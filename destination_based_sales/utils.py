@@ -28,4 +28,22 @@ def impute_missing_codes(row, column, codes_to_impute):
     else:
         return row[column]
 
-### FOR BEA DATA
+### FOR REVENUE SPLIT
+
+def eliminate_irrelevant_percentages(row, column):
+    sales_type = column.split('_')[1]
+
+    indicator_column = '_'.join(['IS', sales_type, 'COMPLETE'])
+
+    if bool(row[indicator_column]):
+        return row[column]
+
+    else:
+        return np.nan
+
+def impute_missing_values(row, column, imputations):
+    if np.isnan(row[column]):
+        return imputations[row['CONTINENT_CODE']][column]
+
+    else:
+        return row[column]
