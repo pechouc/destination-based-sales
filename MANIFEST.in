@@ -1,0 +1,3 @@
+graft destination_based_sales
+global-exclude *.py[cod] __pycache__ *.so *.ipynb
+recursive-exclude  destination_based_sales/jupy *
