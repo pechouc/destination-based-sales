@@ -1,0 +1,44 @@
+{
+    "Cote D'Ivoire (Ivory Coast)": {
+        "NAME": "Ivory Coast",
+        "CODE": "CIV",
+        "CONTINENT_NAME": "Africa",
+        "CONTINENT_CODE": "AFR"
+    },
+    "St. Kitts and Nevis": {
+        "NAME": "Saint Kitts and Nevis",
+        "CODE": "KNA",
+        "CONTINENT_NAME": "North America",
+        "CONTINENT_CODE": "NAMR"
+    },
+    "St. Lucia Island": {
+        "NAME": "Saint Lucia",
+        "CODE": "LCA",
+        "CONTINENT_NAME": "North America",
+        "CONTINENT_CODE": "NAMR"
+    },
+    "Virgin Islands": {
+        "NAME": "US Virgin Islands",
+        "CODE": "VIR",
+        "CONTINENT_NAME": "North America",
+        "CONTINENT_CODE": "NAMR"
+    },
+    "Papua-New Guinea": {
+        "NAME": "Papua New Guinea",
+        "CODE": "PNG",
+        "CONTINENT_NAME": "Oceania",
+        "CONTINENT_CODE": "OCN"
+    },
+    "Other Asia and Oceania": {
+        "NAME": "Other Asia and Oceania",
+        "CODE": "OASIAOCN",
+        "CONTINENT_NAME": "Asia-Pacific",
+        "CONTINENT_CODE": "APAC"
+    },
+    "Bosnia-Herzegovina": {
+        "NAME": "Bosnia and Herzegovina",
+        "CODE": "BIH",
+        "CONTINENT_NAME": "Europe",
+        "CONTINENT_CODE": "EUR"
+    }
+}
