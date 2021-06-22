@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -7,6 +9,7 @@ path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_irs_data = os.path.join(path_to_dir, 'data', 'irs_2018_revenues.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
+
 
 class IRSDataPreprocessor:
 
@@ -19,7 +22,7 @@ class IRSDataPreprocessor:
         self.path_to_geo_file = path_to_geographies
 
         self.CODES_TO_IMPUTE = CODES_TO_IMPUTE_IRS.copy()
-        self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS
+        self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()
 
     def load_data(self):
 

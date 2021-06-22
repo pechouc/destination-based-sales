@@ -6,6 +6,7 @@ from bea import BEADataPreprocessor
 
 from utils import eliminate_irrelevant_percentages
 
+
 class RevenueSplitter:
 
     def __init__(self):
@@ -215,4 +216,3 @@ class RevenueSplitter:
         merged_df = merged_df[['AFFILIATE_COUNTRY_NAME', 'CODE'] + self.percentage_columns].copy()
 
         return merged_df.copy()
-

@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -7,6 +9,7 @@ path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_bea_data = os.path.join(path_to_dir, 'data', 'bea_data.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
+
 
 class BEADataPreprocessor:
 
