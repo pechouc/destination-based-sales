@@ -3,9 +3,10 @@ import os
 import numpy as np
 import pandas as pd
 
-from revenue_split import RevenueSplitter
-
-from utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, impute_missing_continent_codes
+from destination_based_sales.revenue_split import RevenueSplitter
+from destination_based_sales.irs import IRSDataPreprocessor
+from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
+    impute_missing_continent_codes, ensure_country_overlap_with_IRS, ServicesDataTransformer
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,9 +27,13 @@ class TradeStatisticsProcessor:
         self.path_to_services_data = path_to_services_data
 
         self.path_to_geographies = path_to_geographies
+        self.geographies = pd.read_csv(self.path_to_geographies)
 
         self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()
         self.CONTINENT_CODES_TO_IMPUTE_TRADE = CONTINENT_CODES_TO_IMPUTE_TRADE.copy()
+
+        preprocessor = IRSDataPreprocessor()
+        self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
 
     def load_clean_merchandise_data(self):
 
@@ -52,6 +57,25 @@ class TradeStatisticsProcessor:
             inplace=True
         )
 
+        merchandise = merchandise.merge(
+            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
+            how='inner',
+            left_on='OTHER_COUNTRY_CODE', right_on='CODE'
+        )
+
+        merchandise['OTHER_COUNTRY_CODE'] = merchandise.apply(
+            lambda row: ensure_country_overlap_with_IRS(
+                row,
+                self.unique_IRS_country_codes,
+                self.UK_CARIBBEAN_ISLANDS
+            ),
+            axis=1
+        )
+
+        merchandise.drop(columns=['CODE', 'CONTINENT_CODE'], inplace=True)
+
+        merchandise = merchandise.groupby(['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE']).sum().reset_index()
+
         return merchandise.copy()
 
     def load_clean_services_data(self):
@@ -74,6 +98,16 @@ class TradeStatisticsProcessor:
 
         services.drop(columns=['PowerCode Code'], inplace=True)
 
+        services = services[~services['LOCATION'].isin(['OECD', 'EU27_2020'])].copy()
+        services = services[
+            ~services['PARTNER'].isin(
+                ['NOC', 'OECD', 'EU27_2020', 'E_EU', 'WLD']
+            )
+        ].copy()
+
+        services['LOCATION'] = services['LOCATION'].map(lambda x: 'XXK' if x == 'XKV' else x)
+        services['PARTNER'] = services['PARTNER'].map(lambda x: 'XXK' if x == 'XKV' else x)
+
         services.rename(
             columns={
                 'LOCATION': 'AFFILIATE_COUNTRY_CODE',
@@ -85,15 +119,46 @@ class TradeStatisticsProcessor:
 
         services.reset_index(drop=True, inplace=True)
 
+        services = services.merge(
+            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
+            how='left',
+            left_on='OTHER_COUNTRY_CODE', right_on='CODE'
+        )
+
+        services['OTHER_COUNTRY_CODE'] = services.apply(
+            lambda row: ensure_country_overlap_with_IRS(
+                row,
+                self.unique_IRS_country_codes,
+                self.UK_CARIBBEAN_ISLANDS
+            ),
+            axis=1
+        )
+
+        services.drop(columns=['CODE', 'CONTINENT_CODE'], inplace=True)
+
+        services = services.groupby(['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE']).sum().reset_index()
+
+        transformer = ServicesDataTransformer()
+
+        transformer.fit(services)
+
+        services = transformer.transform(services)
+
         return services.copy()
 
     def load_merged_dataframe(self):
 
+        merchandise = self.load_clean_merchandise_data()
+        services = self.load_clean_services_data()
+
         merged_df = merchandise.merge(
             services,
-            how='inner',
+            how='outer',
             on=['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE']
         )
+
+        for column in merged_df.columns:
+            merged_df[column] = merged_df[column].fillna(0)
 
         mask_domestic = (merged_df['AFFILIATE_COUNTRY_CODE'] != merged_df['OTHER_COUNTRY_CODE'])
         mask_US = (merged_df['OTHER_COUNTRY_CODE'] != 'USA')
@@ -116,26 +181,14 @@ class TradeStatisticsProcessor:
 
         merged_df['EXPORT_PERC'] = merged_df['ALL_EXPORTS'] / merged_df['TOTAL_EXPORTS']
 
-    def manage_UK_caribbean_islands(self):
-
-        merged_df = self.load_merged_dataframe()
-
-        extract = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'].isin(uk_caribbean_islands)].copy()
-
-        if extract.shape[0] == 0:
-            return merged_df.copy()
-
-        else:
-            raise Exception('We now have to manage the case of UK Caribbean Islands properly.')
+        return merged_df.copy()
 
     def compute_exports_per_continent(self):
 
-        merged_df = self.manage_UK_caribbean_islands()
-
-        geographies = pd.read_csv(self.path_to_geographies)
+        merged_df = self.load_merged_dataframe()
 
         continents = merged_df.merge(
-            geographies[['CODE', 'CONTINENT_CODE']].copy(),
+            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
             how='left',
             left_on='AFFILIATE_COUNTRY_CODE', right_on='CODE'
         )
@@ -166,7 +219,7 @@ class TradeStatisticsProcessor:
 
     def load_data_with_imputations(self):
 
-        merged_df = self.manage_UK_caribbean_islands()
+        merged_df = self.load_merged_dataframe()
 
         splitter = RevenueSplitter()
 
@@ -179,7 +232,7 @@ class TradeStatisticsProcessor:
         ][['AFFILIATE_COUNTRY_NAME', 'CODE']]
 
         missing_countries = missing_countries.merge(
-            geographies[['CODE', 'CONTINENT_CODE']],
+            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
             how='left',
             on='CODE'
         )

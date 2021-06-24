@@ -1,4 +1,7 @@
+import os
 import json
+
+import numpy as np
 
 # FOR IRS DATA
 
@@ -8,10 +11,10 @@ path_to_codes_to_impute_IRS = os.path.join(path_to_dir, 'data', 'codes_to_impute
 path_to_codes_to_impute_BEA = os.path.join(path_to_dir, 'data', 'codes_to_impute_BEA.json')
 
 with open(path_to_codes_to_impute_IRS) as file:
-    CODES_TO_IMPUTE_IRS = json.loads(file)
+    CODES_TO_IMPUTE_IRS = json.loads(file.read())
 
 with open(path_to_codes_to_impute_BEA) as file:
-    CODES_TO_IMPUTE_BEA = json.loads(file)
+    CODES_TO_IMPUTE_BEA = json.loads(file.read())
 
 CONTINENT_CODES_TO_IMPUTE_TRADE = {
     'OASIAOCN': 'APAC',
@@ -65,3 +68,90 @@ def impute_missing_continent_codes(row, mapping):
 
     else:
         return row['CONTINENT_CODE']
+
+
+def ensure_country_overlap_with_IRS(row, unique_IRS_country_codes, UK_caribbean_islands):
+    mapping = {
+        'EUR': 'OEUR',
+        'AFR': 'OAFR',
+        'ASIA': 'OASIAOCN',
+        'SAMR': 'OAMR',
+        'NAMR': 'OAMR',
+        'OCN': 'OASIAOCN'
+    }
+
+    if row['OTHER_COUNTRY_CODE'] in UK_caribbean_islands:
+        return 'UKI'
+
+    else:
+        if row['OTHER_COUNTRY_CODE'] in unique_IRS_country_codes:
+            return row['OTHER_COUNTRY_CODE']
+
+        elif row['OTHER_COUNTRY_CODE'] == 'RWD':
+            return row['OTHER_COUNTRY_CODE']
+
+        else:
+            return mapping[row['CONTINENT_CODE']]
+
+
+class ServicesDataTransformer:
+
+    def __init__(self):
+        self.amounts_to_distribute = {}
+
+        self.allocations = {}
+        self.list_of_OTHER_codes = ['OAFR', 'OAMR', 'OASIAOCN', 'OEUR']
+
+    def fit(self, data):
+        for country in data['AFFILIATE_COUNTRY_CODE'].unique():
+            mask_affiliate_country = data['AFFILIATE_COUNTRY_CODE'] == country
+
+            mask_RWD = data['OTHER_COUNTRY_CODE'] == 'RWD'
+            mask_OTHER = data['OTHER_COUNTRY_CODE'].isin(self.list_of_OTHER_codes)
+
+            mask = np.logical_and(mask_affiliate_country, mask_RWD)
+
+            if not data[mask].empty:
+                self.amounts_to_distribute[country] = data[mask]['SERVICES_EXPORTS'].iloc[0]
+
+            else:
+                self.amounts_to_distribute[country] = 0
+
+            mask = np.logical_and(mask_affiliate_country, mask_OTHER)
+
+            if not data[mask].empty:
+                restricted_df = data[mask].copy()
+
+                restricted_df['ALLOCABLE_SHARE'] = (
+                    restricted_df['SERVICES_EXPORTS'] / restricted_df['SERVICES_EXPORTS'].sum()
+                )
+
+                self.allocations[country] = {}
+
+                for code in self.list_of_OTHER_codes:
+                    if code not in restricted_df['OTHER_COUNTRY_CODE'].unique():
+                        self.allocations[country][code] = 0
+
+                    else:
+                        self.allocations[country][code] = restricted_df[
+                            restricted_df['OTHER_COUNTRY_CODE'] == code
+                        ]['ALLOCABLE_SHARE'].iloc[0]
+
+            else:
+                self.allocations[country] = {
+                    code: 0.25 for code in self.list_of_OTHER_codes
+                }
+
+    def transform(self, data):
+        data = data[data['OTHER_COUNTRY_CODE'] != 'RWD'].copy()
+
+        data['SERVICES_EXPORTS'] = data.apply(
+            (
+                lambda row: row['SERVICES_EXPORTS'] + self.amounts_to_distribute[row['AFFILIATE_COUNTRY_CODE']] \
+                    * self.allocations[row['AFFILIATE_COUNTRY_CODE']][row['OTHER_COUNTRY_CODE']] \
+                    if row['OTHER_COUNTRY_CODE'] in self.list_of_OTHER_codes else row['SERVICES_EXPORTS']
+            ),
+            axis=1
+        )
+
+        return data.reset_index(drop=True)

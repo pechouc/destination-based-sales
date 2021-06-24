@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from utils import CODES_TO_IMPUTE_IRS, impute_missing_codes, UK_CARIBBEAN_ISLANDS
+from destination_based_sales.utils import CODES_TO_IMPUTE_IRS, impute_missing_codes, UK_CARIBBEAN_ISLANDS
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -76,7 +76,7 @@ class IRSDataPreprocessor:
         dict_df[irs.columns[5]][len(irs)] = 'America'
         dict_df[irs.columns[6]][len(irs)] = 'AMR'
 
-        irs = pd.DataFrame.from_dict(irs)
+        irs = pd.DataFrame.from_dict(dict_df)
 
         return irs.copy()
 

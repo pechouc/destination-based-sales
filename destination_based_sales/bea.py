@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from utils import CODES_TO_IMPUTE_BEA, impute_missing_codes
+from destination_based_sales.utils import CODES_TO_IMPUTE_BEA, impute_missing_codes
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 

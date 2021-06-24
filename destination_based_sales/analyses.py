@@ -3,9 +3,13 @@ import os
 import numpy as np
 import pandas as pd
 
-from irs import IRSDataPreprocessor
-from revenue_split import RevenueSplitter
-from trade_statistics import TradeStatisticsProcessor
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+
+from destination_based_sales.irs import IRSDataPreprocessor
+from destination_based_sales.revenue_split import RevenueSplitter
+from destination_based_sales.trade_statistics import TradeStatisticsProcessor
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -24,8 +28,8 @@ class SalesCalculator:
         self.trade_statistics = self.trade_stat_processor.load_data_with_imputations()
 
         missing_overlap = (
-            ~splitted_revenues['CODE'].isin(
-                trade_statistics['AFFILIATE_COUNTRY_CODE'].unique()
+            ~self.splitted_revenues['CODE'].isin(
+                self.trade_statistics['AFFILIATE_COUNTRY_CODE'].unique()
             )
         ).sum()
 
@@ -123,7 +127,7 @@ class SalesCalculator:
 
         us_sales['OTHER_COUNTRY_CODE'] = 'USA'
 
-    def get_final_dataframe():
+    def get_final_dataframe(self):
 
         merged_df = self.get_sales_to_other_foreign_countries()
         affiliate_country_sales = self.get_sales_to_affiliate_country()
@@ -145,16 +149,24 @@ class AnalysisProvider:
     ):
 
         self.path_to_GNI_data = path_to_GNI_data
-        self.gross_national_income = pd.read_csv(self.path_to_GNI_data)
+        self.gross_national_income = pd.read_csv(self.path_to_GNI_data, delimiter=';')
 
         self.path_to_tax_haven_list = path_to_tax_haven_list
         self.tax_havens = pd.read_csv(self.path_to_tax_haven_list)
 
-    def get_intermediary_dataframe_1(self):
+        print('Running computations - This may take around 10 seconds or slightly more.')
 
         irs_preprocessor = IRSDataPreprocessor()
+        self.irs = irs_preprocessor.load_final_data()
 
-        irs = irs_preprocessor.load_final_data()
+        calculator = SalesCalculator()
+        self.sales_mapping = calculator.get_final_dataframe()
+
+        print('Computations finalized - Results are stored as attributes.')
+
+    def get_intermediary_dataframe_1(self):
+
+        irs = self.irs.copy()
 
         merged_df = irs.merge(
             self.gross_national_income,
@@ -227,7 +239,7 @@ class AnalysisProvider:
         else:
 
             merged_df = merged_df.merge(
-                tax_havens,
+                self.tax_havens,
                 how='left',
                 on='CODE'
             )
@@ -256,7 +268,7 @@ class AnalysisProvider:
                     lambda x: 'blue' if x == 0 else 'red'
                 )
 
-                px.scatter(
+                fig = px.scatter(
                     x='SHARE_OF_GNI_2018',
                     y='SHARE_OF_UNRELATED_PARTY_REVENUES',
                     color=colors,
@@ -264,11 +276,11 @@ class AnalysisProvider:
                     hover_name='AFFILIATE_COUNTRY_NAME'
                 )
 
+                fig.show()
+
     def get_intermediary_dataframe_2(self):
 
-        calculator = SalesCalculator()
-
-        sales_mapping = calculator.get_final_dataframe()
+        sales_mapping = self.sales_mapping.copy()
 
         sales_mapping = sales_mapping.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
 
@@ -304,7 +316,7 @@ class AnalysisProvider:
         merged_df = self.get_intermediary_dataframe_2()
 
         output = merged_df[
-            ['AFFILIATE_COUNTRY_NAME', 'SHARE_OF_UNRELATED_PARTY_REVENUES', 'SHARE_OF_GNI_2018']
+            ['COUNTRY_NAME', 'SHARE_OF_UNRELATED_PARTY_REVENUES', 'SHARE_OF_GNI_2018']
         ].sort_values(
             by='SHARE_OF_UNRELATED_PARTY_REVENUES',
             ascending=False
@@ -326,7 +338,7 @@ class AnalysisProvider:
         if kind == 'regplot':
 
             plot_df = merged_df.dropna()
-            plot_df = plot_df[plot_df['AFFILIATE_COUNTRY_NAME'] != 'United States'].copy()
+            plot_df = plot_df[plot_df['COUNTRY_NAME'] != 'United States'].copy()
 
             correlation = np.corrcoef(
                 plot_df['SHARE_OF_GNI_2018'], plot_df['SHARE_OF_UNRELATED_PARTY_REVENUES']
@@ -345,7 +357,7 @@ class AnalysisProvider:
         else:
 
             merged_df = merged_df.merge(
-                tax_havens,
+                self.tax_havens,
                 how='left',
                 left_on='COUNTRY_CODE', right_on='CODE'
             )
@@ -355,7 +367,7 @@ class AnalysisProvider:
             merged_df.drop(columns=['CODE'], inplace=True)
 
             plot_df = merged_df.dropna()
-            plot_df = plot_df[plot_df['AFFILIATE_COUNTRY_NAME'] != 'United States'].copy()
+            plot_df = plot_df[plot_df['COUNTRY_NAME'] != 'United States'].copy()
 
             if kind == 'scatter':
 
@@ -376,10 +388,97 @@ class AnalysisProvider:
                     lambda x: 'blue' if x == 0 else 'red'
                 )
 
-                px.scatter(
+                fig = px.scatter(
                     x='SHARE_OF_GNI_2018',
                     y='SHARE_OF_UNRELATED_PARTY_REVENUES',
                     color=colors,
                     data_frame=plot_df,
                     hover_name='COUNTRY_NAME'
                 )
+
+                fig.show()
+
+    def get_comparison_dataframe(self):
+
+        irs = self.irs.copy()
+        irs = irs[irs['CODE'] != 'USA'].copy()
+
+        sales_mapping = self.sales_mapping.copy()
+        sales_mapping = sales_mapping.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
+
+        irs = irs[['AFFILIATE_COUNTRY_NAME', 'CODE', 'UNRELATED_PARTY_REVENUES']].copy()
+
+        merged_df = irs.merge(
+            sales_mapping[['OTHER_COUNTRY_CODE', 'UNRELATED_PARTY_REVENUES']],
+            how='inner',
+            left_on='CODE', right_on='OTHER_COUNTRY_CODE'
+        )
+
+        merged_df.drop(columns=['OTHER_COUNTRY_CODE'], inplace=True)
+
+        merged_df.rename(
+            columns={
+                'AFFILIATE_COUNTRY_NAME': 'COUNTRY_NAME',
+                'CODE': 'COUNTRY_CODE',
+                'UNRELATED_PARTY_REVENUES_x': 'UPR_IRS',
+                'UNRELATED_PARTY_REVENUES_y': 'UPR_ADJUSTED'
+            },
+            inplace=True
+        )
+
+        return merged_df.copy()
+
+    def get_focus_on_tax_havens(self):
+
+        merged_df = self.get_comparison_dataframe()
+
+        restricted_df = merged_df[
+            merged_df['COUNTRY_CODE'].isin(
+                list(self.tax_havens['CODE']) + ['UKI']
+            )
+        ].copy()
+
+        restricted_df.sort_values(by='UPR_IRS', ascending=False, inplace=True)
+
+        restricted_df.reset_index(drop=True, inplace=True)
+
+        dict_df = restricted_df.to_dict()
+
+        dict_df[restricted_df.columns[0]][len(restricted_df)] = 'Total for tax havens'
+        dict_df[restricted_df.columns[1]][len(restricted_df)] = '..'
+        dict_df[restricted_df.columns[2]][len(restricted_df)] = restricted_df['UPR_IRS'].sum()
+        dict_df[restricted_df.columns[3]][len(restricted_df)] = restricted_df['UPR_ADJUSTED'].sum()
+
+        restricted_df = pd.DataFrame.from_dict(dict_df)
+
+        restricted_df['SHARE_OF_UPR_IRS'] = restricted_df['UPR_IRS'] / merged_df['UPR_IRS'].sum() * 100
+        restricted_df['SHARE_OF_UPR_ADJUSTED'] = restricted_df['UPR_ADJUSTED'] / merged_df['UPR_ADJUSTED'].sum() * 100
+
+        for column in ['UPR_IRS', 'UPR_ADJUSTED']:
+            restricted_df[column] = restricted_df[column] / 10**6
+            restricted_df[column] = restricted_df[column].map(round)
+
+        for column in ['SHARE_OF_UPR_IRS', 'SHARE_OF_UPR_ADJUSTED']:
+            restricted_df[column] = restricted_df[column].map(
+                lambda x: round(x, 3)
+            )
+
+        restricted_df.rename(
+            columns={
+                'COUNTRY_NAME': 'Country name',
+                'UPR_IRS': 'Unrelated-party revenues based on IRS ($m)',
+                'UPR_ADJUSTED': 'Adjusted unrelated-party revenues ($m)',
+                'SHARE_OF_UPR_IRS': 'Share of URP based on IRS (%)',
+                'SHARE_OF_UPR_ADJUSTED': 'Share of adjusted URP (%)'
+            },
+            inplace=True
+        )
+
+        restricted_df.drop(columns=['COUNTRY_CODE'], inplace=True)
+
+        return restricted_df.copy()
+
+
+
+
+
