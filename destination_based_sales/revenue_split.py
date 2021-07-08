@@ -10,12 +10,12 @@ from destination_based_sales.utils import eliminate_irrelevant_percentages, impu
 class RevenueSplitter:
 
     def __init__(self):
-        self.IRSDataPreprocessor = IRSDataPreprocessor()
-        self.BEADataPreprocessor = BEADataPreprocessor()
+        self.irs_preprocessor = IRSDataPreprocessor()
+        self.bea_preprocessor = BEADataPreprocessor()
 
     def merge_dataframes(self):
-        irs = self.IRSDataPreprocessor.load_final_data()
-        bea = self.BEADataPreprocessor.load_final_data()
+        irs = self.irs_preprocessor.load_final_data()
+        bea = self.bea_preprocessor.load_final_data()
 
         merged_df = irs.merge(
             bea,

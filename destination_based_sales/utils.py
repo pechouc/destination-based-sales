@@ -21,6 +21,18 @@ CONTINENT_CODES_TO_IMPUTE_TRADE = {
     'UKI': 'AMR'
 }
 
+CONTINENT_CODES_TO_IMPUTE_OECD_CBCR = {
+    'OAF': 'AFR',
+    'OAM': 'AMR',
+    'OAS': 'APAC',
+    'OTE': 'EUR',
+    'AFRIC': 'AFR',
+    'AMER': 'AMR',
+    'ASIAT': 'APAC',
+    'EUROP': 'EUR',
+    'GRPS': 'OTHER_GROUPS'
+}
+
 UK_CARIBBEAN_ISLANDS = [
     'CYM',
     'VGB',
@@ -60,11 +72,14 @@ def impute_missing_values(row, column, imputations):
         return row[column]
 
 
-# FOR TRADE STATISTICS
+# FOR TRADE STATISTICS (AND OECD CBCR FOR THE FIRST FUNCTION)
 
 def impute_missing_continent_codes(row, mapping):
     if not isinstance(row['CONTINENT_CODE'], str) and np.isnan(row['CONTINENT_CODE']):
-        return mapping[row['CODE']]
+        if 'CODE' in row.index:
+            return mapping[row['CODE']]
+        else:
+            return mapping[row['AFFILIATE_COUNTRY_CODE']]
 
     else:
         return row['CONTINENT_CODE']
@@ -147,11 +162,33 @@ class ServicesDataTransformer:
 
         data['SERVICES_EXPORTS'] = data.apply(
             (
-                lambda row: row['SERVICES_EXPORTS'] + self.amounts_to_distribute[row['AFFILIATE_COUNTRY_CODE']] \
-                    * self.allocations[row['AFFILIATE_COUNTRY_CODE']][row['OTHER_COUNTRY_CODE']] \
-                    if row['OTHER_COUNTRY_CODE'] in self.list_of_OTHER_codes else row['SERVICES_EXPORTS']
+                lambda row: row['SERVICES_EXPORTS'] + self.amounts_to_distribute[row['AFFILIATE_COUNTRY_CODE']]
+                * self.allocations[row['AFFILIATE_COUNTRY_CODE']][row['OTHER_COUNTRY_CODE']]
+                if row['OTHER_COUNTRY_CODE'] in self.list_of_OTHER_codes else row['SERVICES_EXPORTS']
             ),
             axis=1
         )
 
         return data.reset_index(drop=True)
+
+
+# FOR ANALYTICAL AMNE DATA
+
+def compute_foreign_owned_gross_output(row, include_US):
+    foreign_owned_gross_output = 0
+
+    for column in row.index:
+        if column in ['cou', 'GROSS_OUTPUT_INCL_US']:
+            continue
+
+        elif column == row['cou']:
+            continue
+
+        else:
+            foreign_owned_gross_output += row[column]
+
+    if include_US:
+        return foreign_owned_gross_output
+
+    else:
+        return foreign_owned_gross_output - row['USA']

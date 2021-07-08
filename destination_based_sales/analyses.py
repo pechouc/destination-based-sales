@@ -10,6 +10,7 @@ import plotly.express as px
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.revenue_split import RevenueSplitter
 from destination_based_sales.trade_statistics import TradeStatisticsProcessor
+from destination_based_sales.analytical_amne import AnalyticalAMNEPreprocessor
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,11 +22,17 @@ class SalesCalculator:
 
     def __init__(self):
 
+        self.irs_preprocessor = IRSDataPreprocessor()
+        self.irs = self.irs_preprocessor.load_final_data()
+
         self.splitter = RevenueSplitter()
         self.splitted_revenues = self.splitter.get_splitted_revenues()
 
         self.trade_stat_processor = TradeStatisticsProcessor()
         self.trade_statistics = self.trade_stat_processor.load_data_with_imputations()
+
+        self.analytical_amne_preprocessor = AnalyticalAMNEPreprocessor()
+        self.domestic_revenue_split = self.analytical_amne_preprocessor.get_extended_domestic_analytical_amne_data()
 
         missing_overlap = (
             ~self.splitted_revenues['CODE'].isin(
@@ -127,6 +134,14 @@ class SalesCalculator:
 
         us_sales['OTHER_COUNTRY_CODE'] = 'USA'
 
+        return us_sales.copy()
+
+    def get_sales_from_the_US(self):
+        sales_in_the_us = self.irs[self.irs['CODE'] == 'USA'].copy()
+
+
+
+
     def get_final_dataframe(self):
 
         merged_df = self.get_sales_to_other_foreign_countries()
@@ -169,7 +184,7 @@ class AnalysisProvider:
         irs = self.irs.copy()
 
         merged_df = irs.merge(
-            self.gross_national_income,
+            self.gross_national_income[['COUNTRY_CODE', 'GNI_2018']].copy(),
             how='left',
             left_on='CODE', right_on='COUNTRY_CODE'
         )
@@ -287,7 +302,7 @@ class AnalysisProvider:
         sales_mapping = sales_mapping[sales_mapping['OTHER_COUNTRY_CODE'] != 'USA'].copy()
 
         sales_mapping = sales_mapping.merge(
-            self.gross_national_income,
+            self.gross_national_income[['COUNTRY_CODE', 'COUNTRY_NAME', 'GNI_2018']].copy(),
             how='left',
             left_on='OTHER_COUNTRY_CODE', right_on='COUNTRY_CODE'
         )
@@ -478,7 +493,35 @@ class AnalysisProvider:
 
         return restricted_df.copy()
 
+    def plot_focus_on_tax_havens(self):
 
+        df = self.get_focus_on_tax_havens()
 
+        df['Change in unrelated-party revenues (%)'] = (df[df.columns[2]] / df[df.columns[1]] - 1) * 100
 
+        df_sorted = df.sort_values(
+            by=df.columns[-1],
+            ascending=False
+        ).iloc[:-1].copy()
 
+        plt.figure(figsize=(12, 12))
+
+        y_pos = np.arange(len(df_sorted))
+        colors = df_sorted[df_sorted.columns[-1]].map(
+            lambda x: 'darkred' if x < 0 else 'darkblue'
+        )
+
+        plt.barh(
+            y_pos,
+            df_sorted[df_sorted.columns[-1]],
+            color=colors
+        )
+
+        plt.yticks(
+            ticks=y_pos,
+            labels=df_sorted['Country name']
+        )
+
+        plt.xlabel(df_sorted.columns[-1])
+
+        plt.show()
