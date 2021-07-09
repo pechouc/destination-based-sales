@@ -3,17 +3,21 @@ import pandas as pd
 
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.bea import BEADataPreprocessor
+from destination_based_sales.analytical_amne import AnalyticalAMNEPreprocessor
 
 from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values
 
 
 class RevenueSplitter:
 
-    def __init__(self):
+    def __init__(self, include_US=True):
         self.irs_preprocessor = IRSDataPreprocessor()
         self.bea_preprocessor = BEADataPreprocessor()
+        self.amne_preprocessor = AnalyticalAMNEPreprocessor(load_OECD_data=False)
 
-    def merge_dataframes(self):
+        self.include_US = include_US
+
+    def merge_dataframes(self, include_US=True):
         irs = self.irs_preprocessor.load_final_data()
         bea = self.bea_preprocessor.load_final_data()
 
@@ -22,8 +26,6 @@ class RevenueSplitter:
             how='left',
             on='CODE'
         )
-
-        merged_df = merged_df[merged_df['CODE'] != 'USA'].copy()
 
         merged_df.drop(
             columns=['AFFILIATE_COUNTRY_NAME_y', 'CONTINENT_NAME_y', 'CONTINENT_CODE_y', 'NAME'],
@@ -39,11 +41,45 @@ class RevenueSplitter:
             inplace=True
         )
 
-        return merged_df.copy()
+        if include_US:
+
+            df = self.amne_preprocessor.get_unextended_domestic_analytical_amne_data()
+            us_sales = df[df['COUNTRY_CODE'] == 'USA'].to_dict(orient='records')[0]
+
+            us_imputation = {}
+
+            for column in merged_df.columns[-11:]:
+                if column == 'TOTAL':
+                    us_imputation[column] = us_sales['DOMESTIC_SALES'] + us_sales['SALES_TO_OTHER_COUNTRY']
+
+                elif 'US' in column:
+                    us_imputation[column] = us_sales['DOMESTIC_SALES'] * 1
+
+                elif 'AFFILIATE_COUNTRY' in column:
+                    us_imputation[column] = us_sales['DOMESTIC_SALES'] * 0
+
+                else:
+                    us_imputation[column] = us_sales['SALES_TO_OTHER_COUNTRY']
+
+            for column in merged_df.columns[-11:]:
+                merged_df[column] = merged_df.apply(
+                    lambda row: us_imputation[column] if row['CODE'] == 'USA' else row[column],
+                    axis=1
+                )
+
+            return merged_df.copy()
+
+        else:
+
+            merged_df = merged_df[merged_df['CODE'] != 'USA'].copy()
+
+            return merged_df.copy()
 
     def add_indicator_variables(self):
 
-        merged_df = self.merge_dataframes()
+        merged_df = self.merge_dataframes(include_US=self.include_US)
+
+        mask_non_US = (merged_df['CODE'] != 'USA')
 
         related = ['TOTAL_US_RELATED', 'TOTAL_AFFILIATE_COUNTRY_RELATED', 'TOTAL_OTHER_COUNTRY_RELATED']
 
@@ -51,7 +87,16 @@ class RevenueSplitter:
         mask_1 = ~merged_df[related[1]].isnull()
         mask_2 = ~merged_df[related[2]].isnull()
 
-        mask = np.logical_and(mask_0, np.logical_and(mask_1, mask_2))
+        mask = np.logical_and(
+            mask_non_US,
+            np.logical_and(
+                mask_0,
+                np.logical_and(
+                    mask_1,
+                    mask_2
+                )
+            )
+        )
 
         merged_df['IS_RELATED_COMPLETE'] = mask * 1
 
@@ -63,7 +108,16 @@ class RevenueSplitter:
         mask_1 = ~merged_df[unrelated[1]].isnull()
         mask_2 = ~merged_df[unrelated[2]].isnull()
 
-        mask = np.logical_and(mask_0, np.logical_and(mask_1, mask_2))
+        mask = np.logical_and(
+            mask_non_US,
+            np.logical_and(
+                mask_0,
+                np.logical_and(
+                    mask_1,
+                    mask_2
+                )
+            )
+        )
 
         merged_df['IS_UNRELATED_COMPLETE'] = mask * 1
 
@@ -75,7 +129,16 @@ class RevenueSplitter:
         mask_1 = ~merged_df[total[1]].isnull()
         mask_2 = ~merged_df[total[2]].isnull()
 
-        mask = np.logical_and(mask_0, np.logical_and(mask_1, mask_2))
+        mask = np.logical_and(
+            mask_non_US,
+            np.logical_and(
+                mask_0,
+                np.logical_and(
+                    mask_1,
+                    mask_2
+                )
+            )
+        )
 
         merged_df['IS_TOTAL_COMPLETE'] = mask * 1
 

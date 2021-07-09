@@ -10,7 +10,6 @@ import plotly.express as px
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.revenue_split import RevenueSplitter
 from destination_based_sales.trade_statistics import TradeStatisticsProcessor
-from destination_based_sales.analytical_amne import AnalyticalAMNEPreprocessor
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,19 +19,16 @@ path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 
 class SalesCalculator:
 
-    def __init__(self):
+    def __init__(self, include_US=True):
 
         self.irs_preprocessor = IRSDataPreprocessor()
         self.irs = self.irs_preprocessor.load_final_data()
 
-        self.splitter = RevenueSplitter()
+        self.splitter = RevenueSplitter(include_US=include_US)
         self.splitted_revenues = self.splitter.get_splitted_revenues()
 
         self.trade_stat_processor = TradeStatisticsProcessor()
         self.trade_statistics = self.trade_stat_processor.load_data_with_imputations()
-
-        self.analytical_amne_preprocessor = AnalyticalAMNEPreprocessor()
-        self.domestic_revenue_split = self.analytical_amne_preprocessor.get_extended_domestic_analytical_amne_data()
 
         missing_overlap = (
             ~self.splitted_revenues['CODE'].isin(
@@ -136,12 +132,6 @@ class SalesCalculator:
 
         return us_sales.copy()
 
-    def get_sales_from_the_US(self):
-        sales_in_the_us = self.irs[self.irs['CODE'] == 'USA'].copy()
-
-
-
-
     def get_final_dataframe(self):
 
         merged_df = self.get_sales_to_other_foreign_countries()
@@ -153,6 +143,8 @@ class SalesCalculator:
             axis=0
         )
 
+        output_df = output_df[output_df[output_df.columns[-3:]].sum(axis=1) > 0].copy()
+
         return output_df.copy()
 
 
@@ -160,6 +152,7 @@ class AnalysisProvider:
 
     def __init__(
         self,
+        include_US,
         path_to_GNI_data=path_to_GNI_data, path_to_tax_haven_list=path_to_tax_haven_list
     ):
 
@@ -174,7 +167,7 @@ class AnalysisProvider:
         irs_preprocessor = IRSDataPreprocessor()
         self.irs = irs_preprocessor.load_final_data()
 
-        calculator = SalesCalculator()
+        calculator = SalesCalculator(include_US=include_US)
         self.sales_mapping = calculator.get_final_dataframe()
 
         print('Computations finalized - Results are stored as attributes.')
