@@ -10,9 +10,8 @@ from destination_based_sales.utils import compute_foreign_owned_gross_output
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
-path_to_analytical_amne_tab1 = os.path.join(path_to_dir, 'data', 'analytical_amne_tab1.csv')
-path_to_analytical_amne_tab2 = os.path.join(path_to_dir, 'data', 'analytical_amne_tab2.csv')
-path_to_analytical_amne_domestic = os.path.join(path_to_dir, 'data', 'analytical_amne_domestic.csv')
+path_to_analytical_amne = os.path.join(path_to_dir, 'data', 'analytical_amne.xlsx')
+path_to_analytical_amne_domestic = os.path.join(path_to_dir, 'data', 'analytical_amne_domesticMNEs.xlsx')
 
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
@@ -21,17 +20,19 @@ class AnalyticalAMNEPreprocessor:
 
     def __init__(
         self,
-        path_to_analytical_amne_tab1=path_to_analytical_amne_tab1,
-        path_to_analytical_amne_tab2=path_to_analytical_amne_tab2,
+        path_to_analytical_amne=path_to_analytical_amne,
         path_to_analytical_amne_domestic=path_to_analytical_amne_domestic,
         path_to_geographies=path_to_geographies,
         load_OECD_data=True
     ):
-        self.path_to_analytical_amne_tab1 = path_to_analytical_amne_tab1
-        self.path_to_analytical_amne_tab2 = path_to_analytical_amne_tab2
-        self.path_to_analytical_amne_domestic = path_to_analytical_amne_domestic
+        self.path_to_analytical_amne = path_to_analytical_amne
+        self.tab_1 = 'GO bilateral'
+        self.tab_2 = 'GVA EXGR IMGR'
 
-        self.bea_processor = BEADataPreprocessor()
+        self.path_to_analytical_amne_domestic = path_to_analytical_amne_domestic
+        self.domestic_aamne_tab = 'MNE GO GVA EXGR IMGR'
+
+        self.bea_processor = BEADataPreprocessor(year=2016)
         self.bea = self.bea_processor.load_final_data()
 
         if load_OECD_data:
@@ -47,7 +48,11 @@ class AnalyticalAMNEPreprocessor:
         self.oecd = self.cbcr_preprocessor.get_preprocessed_revenue_data()
 
     def load_clean_foreign_analytical_amne_data(self):
-        aamne = pd.read_csv(self.path_to_analytical_amne_tab2, delimiter=';')
+        aamne = pd.read_excel(
+            self.path_to_analytical_amne,
+            sheet_name=self.tab_2,
+            engine='openpyxl'
+        )
 
         aamne.drop(
             columns=['flag_gva', 'flag_exgr', 'flag_imgr'],
@@ -80,7 +85,11 @@ class AnalyticalAMNEPreprocessor:
         return aamne_grouped.copy()
 
     def load_clean_bilateral_gross_output_data(self):
-        gross_output = pd.read_csv(self.path_to_analytical_amne_tab1, delimiter=';')
+        gross_output = pd.read_excel(
+            self.path_to_analytical_amne,
+            sheet_name=self.tab_1,
+            engine='openpyxl'
+        )
 
         gross_output = gross_output[gross_output['year'] == 2016].copy()
         gross_output = gross_output[gross_output['cou'] != 'ROW'].copy()
@@ -289,7 +298,11 @@ class AnalyticalAMNEPreprocessor:
         return partner_jurisdictions.copy()
 
     def load_clean_domestic_analytical_amne_data(self):
-        aamne_domestic = pd.read_csv(self.path_to_analytical_amne_domestic, delimiter=';')
+        aamne_domestic = pd.read_excel(
+            self.path_to_analytical_amne_domestic,
+            sheet_name=self.domestic_aamne_tab,
+            engine='openpyxl'
+        )
 
         aamne_domestic = aamne_domestic[aamne_domestic['year'] == 2016].copy()
         aamne_domestic = aamne_domestic[aamne_domestic['own'] == 'MNE'].copy()

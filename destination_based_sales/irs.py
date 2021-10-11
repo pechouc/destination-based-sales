@@ -7,7 +7,7 @@ from destination_based_sales.utils import CODES_TO_IMPUTE_IRS, impute_missing_co
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
-path_to_irs_data = os.path.join(path_to_dir, 'data', 'irs_2018_revenues.csv')
+path_to_irs_data = os.path.join(path_to_dir, 'data', '18it01acbc.xlsx')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
 
@@ -15,10 +15,19 @@ class IRSDataPreprocessor:
 
     def __init__(
         self,
-        path_to_cbcr=path_to_irs_data, path_to_geo_file=path_to_geographies
+        year,
+        path_to_dir=path_to_dir,
+        path_to_geo_file=path_to_geographies
     ):
+        self.year = year
 
-        self.path_to_cbcr = path_to_cbcr
+        self.path_to_cbcr = os.path.join(
+            path_to_dir,
+            'data',
+            str(year),
+            f'{year - 2000}it01acbc.xlsx'
+        )
+
         self.path_to_geo_file = path_to_geographies
 
         self.CODES_TO_IMPUTE = CODES_TO_IMPUTE_IRS.copy()
@@ -26,7 +35,53 @@ class IRSDataPreprocessor:
 
     def load_data(self):
 
-        irs = pd.read_csv(self.path_to_cbcr, delimiter=';')
+        irs = pd.read_excel(
+            self.path_to_cbcr,
+            engine='openpyxl'
+        )
+
+        irs.drop(
+            columns=['Unnamed: 1'] + list(irs.columns[5:]),
+            inplace=True
+        )
+
+        irs.columns = [
+            'AFFILIATE_COUNTRY_NAME', 'UNRELATED_PARTY_REVENUES', 'RELATED_PARTY_REVENUES', 'TOTAL_REVENUES'
+        ]
+
+        irs = irs.loc[5:].copy()
+
+        mask_stateless = irs['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country_name: 'stateless' in country_name.lower()
+        )
+        mask_total = irs['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country_name: 'total' in country_name.lower()
+        )
+        mask = ~np.logical_or(
+            mask_stateless, mask_total
+        )
+
+        irs = irs[mask].copy()
+
+        irs = irs.iloc[:-4].copy()
+
+        irs['AFFILIATE_COUNTRY_NAME'] = irs['AFFILIATE_COUNTRY_NAME'].map(
+            (
+                lambda country_name: ('Other ' + country_name.split(',')[0]).replace('&', 'and')
+                if 'other' in country_name.lower() else country_name
+            )
+        )
+        irs['AFFILIATE_COUNTRY_NAME'] = irs['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country_name: 'United Kingdom' if 'United Kingdom' in country_name else country_name
+        )
+        irs['AFFILIATE_COUNTRY_NAME'] = irs['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country_name: 'Korea' if country_name.startswith('Korea') else country_name
+        )
+        irs['AFFILIATE_COUNTRY_NAME'] = irs['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country_name: 'Congo' if country_name.endswith('(Brazzaville)') else country_name
+        )
+
+        irs.reset_index(drop=True, inplace=True)
 
         return irs.copy()
 

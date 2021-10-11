@@ -5,7 +5,8 @@ import pandas as pd
 
 import requests
 
-from destination_based_sales.utils import impute_missing_continent_codes, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR
+from destination_based_sales.utils import impute_missing_continent_codes, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR, \
+    UK_CARIBBEAN_ISLANDS
 
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +14,7 @@ path_to_dir = os.path.dirname(os.path.abspath(__file__))
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 path_to_GNI_data = os.path.join(path_to_dir, 'data', 'gross_national_income.csv')
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
+local_path_to_OECD_CbCR_data = os.path.join(path_to_dir, 'data', 'oecd_cbcr.csv')
 
 
 class CbCRPreprocessor:
@@ -23,16 +25,21 @@ class CbCRPreprocessor:
         path_to_geographies=path_to_geographies,
         continent_code_imputations=CONTINENT_CODES_TO_IMPUTE_OECD_CBCR,
         path_to_GNI_data=path_to_GNI_data,
-        path_to_tax_haven_list=path_to_tax_haven_list
+        path_to_tax_haven_list=path_to_tax_haven_list,
+        fetch_data_online=False
     ):
-        self.url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
-        self.dataset_identifier = 'CBCR_TABLEI/'
-        self.dimensions = 'ALL/'
-        self.agency_name = 'OECD'
+        if fetch_data_online:
+            self.url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
+            self.dataset_identifier = 'CBCR_TABLEI/'
+            self.dimensions = 'ALL/'
+            self.agency_name = 'OECD'
 
-        self.download_url = (
-            self.url_base + self.dataset_identifier + self.dimensions + self.agency_name + '?contenttype=csv'
-        )
+            self.path_to_OECD_data = (
+                self.url_base + self.dataset_identifier + self.dimensions + self.agency_name + '?contenttype=csv'
+            )
+
+        else:
+            self.path_to_OECD_CbCR_data = local_path_to_OECD_CbCR_data
 
         self.path_to_geographies = path_to_geographies
         self.continent_code_imputations = continent_code_imputations
@@ -41,15 +48,19 @@ class CbCRPreprocessor:
         self.path_to_tax_haven_list = path_to_tax_haven_list
 
         if load_raw_data:
-            print("Fetching the OECD's aggregated and anonymized CbCR data - This may take up to 30 seconds.")
-            self.data = pd.read_csv(self.download_url)
-            print("Loaded the OECD's aggregated and anonymized CbCR data successfully.")
+            if fetch_data_online:
+                print("Fetching the OECD's aggregated and anonymized CbCR data - This may take up to 30 seconds.")
+
+            self.data = pd.read_csv(self.path_to_OECD_CbCR_data)
+
+            if fetch_data_online:
+                print("Loaded the OECD's aggregated and anonymized CbCR data successfully.")
 
         else:
             self.data = None
 
     def load_raw_data(self):
-        self.data = pd.read_csv(self.download_url)
+        self.data = pd.read_csv(self.path_to_OECD_CbCR_data)
 
     def get_preprocessed_revenue_data(self):
         if self.data is None:
@@ -104,6 +115,21 @@ class CbCRPreprocessor:
 
         # And we can now eliminate Foreign Jurisdictions Total rows
         oecd = oecd[oecd['AFFILIATE_COUNTRY_NAME'] != 'Foreign Jurisdictions Total'].copy()
+
+        # We group the rows corresponding to UK Caribbean Islands
+        oecd['AFFILIATE_COUNTRY_CODE'] = oecd['AFFILIATE_COUNTRY_CODE'].map(
+            lambda country_code: country_code if country_code not in UK_CARIBBEAN_ISLANDS else 'UKI'
+        )
+        oecd['AFFILIATE_COUNTRY_NAME'] = oecd.apply(
+            (
+                lambda row: row['AFFILIATE_COUNTRY_NAME']
+                if row['AFFILIATE_COUNTRY_CODE'] != 'UKI' else 'UK Caribbean Islands'
+            ),
+            axis=1
+        )
+        oecd = oecd.groupby(
+            ['PARENT_COUNTRY_CODE', 'PARENT_COUNTRY_NAME', 'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_NAME']
+        ).sum().reset_index()
 
         geographies = pd.read_csv(self.path_to_geographies)
 

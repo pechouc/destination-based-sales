@@ -30,7 +30,8 @@ CONTINENT_CODES_TO_IMPUTE_OECD_CBCR = {
     'AMER': 'AMR',
     'ASIAT': 'APAC',
     'EUROP': 'EUR',
-    'GRPS': 'OTHER_GROUPS'
+    'GRPS': 'OTHER_GROUPS',
+    'UKI': 'AMR'
 }
 
 UK_CARIBBEAN_ISLANDS = [
@@ -57,7 +58,7 @@ def eliminate_irrelevant_percentages(row, column):
 
     indicator_column = '_'.join(['IS', sales_type, 'COMPLETE'])
 
-    if bool(row[indicator_column]):
+    if row[indicator_column] != 0:
         return row[column]
 
     else:
@@ -77,6 +78,8 @@ def impute_missing_values(row, column, imputations):
 def impute_missing_continent_codes(row, mapping):
     if not isinstance(row['CONTINENT_CODE'], str) and np.isnan(row['CONTINENT_CODE']):
         if 'CODE' in row.index:
+            if isinstance(row['CODE'], float) and np.isnan(row['CODE']):
+                print(row)
             return mapping[row['CODE']]
         else:
             return mapping[row['AFFILIATE_COUNTRY_CODE']]
@@ -103,6 +106,26 @@ def ensure_country_overlap_with_IRS(row, unique_IRS_country_codes, UK_caribbean_
             return row['OTHER_COUNTRY_CODE']
 
         elif row['OTHER_COUNTRY_CODE'] == 'RWD':
+            return row['OTHER_COUNTRY_CODE']
+
+        else:
+            return mapping[row['CONTINENT_CODE']]
+
+def ensure_country_overlap_with_OECD_CbCR(row, unique_OECD_country_codes, UK_caribbean_islands):
+    mapping = {
+        'EUR': 'OEUR',
+        'AFR': 'OAFR',
+        'ASIA': 'OASIAOCN',
+        'SAMR': 'OAMR',
+        'NAMR': 'OAMR',
+        'OCN': 'OASIAOCN'
+    }
+
+    if row['OTHER_COUNTRY_CODE'] in UK_caribbean_islands:
+        return 'UKI'
+
+    else:
+        if row['OTHER_COUNTRY_CODE'] in unique_OECD_country_codes or row['OTHER_COUNTRY_CODE'] == 'RWD':
             return row['OTHER_COUNTRY_CODE']
 
         else:

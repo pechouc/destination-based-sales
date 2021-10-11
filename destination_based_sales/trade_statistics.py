@@ -5,8 +5,10 @@ import pandas as pd
 
 from destination_based_sales.revenue_split import RevenueSplitter
 from destination_based_sales.irs import IRSDataPreprocessor
+from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
-    impute_missing_continent_codes, ensure_country_overlap_with_IRS, ServicesDataTransformer
+    impute_missing_continent_codes, ensure_country_overlap_with_IRS, ServicesDataTransformer, \
+    ensure_country_overlap_with_OECD_CbCR, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,9 +22,31 @@ class TradeStatisticsProcessor:
 
     def __init__(
         self,
-        path_to_merchandise_data=path_to_merchandise_data, path_to_services_data=path_to_services_data,
+        year,
+        winsorize_export_percs,
+        US_only,
+        path_to_merchandise_data=path_to_merchandise_data,
+        path_to_services_data=path_to_services_data,
         path_to_geographies=path_to_geographies
     ):
+        self.year = year
+        self.winsorize_export_percs = winsorize_export_percs
+
+        if winsorize_export_percs:
+            self.winsorizing_threshold = (0.5 / 100)
+            self.winsorizing_threshold_US = (0.1 / 100)
+
+        self.US_only = US_only
+
+        if not US_only:
+            oecd_preprocessor = CbCRPreprocessor()
+            temp = oecd_preprocessor.get_preprocessed_revenue_data()
+
+            self.unique_OECD_country_codes = temp['AFFILIATE_COUNTRY_CODE'].unique()
+            self.unique_OECD_affiliate_countries = temp[
+                ['AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_NAME']
+            ].drop_duplicates()
+
         self.path_to_merchandise_data = path_to_merchandise_data
         self.path_to_services_data = path_to_services_data
 
@@ -31,13 +55,16 @@ class TradeStatisticsProcessor:
 
         self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()
         self.CONTINENT_CODES_TO_IMPUTE_TRADE = CONTINENT_CODES_TO_IMPUTE_TRADE.copy()
+        self.CONTINENT_CODES_TO_IMPUTE_OECD_CBCR = CONTINENT_CODES_TO_IMPUTE_OECD_CBCR.copy()
 
-        preprocessor = IRSDataPreprocessor()
+        preprocessor = IRSDataPreprocessor(year=year)
         self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
 
     def load_clean_merchandise_data(self):
 
         merchandise = pd.read_csv(self.path_to_merchandise_data)
+
+        merchandise = merchandise[merchandise['TIME'] == self.year].copy()
 
         merchandise.drop(
             columns=[
@@ -63,14 +90,25 @@ class TradeStatisticsProcessor:
             left_on='OTHER_COUNTRY_CODE', right_on='CODE'
         )
 
-        merchandise['OTHER_COUNTRY_CODE'] = merchandise.apply(
-            lambda row: ensure_country_overlap_with_IRS(
-                row,
-                self.unique_IRS_country_codes,
-                self.UK_CARIBBEAN_ISLANDS
-            ),
-            axis=1
-        )
+        if self.US_only:
+            merchandise['OTHER_COUNTRY_CODE'] = merchandise.apply(
+                lambda row: ensure_country_overlap_with_IRS(
+                    row,
+                    self.unique_IRS_country_codes,
+                    self.UK_CARIBBEAN_ISLANDS
+                ),
+                axis=1
+            )
+
+        else:
+            merchandise['OTHER_COUNTRY_CODE'] = merchandise.apply(
+                lambda row: ensure_country_overlap_with_OECD_CbCR(
+                    row,
+                    self.unique_OECD_country_codes,
+                    self.UK_CARIBBEAN_ISLANDS
+                ),
+                axis=1
+            )
 
         merchandise.drop(columns=['CODE', 'CONTINENT_CODE'], inplace=True)
 
@@ -81,6 +119,8 @@ class TradeStatisticsProcessor:
     def load_clean_services_data(self):
 
         services = pd.read_csv(self.path_to_services_data)
+
+        services = services[services['TIME'] == self.year].copy()
 
         services = services[services['Measure'] == 'Final balanced value'].copy()
 
@@ -125,14 +165,25 @@ class TradeStatisticsProcessor:
             left_on='OTHER_COUNTRY_CODE', right_on='CODE'
         )
 
-        services['OTHER_COUNTRY_CODE'] = services.apply(
-            lambda row: ensure_country_overlap_with_IRS(
-                row,
-                self.unique_IRS_country_codes,
-                self.UK_CARIBBEAN_ISLANDS
-            ),
-            axis=1
-        )
+        if self.US_only:
+            services['OTHER_COUNTRY_CODE'] = services.apply(
+                lambda row: ensure_country_overlap_with_IRS(
+                    row,
+                    self.unique_IRS_country_codes,
+                    self.UK_CARIBBEAN_ISLANDS
+                ),
+                axis=1
+            )
+
+        else:
+            services['OTHER_COUNTRY_CODE'] = services.apply(
+                lambda row: ensure_country_overlap_with_OECD_CbCR(
+                    row,
+                    self.unique_IRS_country_codes,
+                    self.UK_CARIBBEAN_ISLANDS
+                ),
+                axis=1
+            )
 
         services.drop(columns=['CODE', 'CONTINENT_CODE'], inplace=True)
 
@@ -206,7 +257,6 @@ class TradeStatisticsProcessor:
         exports_per_continent = {}
 
         for continent in continents['CONTINENT_CODE'].unique():
-
             restricted_df = continents[continents['CONTINENT_CODE'] == continent].copy()
 
             restricted_df = restricted_df[['OTHER_COUNTRY_CODE', 'ALL_EXPORTS']].copy()
@@ -215,21 +265,36 @@ class TradeStatisticsProcessor:
 
             exports_per_continent[continent] = restricted_df.copy()
 
+        if not self.US_only:
+            other_groups_df = merged_df[
+                ['OTHER_COUNTRY_CODE', 'ALL_EXPORTS']
+            ].groupby('OTHER_COUNTRY_CODE').sum().reset_index()
+
+            exports_per_continent['OTHER_GROUPS'] = other_groups_df.copy()
+
         return exports_per_continent.copy()
 
     def load_data_with_imputations(self):
 
         merged_df = self.load_merged_dataframe()
 
-        splitter = RevenueSplitter()
+        splitter = RevenueSplitter(year=self.year)
 
         splitted_revenues = splitter.get_splitted_revenues()
 
         exports_per_continent = self.compute_exports_per_continent()
 
-        missing_countries = splitted_revenues[
-            ~splitted_revenues['CODE'].isin(merged_df['AFFILIATE_COUNTRY_CODE'])
-        ][['AFFILIATE_COUNTRY_NAME', 'CODE']]
+        if self.US_only:
+            missing_countries = splitted_revenues[
+                ~splitted_revenues['CODE'].isin(merged_df['AFFILIATE_COUNTRY_CODE'])
+            ][['AFFILIATE_COUNTRY_NAME', 'CODE']]
+
+        else:
+            missing_countries = self.unique_OECD_affiliate_countries.copy()
+            missing_countries = missing_countries[
+                ~missing_countries['AFFILIATE_COUNTRY_CODE'].isin(merged_df['AFFILIATE_COUNTRY_CODE'])
+            ].copy()
+            missing_countries.rename(columns={'AFFILIATE_COUNTRY_CODE': 'CODE'}, inplace=True)
 
         missing_countries = missing_countries.merge(
             self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
@@ -237,10 +302,22 @@ class TradeStatisticsProcessor:
             on='CODE'
         )
 
-        missing_countries['CONTINENT_CODE'] = missing_countries.apply(
-            lambda row: impute_missing_continent_codes(row, self.CONTINENT_CODES_TO_IMPUTE_TRADE),
-            axis=1
-        )
+        if self.US_only:
+            missing_countries['CONTINENT_CODE'] = missing_countries.apply(
+                lambda row: impute_missing_continent_codes(row, self.CONTINENT_CODES_TO_IMPUTE_TRADE),
+                axis=1
+            )
+
+        else:
+            continent_codes_to_impute = self.CONTINENT_CODES_TO_IMPUTE_TRADE.copy()
+
+            for k, v in self.CONTINENT_CODES_TO_IMPUTE_OECD_CBCR.items():
+                continent_codes_to_impute[k] = v
+
+            missing_countries['CONTINENT_CODE'] = missing_countries.apply(
+                lambda row: impute_missing_continent_codes(row, continent_codes_to_impute),
+                axis=1
+            )
 
         missing_countries['CONTINENT_CODE'] = missing_countries['CONTINENT_CODE'].map(
             lambda x: 'AMR' if x in ['NAMR', 'SAMR'] else x
@@ -253,7 +330,7 @@ class TradeStatisticsProcessor:
         missing_countries.drop_duplicates(inplace=True)
 
         output_df = merged_df[
-            ['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE', 'EXPORT_PERC']
+            ['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE', 'ALL_EXPORTS', 'EXPORT_PERC']
         ].copy()
 
         for _, row in missing_countries.iterrows():
@@ -266,11 +343,39 @@ class TradeStatisticsProcessor:
 
             df['AFFILIATE_COUNTRY_CODE'] = row['CODE']
 
-            df.drop(columns=['ALL_EXPORTS'], inplace=True)
-
             output_df = pd.concat(
                 [output_df, df],
                 axis=0
             )
 
-        return output_df.copy()
+        output_df = output_df[output_df['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+
+        us_exports = self.load_clean_merchandise_data()
+        us_exports = us_exports[us_exports['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
+        us_exports['EXPORT_PERC'] = us_exports['MERCHANDISE_EXPORTS'] / us_exports['MERCHANDISE_EXPORTS'].sum()
+        us_exports.rename(columns={'MERCHANDISE_EXPORTS': 'ALL_EXPORTS'}, inplace=True)
+
+        if self.winsorize_export_percs:
+
+            output_df = output_df[output_df['EXPORT_PERC'] > self.winsorizing_threshold].copy()
+
+            totals = {}
+
+            for country_code in output_df['AFFILIATE_COUNTRY_CODE'].unique():
+
+                restricted_df = output_df[output_df['AFFILIATE_COUNTRY_CODE'] == country_code].copy()
+
+                totals[country_code] = restricted_df['ALL_EXPORTS'].sum()
+
+            output_df['TOTAL_EXPORTS'] = output_df['AFFILIATE_COUNTRY_CODE'].map(totals)
+
+            output_df['EXPORT_PERC'] = output_df['ALL_EXPORTS'] / output_df['TOTAL_EXPORTS']
+
+            output_df.drop(columns=['TOTAL_EXPORTS'], inplace=True)
+
+            us_exports = us_exports[us_exports['EXPORT_PERC'] > self.winsorizing_threshold_US].copy()
+            us_exports['EXPORT_PERC'] = us_exports['ALL_EXPORTS'] / us_exports['ALL_EXPORTS'].sum()
+
+        output_df = pd.concat([output_df, us_exports], axis=0)
+
+        return output_df.reset_index(drop=True)

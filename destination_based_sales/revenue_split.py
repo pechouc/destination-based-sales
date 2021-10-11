@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -8,14 +10,30 @@ from destination_based_sales.analytical_amne import AnalyticalAMNEPreprocessor
 from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values
 
 
+path_to_dir = os.path.dirname(os.path.abspath(__file__))
+
+
 class RevenueSplitter:
 
-    def __init__(self, include_US=True):
-        self.irs_preprocessor = IRSDataPreprocessor()
-        self.bea_preprocessor = BEADataPreprocessor()
-        self.amne_preprocessor = AnalyticalAMNEPreprocessor(load_OECD_data=False)
+    def __init__(
+        self,
+        year,
+        include_US=True,
+        path_to_dir=path_to_dir
+    ):
+        self.year = year
+
+        self.irs_preprocessor = IRSDataPreprocessor(year=year)
+        self.bea_preprocessor = BEADataPreprocessor(year=year)
 
         self.include_US = include_US
+
+        self.path_to_BEA_KR_tables = os.path.join(
+            path_to_dir,
+            'data',
+            str(year),
+            'Part-I-K1-R2.xls'
+        )
 
     def merge_dataframes(self, include_US=True):
         irs = self.irs_preprocessor.load_final_data()
@@ -43,23 +61,31 @@ class RevenueSplitter:
 
         if include_US:
 
-            df = self.amne_preprocessor.get_unextended_domestic_analytical_amne_data()
-            us_sales = df[df['COUNTRY_CODE'] == 'USA'].to_dict(orient='records')[0]
+            df = pd.read_excel(self.path_to_BEA_KR_tables, sheet_name='Table I.O 1')
+
+            column_names = df.loc[4].to_dict().copy()
+            column_names[list(column_names.keys())[0]] = 'Industry'
+            column_names['Unnamed: 1'] = 'Total'
+
+            df.rename(columns=column_names, inplace=True)
+
+            us_sales = df.loc[6].to_dict()
 
             us_imputation = {}
 
             for column in merged_df.columns[-11:]:
+
                 if column == 'TOTAL':
-                    us_imputation[column] = us_sales['DOMESTIC_SALES'] + us_sales['SALES_TO_OTHER_COUNTRY']
+                    us_imputation[column] = us_sales['Total']
 
                 elif 'US' in column:
-                    us_imputation[column] = us_sales['DOMESTIC_SALES'] * 1
+                    us_imputation[column] = us_sales['To U.S. persons'] * 1
 
                 elif 'AFFILIATE_COUNTRY' in column:
-                    us_imputation[column] = us_sales['DOMESTIC_SALES'] * 0
+                    us_imputation[column] = us_sales['To U.S. persons'] * 0
 
                 else:
-                    us_imputation[column] = us_sales['SALES_TO_OTHER_COUNTRY']
+                    us_imputation[column] = us_sales['To foreign affiliates'] + us_sales['To other foreign persons']
 
             for column in merged_df.columns[-11:]:
                 merged_df[column] = merged_df.apply(
@@ -79,7 +105,7 @@ class RevenueSplitter:
 
         merged_df = self.merge_dataframes(include_US=self.include_US)
 
-        mask_non_US = (merged_df['CODE'] != 'USA')
+        mask_US = (merged_df['CODE'] == 'USA')
 
         related = ['TOTAL_US_RELATED', 'TOTAL_AFFILIATE_COUNTRY_RELATED', 'TOTAL_OTHER_COUNTRY_RELATED']
 
@@ -88,17 +114,14 @@ class RevenueSplitter:
         mask_2 = ~merged_df[related[2]].isnull()
 
         mask = np.logical_and(
-            mask_non_US,
+            mask_0,
             np.logical_and(
-                mask_0,
-                np.logical_and(
-                    mask_1,
-                    mask_2
-                )
+                mask_1,
+                mask_2
             )
         )
 
-        merged_df['IS_RELATED_COMPLETE'] = mask * 1
+        merged_df['IS_RELATED_COMPLETE'] = mask * 1 + mask_US * 1
 
         self.related = related.copy()
 
@@ -109,17 +132,14 @@ class RevenueSplitter:
         mask_2 = ~merged_df[unrelated[2]].isnull()
 
         mask = np.logical_and(
-            mask_non_US,
+            mask_0,
             np.logical_and(
-                mask_0,
-                np.logical_and(
-                    mask_1,
-                    mask_2
-                )
+                mask_1,
+                mask_2
             )
         )
 
-        merged_df['IS_UNRELATED_COMPLETE'] = mask * 1
+        merged_df['IS_UNRELATED_COMPLETE'] = mask * 1 + mask_US * 1
 
         self.unrelated = unrelated.copy()
 
@@ -130,17 +150,14 @@ class RevenueSplitter:
         mask_2 = ~merged_df[total[2]].isnull()
 
         mask = np.logical_and(
-            mask_non_US,
+            mask_0,
             np.logical_and(
-                mask_0,
-                np.logical_and(
-                    mask_1,
-                    mask_2
-                )
+                mask_1,
+                mask_2
             )
         )
 
-        merged_df['IS_TOTAL_COMPLETE'] = mask * 1
+        merged_df['IS_TOTAL_COMPLETE'] = mask * 1 + mask_US * 1
 
         self.total = total.copy()
 
