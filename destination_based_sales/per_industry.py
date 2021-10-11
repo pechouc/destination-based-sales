@@ -1,4 +1,5 @@
 import os
+import json
 
 import pandas as pd
 import numpy as np
@@ -13,6 +14,10 @@ path_to_dir = os.path.dirname(os.path.abspath(__file__))
 path_to_GNI_data = os.path.join(path_to_dir, 'data', 'gross_national_income.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
+path_to_industry_names_mapping = os.path.join(path_to_dir, 'data', 'industry_names_mapping.json')
+
+with open(path_to_industry_names_mapping) as file:
+    industry_names_mapping = json.loads(file.read())
 
 
 class PerIndustryAnalyser:
@@ -158,15 +163,6 @@ class PerIndustryAnalyser:
 
         data.reset_index(drop=True, inplace=True)
 
-        # Simplifying the sector denominations
-        industry_names_mapping = {
-            'Agriculture, forestry, fishing and hunting, mining, quarrying, oil and gas extraction, utilities, and construction': 'Agriculture, extractives and construction',
-            'Wholesale and retail trade, transportation and warehousing ': 'Wholesale and retail trade',
-            'Finance and insurance, real estate and rental and leasing': 'Finance and insurance',
-            'Professional, scientific, and technical services': 'Technical services',
-            'Management of companies and enterprises, all other services (except public administration)': 'Management (except public administration)'
-        }
-
         data['INDUSTRY'] = data['INDUSTRY'].map(
             lambda industry: industry_names_mapping.get(industry, industry)
         )
@@ -298,7 +294,6 @@ class PerIndustryAnalyser:
                 ci=None,
                 ax=ax
             )
-
 
             sns.scatterplot(
                 x=f'Share of total {self.year} GNI (%)',

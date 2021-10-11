@@ -423,18 +423,3 @@ class GlobalAnalysisProvider:
             output_df[column] = output_df[column].map('{:.1f}'.format)
 
         return output_df.copy()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

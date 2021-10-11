@@ -52,14 +52,14 @@ class BEADataPreprocessor:
         bea.reset_index(inplace=True, drop=True)
 
         continent_names = [
-                'Europe',
-                'South America',
-                'Central America',
-                'Other Western Hemisphere',
-                'Africa',
-                'Middle East',
-                'Asia and Pacific',
-            ]
+            'Europe',
+            'South America',
+            'Central America',
+            'Other Western Hemisphere',
+            'Africa',
+            'Middle East',
+            'Asia and Pacific',
+        ]
 
         total_indices = list(
             bea[

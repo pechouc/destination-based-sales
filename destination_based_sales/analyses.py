@@ -911,6 +911,7 @@ class AnalysisProvider:
 
         return focus.copy()
 
+
 if __name__ == '__main__':
     final_output = {}
 
@@ -945,7 +946,3 @@ if __name__ == '__main__':
     with pd.ExcelWriter(os.path.join(path_to_folder, 'tables_PYTHON_OUTPUT.xlsx'), engine='xlsxwriter') as writer:
         for key, value in final_output.items():
             value.to_excel(writer, sheet_name=key, index=True)
-
-
-
-
