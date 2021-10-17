@@ -1,9 +1,18 @@
+"""
+This module defines several useful functions, mobilised throughout the other Python files.
+"""
+
+########################################################################################################################
+# --- Imports
+
 import os
 import json
 
 import numpy as np
 
-# FOR IRS DATA
+
+########################################################################################################################
+# --- For IRS data
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -51,7 +60,8 @@ def impute_missing_codes(row, column, codes_to_impute):
         return row[column]
 
 
-# FOR REVENUE SPLIT
+########################################################################################################################
+# --- For splitting revenue variables
 
 def eliminate_irrelevant_percentages(row, column):
     sales_type = column.split('_')[1]
@@ -196,7 +206,8 @@ class ServicesDataTransformer:
         return data.reset_index(drop=True)
 
 
-# FOR ANALYTICAL AMNE DATA
+########################################################################################################################
+# --- For Analytical AMNE data
 
 def compute_foreign_owned_gross_output(row, include_US):
     foreign_owned_gross_output = 0

@@ -1,3 +1,14 @@
+"""
+This module is dedicated to the industry-specific analyses described in Section 4.a. of the PDF report of August 2021.
+Indeed, the US Internal Revenue Service (IRS) provides a breakdown of its country-by-country statistics based on the
+main sector of activity of the parent company of the multinational group. We use it to highlight the differences, from
+an industry to another, in the concentration of foreign sales in tax havens.
+"""
+
+
+########################################################################################################################
+# --- Imports
+
 import os
 import json
 
@@ -10,6 +21,9 @@ import seaborn as sns
 from destination_based_sales.utils import CONTINENT_CODES_TO_IMPUTE_TRADE
 
 
+########################################################################################################################
+# --- Diverse
+
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 path_to_GNI_data = os.path.join(path_to_dir, 'data', 'gross_national_income.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
@@ -19,6 +33,9 @@ path_to_industry_names_mapping = os.path.join(path_to_dir, 'data', 'industry_nam
 with open(path_to_industry_names_mapping) as file:
     industry_names_mapping = json.loads(file.read())
 
+
+########################################################################################################################
+# --- Content
 
 class PerIndustryAnalyser:
 

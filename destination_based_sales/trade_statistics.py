@@ -1,3 +1,14 @@
+"""
+This module is used to load and preprocess the OECD's balanced trade statistics (both in services (BaTIS) and in mer-
+chandise trade (BIMTS)). These statistics allow to attribute the "sales to any other country" of US and non-US multina-
+tional companies to their (hypothetical) eventual destination. The preprocessing logic is encapsulated in a Python
+class, TradeStatisticsProcessor.
+"""
+
+
+########################################################################################################################
+# --- Imports
+
 import os
 
 import numpy as np
@@ -10,6 +21,10 @@ from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_
     impute_missing_continent_codes, ensure_country_overlap_with_IRS, ServicesDataTransformer, \
     ensure_country_overlap_with_OECD_CbCR, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR
 
+
+########################################################################################################################
+# --- Diverse
+
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_merchandise_data = os.path.join(path_to_dir, 'data', 'merchandise_trade_statistics.csv')
@@ -17,6 +32,9 @@ path_to_services_data = os.path.join(path_to_dir, 'data', 'services_trade_statis
 
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
+
+########################################################################################################################
+# --- Content
 
 class TradeStatisticsProcessor:
 

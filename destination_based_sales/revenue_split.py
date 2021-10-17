@@ -1,3 +1,14 @@
+"""
+This module is used to split the revenue variables of the IRS country-by-country data into three categories (sales to
+the affiliate country, sales to the US and sales to any third country), based on BEA data. It therefore relies on other
+Python files, essentially irs.py and bea.py. The methodology is detailed either in the PDF report or in the docstrings
+and comments below.
+"""
+
+
+########################################################################################################################
+# --- Imports
+
 import os
 
 import numpy as np
@@ -5,13 +16,18 @@ import pandas as pd
 
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.bea import BEADataPreprocessor
-from destination_based_sales.analytical_amne import AnalyticalAMNEPreprocessor
 
 from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values
 
 
+########################################################################################################################
+# --- Diverse
+
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
+
+########################################################################################################################
+# --- Content
 
 class RevenueSplitter:
 
@@ -21,6 +37,16 @@ class RevenueSplitter:
         include_US=True,
         path_to_dir=path_to_dir
     ):
+        """
+        The logic allowing to split revenue variables is encapsulated in a Python class, RevenueSplitter.
+
+        This is the instantiation function for this class, which requires the following arguments:
+
+        - the year to consider;
+        - a boolean, indicating whether or not to include US-US sales in the split;
+        - and the path to the directory where the Python file is located, to retrieve the necessary data.
+
+        """
         self.year = year
 
         self.irs_preprocessor = IRSDataPreprocessor(year=year)
@@ -28,6 +54,7 @@ class RevenueSplitter:
 
         self.include_US = include_US
 
+        # We reconstruct the path to the Excel file that contains the BEA data we use for the split of US-US sales
         self.path_to_BEA_KR_tables = os.path.join(
             path_to_dir,
             'data',
@@ -36,9 +63,16 @@ class RevenueSplitter:
         )
 
     def merge_dataframes(self, include_US=True):
+        """
+        This class method is used to combine the IRS and BEA dataset. If US-US sales are excluded, it consists in a sim-
+        ple merge, with a few duplicate columns to filter out. On the other hand, if US-US sales are included, since
+        their split is based on a secondary file provided by the BEA, we have to operate the split separately and re-
+        introduce it in the merged dataset.
+        """
         irs = self.irs_preprocessor.load_final_data()
         bea = self.bea_preprocessor.load_final_data()
 
+        # We merge the two datasets (IRS and BEA)
         merged_df = irs.merge(
             bea,
             how='left',
@@ -60,7 +94,7 @@ class RevenueSplitter:
         )
 
         if include_US:
-
+            # We load the secondary file from the BEA, with the split of US-US sales
             df = pd.read_excel(self.path_to_BEA_KR_tables, sheet_name='Table I.O 1')
 
             column_names = df.loc[4].to_dict().copy()

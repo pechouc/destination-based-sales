@@ -1,3 +1,16 @@
+"""
+Following the model of "analyses.py", this module is the central module for the study of non-US multinational companies'
+destination-based sales. It builds upon the logic encapsulated in "oecd_cbcr.py", "analytical_amne.py" and "trade_
+statistics.py" to output the destination-based mapping of their worldwide revenues; this is covered in the "GlobalSales-
+Calculator" Python class. Additionally, the "GlobalAnalysisProvider" class allows to reproduce the analyses that can be
+found in the PDF report. In particular, it allows to re-estimate the revenue gains from the unilateral scenario of
+Baraké et al. (2021).
+"""
+
+
+########################################################################################################################
+# --- Imports
+
 import os
 
 import numpy as np
@@ -9,6 +22,9 @@ from destination_based_sales.trade_statistics import TradeStatisticsProcessor
 from destination_based_sales.analyses import SalesCalculator
 
 
+########################################################################################################################
+# --- Diverse
+
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_tax_deficits = os.path.join(path_to_dir, 'data', 'total_tax_deficits.xlsx')
@@ -18,6 +34,9 @@ eu_28_country_codes = pd.read_csv(path_to_EU_countries, delimiter=';')
 eu_28_country_codes = list(eu_28_country_codes['Alpha-3 code'].unique())
 eu_27_country_codes = [c for c in eu_28_country_codes if c not in ['GBR', 'BGR', 'HRV', 'ROU', 'LTU']]
 
+
+########################################################################################################################
+# --- Content
 
 class GlobalSalesCalculator:
 

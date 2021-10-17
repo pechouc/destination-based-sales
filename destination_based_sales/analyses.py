@@ -1,3 +1,15 @@
+"""
+This module is the central module for the study and estimation of US multinational companies' destination-based sales.
+It builds upon the logic encapsulated in "irs.py", "bea.py", "revenue_split.py" and "trade_statistics.py" to output a
+destination-based mapping of their worldwide revenues; this is done in the SalesCalculator Python class. Furthermore,
+the "AnalysisProvider" class provides methods that allow to reproduce the analyses and the graphs of the PDF report of
+August 2021.
+"""
+
+
+########################################################################################################################
+# --- Imports
+
 import os
 import sys
 
@@ -14,12 +26,18 @@ from destination_based_sales.trade_statistics import TradeStatisticsProcessor
 from destination_based_sales.per_industry import PerIndustryAnalyser
 
 
+########################################################################################################################
+# --- Diverse
+
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_GNI_data = os.path.join(path_to_dir, 'data', 'gross_national_income.csv')
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
+
+########################################################################################################################
+# --- Content
 
 class SalesCalculator:
 
