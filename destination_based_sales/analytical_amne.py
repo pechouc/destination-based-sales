@@ -5,7 +5,7 @@ jurisdiction. These are split between sales to the headquarter country and sales
 """
 
 
-#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+########################################################################################################################
 # --- Imports
 
 import os
@@ -18,7 +18,7 @@ from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 from destination_based_sales.utils import compute_foreign_owned_gross_output
 
 
-#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+########################################################################################################################
 # --- Diverse
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +29,7 @@ path_to_analytical_amne_domestic = os.path.join(path_to_dir, 'data', 'analytical
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
 
-#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+########################################################################################################################
 # --- Content
 
 class AnalyticalAMNEPreprocessor:

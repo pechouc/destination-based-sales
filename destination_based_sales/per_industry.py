@@ -39,24 +39,49 @@ with open(path_to_industry_names_mapping) as file:
 
 class PerIndustryAnalyser:
 
-    def __init__(self, year, path_to_tax_haven_list=path_to_tax_haven_list):
+    def __init__(
+        self,
+        year,
+        path_to_dir=path_to_dir,
+        path_to_tax_haven_list=path_to_tax_haven_list,
+        path_to_geographies=path_to_geographies
+    ):
+        """
+        The logic for loading, preprocessing and analysing the industry-specific country-by-country statistics of the
+        IRS is encapsulated in a Python class, PerIndustryAnalyser. This is the instantiation function of this class,
+        which takes as arguments:
+
+        - the year to consider;
+        - the string path to the directory where this Python file is located;
+        - the string path to the list of tax havens;
+        - the string path to the "geographies.csv" file.
+        """
         if year not in [2016, 2017, 2018]:
             raise Exception('For now, only the financial years from 2016 to 2018 (included) are covered.')
 
         self.year = year
 
+        # We load the list of tax havens in a dedicated attribute
         self.path_to_tax_haven_list = path_to_tax_haven_list
         self.tax_havens = pd.read_csv(self.path_to_tax_haven_list)
 
+        self.path_to_dir = path_to_dir
+        self.path_to_geographies = path_to_geographies
+
     def load_clean_data(
         self,
-        path_to_dir=path_to_dir, path_to_geographies=path_to_geographies,
         exclude_all_jurisdictions=True
     ):
+        """
+        This function allows to load and preprocess the industry-specific country-by-country data of the IRS.
+
+        It takes as argument a boolean, "exclude_all_jurisdictions", that determines whether or not to exclude the in-
+        dustry-level totals from the dataset. These are characterised by "All jurisdictions" as a partner country.
+        """
 
         # Loading the data from the corresponding Excel file
         path_to_industry_data = os.path.join(
-            path_to_dir,
+            self.path_to_dir,
             'data',
             str(self.year),
             f'{self.year - 2000}it02cbc.xlsx'
@@ -153,7 +178,7 @@ class PerIndustryAnalyser:
         )
 
         # Adding alpha-3 country codes
-        geographies = pd.read_csv(path_to_geographies)
+        geographies = pd.read_csv(self.path_to_geographies)
 
         data = data.merge(
             geographies[['NAME', 'CODE']],
@@ -180,6 +205,8 @@ class PerIndustryAnalyser:
 
         data.reset_index(drop=True, inplace=True)
 
+
+        # Renaming industries for convenience
         data['INDUSTRY'] = data['INDUSTRY'].map(
             lambda industry: industry_names_mapping.get(industry, industry)
         )
@@ -187,9 +214,19 @@ class PerIndustryAnalyser:
         return data.copy()
 
     def load_data_with_GNI(self, dropna=False, path_to_GNI_data=path_to_GNI_data):
+        """
+        Building upon the previous method, "load_clean_data", this method allows to load and preprocess the industry-
+        specific country-by-country data while adding the Gross National Income (GNI) of each partner country, for the
+        corresponding year. It takes two arguments:
 
+        - a boolean, "dropna", indicating whether or not to exclude the partner countries for which we lack the GNI;
+        - the string path to the file containing GNI data.
+        """
+
+        # Loading and cleaning industry-specific country-by-country data
         data = self.load_clean_data()
 
+        # Loading and preprocessing Gross National Income (GNI) data
         gross_national_income = pd.read_csv(path_to_GNI_data, delimiter=';')
         gross_national_income = gross_national_income[['COUNTRY_CODE', f'GNI_{self.year}']].copy()
 
@@ -197,6 +234,7 @@ class PerIndustryAnalyser:
             lambda x: x.replace(',', '.') if isinstance(x, str) else x
         ).astype(float)
 
+        # Merging the two datasets on partner country codes
         data = data.merge(
             gross_national_income,
             how='left',
@@ -211,16 +249,26 @@ class PerIndustryAnalyser:
         return data.copy()
 
     def get_industry_overview_table(self, output_excel=True):
-
+        """
+        This method allows to output the industry overview table that shows, for each year in the sample period, the
+        distribution of US total unrelated-party revenues and foreign unrelated-party revenues between industries. It
+        corresponds to Table 3 in the PDF report of August 2021. The boolean argument, "output_excel", determines
+        whether to save the table in an Excel file (change the target file path before using this method with
+        "output_excel=True").
+        """
         final_output = {}
 
         for year in [2016, 2017, 2018]:
+            # We instantiate an industry-specific analyser for each year
             analyser = PerIndustryAnalyser(year=year)
 
+            # Loading the data
             data = analyser.load_clean_data(exclude_all_jurisdictions=False)
 
+            # Focusing on industry totals and US-US rows
             data = data[data['AFFILIATE_COUNTRY_NAME'].isin(['All jurisdictions', 'United States'])].copy()
 
+            # Eliminating irrelevant columns
             data.drop(
                 columns=[
                     'AFFILIATE_COUNTRY_CODE', 'NB_REPORTING_MNEs',
@@ -229,14 +277,17 @@ class PerIndustryAnalyser:
                 inplace=True
             )
 
+            # We pivot the DataFrame to show the revenues of each industry in all jurisdictions and in the US
             df = data.pivot(
                 index='INDUSTRY',
                 columns='AFFILIATE_COUNTRY_NAME',
                 values='UNRELATED_PARTY_REVENUES'
             ).reset_index()
 
+            # Foreign unrelated-party revenues simply correspond to the total minus the US-US revenues
             df['FOREIGN_UPR'] = df['All jurisdictions'] - df['United States']
 
+            # We move from absolute amounts to shares / a distribution
             df['Share of total unrelated-party revenues (%)'] = (
                 df['All jurisdictions'] / df['All jurisdictions'].sum() * 100
             )
@@ -244,10 +295,12 @@ class PerIndustryAnalyser:
 
             df.drop(columns=['All jurisdictions', 'United States', 'FOREIGN_UPR'], inplace=True)
 
+            # Ranking industries based on decreasing importance in the distribution
             df.sort_values(by='Share of foreign unrelated-party revenues (%)', ascending=False, inplace=True)
 
             final_output[year] = df.copy()
 
+        # Outputting the Excel file if relevant
         if output_excel:
             path_to_excel_file = '/Users/Paul-Emmanuel/Desktop/industry_overview_table_PYTHON_OUTPUT.xlsx'
 
@@ -258,17 +311,30 @@ class PerIndustryAnalyser:
         return final_output.copy()
 
     def plot_industry_specific_charts(self, save_PNG=False, path_to_folder=None):
+        """
+        This method allows to output the graphs that show the relationship between partner jurisdictions’ share of US
+        multinational companies’ foreign unrelated-party revenues and their share of Gross National Income (GNI),
+        broken down by industry group. These correspond to Figure E.1 of the PDF report of August 2021.
+
+        The method takes two arguments used to save the output charts in a PNG file. This requires to set the boolean
+        "save_PNG" to True and to pass, in "path_to_folder", the string path to the target folder.
+        """
+
+        # Setting Matplotlib parameters
         plt.rcParams.update({'font.size': 18})
 
         if save_PNG and path_to_folder is None:
             raise Exception('To save the figure as a PNG, you must indicate the target folder as an argument.')
 
+        # Loading cleaned data with GNI data (eliminating rows for which we have no GNI data)
         data = self.load_data_with_GNI(dropna=True)
 
         fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(25, 40))
 
+        # Figure displays one graph per industry group
         for industry, ax in zip(data['INDUSTRY'].unique(), axes.flatten()):
 
+            # Restricting the dataset to the industry group under consideration and excluding the US-US row
             restricted_df = data[
                 np.logical_and(
                     data['INDUSTRY'] == industry,
@@ -276,20 +342,24 @@ class PerIndustryAnalyser:
                 )
             ].copy()
 
+            # Computing each partner country's share of US, industry-specific foreign unrelated-party revenues
             restricted_df['SHARE_OF_UNRELATED_PARTY_REVENUES'] = (
                 restricted_df['UNRELATED_PARTY_REVENUES'].astype(float) /
                 restricted_df['UNRELATED_PARTY_REVENUES'].sum()
             )
 
+            # Computing each partner country's share of GNI
             restricted_df[f'SHARE_OF_GNI_{self.year}'] = (
                 restricted_df[f'GNI_{self.year}'] / restricted_df[f'GNI_{self.year}'].sum()
             )
 
+            # Computing the correlation between the two shares for the industry under consideration
             correlation = np.corrcoef(
                 restricted_df['SHARE_OF_UNRELATED_PARTY_REVENUES'],
                 restricted_df[f'SHARE_OF_GNI_{self.year}']
             )[1, 0]
 
+            # Distinguishing non-havens, tax havens and NAFTA members
             restricted_df['Category'] = (
                 restricted_df['AFFILIATE_COUNTRY_CODE'].isin(self.tax_havens['CODE'].unique()) * 1
                 + restricted_df['AFFILIATE_COUNTRY_CODE'].isin(['CAN', 'MEX']) * 2
@@ -304,6 +374,7 @@ class PerIndustryAnalyser:
                 inplace=True
             )
 
+            # Building the graph with the indicative regression line and the scattered plot
             sns.regplot(
                 x=f'Share of total {self.year} GNI (%)',
                 y='Share of total unrelated-party revenues (%)',
@@ -324,10 +395,13 @@ class PerIndustryAnalyser:
                 ax=ax
             )
 
+            # Title indicating the industry being considered and the correlation between the share of foreign unrelated-
+            # party revenues and the share of GNI
             ax.set_title(f'{industry} - Correlation of {round(correlation, 2)}')
 
         plt.show()
 
+        # Saving the figure into a PNG file if relevant
         if save_PNG:
             fig.savefig(
                 os.path.join(
