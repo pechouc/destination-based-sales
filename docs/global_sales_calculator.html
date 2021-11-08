@@ -1,0 +1,1441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>destination_based_sales.global_sales_calculator API documentation</title>
+<meta name="description" content="Following the model of &#34;analyses.py&#34;, this module is the central module for the study of non-US multinational companies&#39;
+destination-based sales. It …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>destination_based_sales.global_sales_calculator</code></h1>
+</header>
+<section id="section-intro">
+<p>Following the model of "analyses.py", this module is the central module for the study of non-US multinational companies'
+destination-based sales. It builds upon the logic encapsulated in "oecd_cbcr.py", "analytical_amne.py" and "trade_
+statistics.py" to output the destination-based mapping of their worldwide revenues; this is covered in the "GlobalSales-
+Calculator" Python class. Additionally, the "GlobalAnalysisProvider" class allows to reproduce the analyses that can be
+found in the PDF report. In particular, it allows to re-estimate the revenue gains from the unilateral scenario of
+Baraké et al. (2021).</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Following the model of &#34;analyses.py&#34;, this module is the central module for the study of non-US multinational companies&#39;
+destination-based sales. It builds upon the logic encapsulated in &#34;oecd_cbcr.py&#34;, &#34;analytical_amne.py&#34; and &#34;trade_
+statistics.py&#34; to output the destination-based mapping of their worldwide revenues; this is covered in the &#34;GlobalSales-
+Calculator&#34; Python class. Additionally, the &#34;GlobalAnalysisProvider&#34; class allows to reproduce the analyses that can be
+found in the PDF report. In particular, it allows to re-estimate the revenue gains from the unilateral scenario of
+Baraké et al. (2021).
+&#34;&#34;&#34;
+
+
+########################################################################################################################
+# --- Imports
+
+import os
+
+import numpy as np
+import pandas as pd
+
+from destination_based_sales.analytical_amne import AnalyticalAMNEPreprocessor
+from destination_based_sales.oecd_cbcr import CbCRPreprocessor
+from destination_based_sales.trade_statistics import TradeStatisticsProcessor
+from destination_based_sales.analyses import SalesCalculator
+
+
+########################################################################################################################
+# --- Diverse
+
+path_to_dir = os.path.dirname(os.path.abspath(__file__))
+
+path_to_tax_deficits = os.path.join(path_to_dir, &#39;data&#39;, &#39;total_tax_deficits.xlsx&#39;)
+path_to_EU_countries = os.path.join(path_to_dir, &#39;data&#39;, &#39;listofeucountries_csv.csv&#39;)
+
+eu_28_country_codes = pd.read_csv(path_to_EU_countries, delimiter=&#39;;&#39;)
+eu_28_country_codes = list(eu_28_country_codes[&#39;Alpha-3 code&#39;].unique())
+eu_27_country_codes = [c for c in eu_28_country_codes if c not in [&#39;GBR&#39;, &#39;BGR&#39;, &#39;HRV&#39;, &#39;ROU&#39;, &#39;LTU&#39;]]
+
+
+########################################################################################################################
+# --- Content
+
+class GlobalSalesCalculator:
+
+    def __init__(self, winsorize_export_percs=True):
+
+        self.aamne_preprocessor = AnalyticalAMNEPreprocessor()
+
+        self.oecd_preprocessor = CbCRPreprocessor()
+        self.oecd = self.oecd_preprocessor.get_preprocessed_revenue_data()
+
+        self.trade_stat_processor = TradeStatisticsProcessor(
+            year=2016,
+            winsorize_export_percs=winsorize_export_percs,
+            US_only=False
+        )
+
+        self.US_sales_calculator = SalesCalculator(year=2016)
+
+        self.basic_revenue_columns = [&#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;, &#39;UNRELATED_PARTY_REVENUES&#39;].copy()
+
+        self.geo_columns = [
+            &#39;PARENT_COUNTRY_CODE&#39;, &#39;PARENT_COUNTRY_NAME&#39;, &#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;
+        ].copy()
+
+    def get_foreign_sales_split(self):
+
+        foreign_aamne_data = self.aamne_preprocessor.get_extended_foreign_analytical_amne_data()
+
+        oecd_foreign = self.oecd[
+            self.oecd[&#39;PARENT_COUNTRY_CODE&#39;] != self.oecd[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+        ].copy()
+
+        merged_df_foreign = oecd_foreign.merge(
+            foreign_aamne_data,
+            how=&#39;left&#39;,
+            on=&#39;AFFILIATE_COUNTRY_CODE&#39;
+        )
+
+        for revenue_column in self.basic_revenue_columns:
+            for perc_column in [&#39;PERC_TO_AFFILIATE_COUNTRY&#39;, &#39;PERC_TO_HEADQUARTER_COUNTRY&#39;, &#39;PERC_TO_OTHER_COUNTRY&#39;]:
+
+                suffix = perc_column.replace(&#39;PERC&#39;, &#39;&#39;)
+
+                merged_df_foreign[revenue_column + suffix] = \
+                    merged_df_foreign[revenue_column] * merged_df_foreign[perc_column]
+
+        merged_df_foreign.drop(
+            columns=[
+                &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES&#39;, &#39;CONTINENT_CODE&#39;,
+                &#39;PERC_TO_AFFILIATE_COUNTRY&#39;, &#39;PERC_TO_HEADQUARTER_COUNTRY&#39;,
+                &#39;PERC_TO_OTHER_COUNTRY&#39;
+            ],
+            inplace=True
+        )
+
+        return merged_df_foreign.copy()
+
+    def get_domestic_sales_split(self):
+
+        domestic_aamne_data = self.aamne_preprocessor.get_extended_domestic_analytical_amne_data()
+
+        oecd_domestic = self.oecd[
+            self.oecd[&#39;PARENT_COUNTRY_CODE&#39;] == self.oecd[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+        ].copy()
+
+        merged_df_domestic = oecd_domestic.merge(
+            domestic_aamne_data,
+            how=&#39;left&#39;,
+            on=&#39;PARENT_COUNTRY_CODE&#39;
+        )
+
+        for revenue_column in self.basic_revenue_columns:
+            merged_df_domestic[revenue_column + &#39;_TO_HEADQUARTER_COUNTRY&#39;] = \
+                merged_df_domestic[&#39;PERC_DOMESTIC_SALES&#39;] * merged_df_domestic[revenue_column]
+
+            merged_df_domestic[revenue_column + &#39;_TO_AFFILIATE_COUNTRY&#39;] = 0
+
+            merged_df_domestic[revenue_column + &#39;_TO_OTHER_COUNTRY&#39;] = \
+                merged_df_domestic[&#39;PERC_TO_OTHER_COUNTRY&#39;] * merged_df_domestic[revenue_column]
+
+        merged_df_domestic.drop(
+            columns=[
+                &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES&#39;, &#39;CONTINENT_CODE&#39;,
+                &#39;PERC_DOMESTIC_SALES&#39;, &#39;PERC_TO_OTHER_COUNTRY&#39;
+            ],
+            inplace=True
+        )
+
+        return merged_df_domestic.copy()
+
+    def get_complete_revenue_split(self):
+
+        merged_df_foreign = self.get_foreign_sales_split()
+        merged_df_domestic = self.get_domestic_sales_split()
+
+        complete_df = pd.concat([merged_df_domestic, merged_df_foreign], axis=0)
+
+        headquarter_country_columns = []
+        affiliate_country_columns = []
+        other_country_columns = []
+
+        for column in complete_df.columns:
+            if column in self.geo_columns:
+                continue
+
+            elif &#39;HEADQUARTER&#39; in column:
+                headquarter_country_columns.append(column)
+
+            elif &#39;AFFILIATE&#39; in column:
+                affiliate_country_columns.append(column)
+
+            else:
+                other_country_columns.append(column)
+
+        headquarter_df = complete_df[self.geo_columns + headquarter_country_columns].copy()
+        affiliate_df = complete_df[self.geo_columns + affiliate_country_columns].copy()
+        other_country_df = complete_df[self.geo_columns + other_country_columns].copy()
+
+        return headquarter_df, affiliate_df, other_country_df
+
+    def get_already_attributed_sales(self):
+
+        headquarter_df, affiliate_df, _ = self.get_complete_revenue_split()
+
+        headquarter_df[&#39;ULTIMATE_DESTINATION_CODE&#39;] = headquarter_df[&#39;PARENT_COUNTRY_CODE&#39;].values
+        headquarter_df[&#39;ULTIMATE_DESTINATION_NAME&#39;] = headquarter_df[&#39;PARENT_COUNTRY_NAME&#39;].values
+
+        affiliate_df[&#39;ULTIMATE_DESTINATION_CODE&#39;] = affiliate_df[&#39;AFFILIATE_COUNTRY_CODE&#39;].values
+        affiliate_df[&#39;ULTIMATE_DESTINATION_NAME&#39;] = affiliate_df[&#39;AFFILIATE_COUNTRY_NAME&#39;].values
+
+        headquarter_df.rename(
+            columns={
+                &#39;RELATED_PARTY_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;RELATED_PARTY_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;UNRELATED_PARTY_REVENUES&#39;,
+                &#39;TOTAL_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;TOTAL_REVENUES&#39;
+            },
+            inplace=True
+        )
+
+        affiliate_df.rename(
+            columns={
+                &#39;RELATED_PARTY_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;RELATED_PARTY_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;UNRELATED_PARTY_REVENUES&#39;,
+                &#39;TOTAL_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;TOTAL_REVENUES&#39;
+            },
+            inplace=True
+        )
+
+        already_attributed = pd.concat([headquarter_df, affiliate_df], axis=0)
+
+        return already_attributed.copy()
+
+    def attribute_other_country_sales(self):
+
+        _, _, to_be_attributed = self.get_complete_revenue_split()
+
+        df = self.trade_stat_processor.load_data_with_imputations()
+
+        merged_df = to_be_attributed.merge(
+            df,
+            how=&#39;left&#39;,
+            on=&#39;AFFILIATE_COUNTRY_CODE&#39;
+        )
+
+        totals = {}
+        merged_df[&#39;KEY&#39;] = merged_df[&#39;PARENT_COUNTRY_CODE&#39;] + merged_df[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+
+        for key in merged_df[&#39;KEY&#39;].unique():
+            restricted_df = merged_df[merged_df[&#39;KEY&#39;] == key].copy()
+
+            totals[key] = restricted_df[
+                restricted_df[&#39;OTHER_COUNTRY_CODE&#39;] != key[:3]
+            ][&#39;ALL_EXPORTS&#39;].sum()
+
+        merged_df[&#39;EXPORT_PERC&#39;] = merged_df.apply(
+            lambda row: row[&#39;ALL_EXPORTS&#39;] / totals[
+                row[&#39;PARENT_COUNTRY_CODE&#39;] + row[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+            ],
+            axis=1
+        )
+
+        merged_df = merged_df[merged_df[&#39;PARENT_COUNTRY_CODE&#39;] != merged_df[&#39;OTHER_COUNTRY_CODE&#39;]].copy()
+
+        columns_to_drop = []
+
+        for revenue_column in [&#39;UNRELATED_PARTY_REVENUES&#39;, &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;]:
+            column_to_drop = revenue_column + &#39;_TO_OTHER_COUNTRY&#39;
+
+            columns_to_drop.append(column_to_drop)
+
+            merged_df[revenue_column] = \
+                merged_df[column_to_drop] * merged_df[&#39;EXPORT_PERC&#39;]
+
+        columns_to_drop += [&#39;ALL_EXPORTS&#39;, &#39;EXPORT_PERC&#39;, &#39;KEY&#39;]
+
+        merged_df.drop(columns=columns_to_drop, inplace=True)
+
+        merged_df.rename(
+            columns={
+                &#39;OTHER_COUNTRY_CODE&#39;: &#39;ULTIMATE_DESTINATION_CODE&#39;
+            },
+            inplace=True
+        )
+
+        return merged_df.copy()
+
+    def get_simplified_sales_mapping_without_US(self):
+
+        already_attributed = self.get_already_attributed_sales()
+
+        already_attributed.drop(
+            columns=[
+                &#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;,
+                &#39;PARENT_COUNTRY_NAME&#39;, &#39;ULTIMATE_DESTINATION_NAME&#39;
+            ],
+            inplace=True
+        )
+
+        merged_df = self.attribute_other_country_sales()
+
+        merged_df.drop(
+            columns=[&#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;PARENT_COUNTRY_NAME&#39;],
+            inplace=True
+        )
+
+        merged_df = pd.concat(
+            [already_attributed, merged_df],
+            axis=0
+        )
+
+        merged_df = merged_df.groupby(
+            [&#39;PARENT_COUNTRY_CODE&#39;, &#39;ULTIMATE_DESTINATION_CODE&#39;]
+        ).sum().reset_index()
+
+        return merged_df[merged_df[&#39;PARENT_COUNTRY_CODE&#39;] != &#39;USA&#39;].copy()
+
+    def get_simplified_sales_mapping(self):
+
+        sales_mapping_excl_US = self.get_simplified_sales_mapping_without_US()
+
+        US_sales_mapping = self.US_sales_calculator.get_final_dataframe()
+
+        US_sales_mapping.drop(
+            columns=[&#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;EXPORT_PERC&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;],
+            inplace=True
+        )
+
+        US_sales_mapping = US_sales_mapping.groupby(&#39;OTHER_COUNTRY_CODE&#39;).sum().reset_index()
+
+        US_sales_mapping[&#39;PARENT_COUNTRY_CODE&#39;] = &#39;USA&#39;
+
+        US_sales_mapping.rename(
+            columns={
+                &#39;OTHER_COUNTRY_CODE&#39;: &#39;ULTIMATE_DESTINATION_CODE&#39;
+            },
+            inplace=True
+        )
+
+        sales_mapping = pd.concat([sales_mapping_excl_US, US_sales_mapping], axis=0)
+
+        return sales_mapping.copy()
+
+
+class GlobalAnalysisProvider:
+
+    def __init__(self, path_to_tax_deficits=path_to_tax_deficits):
+        self.global_sales_calculator = GlobalSalesCalculator()
+        self.sales_mapping = self.global_sales_calculator.get_simplified_sales_mapping()
+
+        self.path_to_tax_deficits = path_to_tax_deficits
+
+    def compute_unilateral_scenario_gains(
+        self,
+        taxing_country_code,
+        minimum_ETR=0.25,
+        return_split=False
+    ):
+        if minimum_ETR not in [0.15, 0.21, 0.25, 0.3]:
+            raise Exception(&#39;Only the 4 benchmark minimum ETRs of the June 1st report are accepted.&#39;)
+
+        sales_mapping = self.sales_mapping.copy()
+
+        tax_deficits = pd.read_excel(
+            self.path_to_tax_deficits,
+            sheet_name=f&#39;{int(minimum_ETR * 100)}_percent&#39;,
+            engine=&#39;openpyxl&#39;
+        )
+
+        tax_deficits = tax_deficits[tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] != &#39;..&#39;].copy()
+
+        attribution_ratios = []
+
+        for country_code in tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;].unique():
+            restricted_sales_mapping = sales_mapping[
+                sales_mapping[&#39;PARENT_COUNTRY_CODE&#39;] == country_code
+            ].copy()
+
+            denominator = restricted_sales_mapping[&#39;UNRELATED_PARTY_REVENUES&#39;].sum()
+
+            if taxing_country_code == country_code:
+                attribution_ratios.append(1)
+
+            elif taxing_country_code in restricted_sales_mapping[&#39;ULTIMATE_DESTINATION_CODE&#39;].unique():
+                numerator = restricted_sales_mapping[
+                    restricted_sales_mapping[&#39;ULTIMATE_DESTINATION_CODE&#39;] == taxing_country_code
+                ][&#39;UNRELATED_PARTY_REVENUES&#39;].iloc[0]
+
+                attribution_ratios.append(numerator / denominator)
+
+            else:
+                attribution_ratios.append(0)
+
+        tax_deficits[&#39;ATTRIBUTION_RATIOS&#39;] = attribution_ratios
+        tax_deficits[&#39;COLLECTIBLE_TAX_DEFICIT&#39;] = tax_deficits[&#39;tax_deficit&#39;] * tax_deficits[&#39;ATTRIBUTION_RATIOS&#39;]
+
+        imputation = tax_deficits[
+            ~tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;].isin([taxing_country_code, &#39;USA&#39;])
+        ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].sum()
+
+        imputation_adjusted = imputation
+
+        if taxing_country_code == &#39;DEU&#39;:
+            imputation_adjusted /= 2
+
+        if not return_split:
+            return tax_deficits[&#39;COLLECTIBLE_TAX_DEFICIT&#39;].sum() + imputation_adjusted
+
+        else:
+            own_tax_deficit = tax_deficits[
+                tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] == taxing_country_code
+            ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].iloc[0]
+
+            if taxing_country_code == &#39;USA&#39;:
+                collected_from_the_US = 0
+
+            else:
+                collected_from_the_US = tax_deficits[
+                    tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] == &#39;USA&#39;
+                ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].iloc[0]
+
+            collected_from_other_multinationals = imputation + imputation_adjusted
+
+            total = own_tax_deficit + collected_from_the_US + collected_from_other_multinationals
+
+            return own_tax_deficit, collected_from_the_US, collected_from_other_multinationals, total
+
+    def build_new_table_3(self, output_excel=False):
+
+        output = {
+            &#39;OWN_TAX_DEFICIT&#39;: [],
+            &#39;COLLECTIBLE_FROM_US_MNEs&#39;: [],
+            &#39;COLLECTIBLE_FROM_OTHER_MNEs&#39;: [],
+            &#39;TOTAL&#39;: []
+        }
+
+        oecd = self.global_sales_calculator.oecd.copy()
+
+        oecd_reporting_countries = list(oecd[&#39;PARENT_COUNTRY_CODE&#39;].unique())
+        oecd_reporting_countries += [&#39;KOR&#39;, &#39;NLD&#39;, &#39;IRL&#39;, &#39;FIN&#39;]
+
+        countries_to_display = sorted(eu_27_country_codes).copy()
+
+        for country_code in sorted(oecd_reporting_countries):
+            if country_code not in countries_to_display:
+                countries_to_display.append(country_code)
+
+            else:
+                continue
+
+        output[&#39;COUNTRY_CODE&#39;] = countries_to_display.copy()
+
+        for country_code in countries_to_display:
+
+            own_tax_deficit, collected_from_the_US, collected_from_other_multinationals, total = \
+                self.compute_unilateral_scenario_gains(country_code, return_split=True)
+
+            output[&#39;OWN_TAX_DEFICIT&#39;].append(own_tax_deficit)
+            output[&#39;COLLECTIBLE_FROM_US_MNEs&#39;].append(collected_from_the_US)
+            output[&#39;COLLECTIBLE_FROM_OTHER_MNEs&#39;].append(collected_from_other_multinationals)
+            output[&#39;TOTAL&#39;].append(total)
+
+        output_df = pd.DataFrame.from_dict(output)
+
+        if output_excel:
+            with pd.ExcelWriter(&#39;/Users/Paul-Emmanuel/Desktop/new_table_3.xlsx&#39;, engine=&#39;xlsxwriter&#39;) as writer:
+                output_df.to_excel(writer, sheet_name=&#39;revised_table&#39;, index=False)
+
+        return output_df.copy()
+
+    def build_new_table_3_formatted(self):
+
+        output_df = self.build_new_table_3()
+
+        columns = [&#39;COUNTRY_CODE&#39;] + list(output_df.columns[:-1])
+
+        output_df = output_df[columns].copy()
+
+        for column in output_df.columns[1:]:
+            output_df[column] /= 10**9
+
+            output_df[column] = output_df[column].map(&#39;{:.1f}&#39;.format)
+
+        return output_df.copy()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider"><code class="flex name class">
+<span>class <span class="ident">GlobalAnalysisProvider</span></span>
+<span>(</span><span>path_to_tax_deficits='/Users/Paul-Emmanuel/Desktop/destination_based_sales/destination_based_sales/data/total_tax_deficits.xlsx')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GlobalAnalysisProvider:
+
+    def __init__(self, path_to_tax_deficits=path_to_tax_deficits):
+        self.global_sales_calculator = GlobalSalesCalculator()
+        self.sales_mapping = self.global_sales_calculator.get_simplified_sales_mapping()
+
+        self.path_to_tax_deficits = path_to_tax_deficits
+
+    def compute_unilateral_scenario_gains(
+        self,
+        taxing_country_code,
+        minimum_ETR=0.25,
+        return_split=False
+    ):
+        if minimum_ETR not in [0.15, 0.21, 0.25, 0.3]:
+            raise Exception(&#39;Only the 4 benchmark minimum ETRs of the June 1st report are accepted.&#39;)
+
+        sales_mapping = self.sales_mapping.copy()
+
+        tax_deficits = pd.read_excel(
+            self.path_to_tax_deficits,
+            sheet_name=f&#39;{int(minimum_ETR * 100)}_percent&#39;,
+            engine=&#39;openpyxl&#39;
+        )
+
+        tax_deficits = tax_deficits[tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] != &#39;..&#39;].copy()
+
+        attribution_ratios = []
+
+        for country_code in tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;].unique():
+            restricted_sales_mapping = sales_mapping[
+                sales_mapping[&#39;PARENT_COUNTRY_CODE&#39;] == country_code
+            ].copy()
+
+            denominator = restricted_sales_mapping[&#39;UNRELATED_PARTY_REVENUES&#39;].sum()
+
+            if taxing_country_code == country_code:
+                attribution_ratios.append(1)
+
+            elif taxing_country_code in restricted_sales_mapping[&#39;ULTIMATE_DESTINATION_CODE&#39;].unique():
+                numerator = restricted_sales_mapping[
+                    restricted_sales_mapping[&#39;ULTIMATE_DESTINATION_CODE&#39;] == taxing_country_code
+                ][&#39;UNRELATED_PARTY_REVENUES&#39;].iloc[0]
+
+                attribution_ratios.append(numerator / denominator)
+
+            else:
+                attribution_ratios.append(0)
+
+        tax_deficits[&#39;ATTRIBUTION_RATIOS&#39;] = attribution_ratios
+        tax_deficits[&#39;COLLECTIBLE_TAX_DEFICIT&#39;] = tax_deficits[&#39;tax_deficit&#39;] * tax_deficits[&#39;ATTRIBUTION_RATIOS&#39;]
+
+        imputation = tax_deficits[
+            ~tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;].isin([taxing_country_code, &#39;USA&#39;])
+        ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].sum()
+
+        imputation_adjusted = imputation
+
+        if taxing_country_code == &#39;DEU&#39;:
+            imputation_adjusted /= 2
+
+        if not return_split:
+            return tax_deficits[&#39;COLLECTIBLE_TAX_DEFICIT&#39;].sum() + imputation_adjusted
+
+        else:
+            own_tax_deficit = tax_deficits[
+                tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] == taxing_country_code
+            ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].iloc[0]
+
+            if taxing_country_code == &#39;USA&#39;:
+                collected_from_the_US = 0
+
+            else:
+                collected_from_the_US = tax_deficits[
+                    tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] == &#39;USA&#39;
+                ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].iloc[0]
+
+            collected_from_other_multinationals = imputation + imputation_adjusted
+
+            total = own_tax_deficit + collected_from_the_US + collected_from_other_multinationals
+
+            return own_tax_deficit, collected_from_the_US, collected_from_other_multinationals, total
+
+    def build_new_table_3(self, output_excel=False):
+
+        output = {
+            &#39;OWN_TAX_DEFICIT&#39;: [],
+            &#39;COLLECTIBLE_FROM_US_MNEs&#39;: [],
+            &#39;COLLECTIBLE_FROM_OTHER_MNEs&#39;: [],
+            &#39;TOTAL&#39;: []
+        }
+
+        oecd = self.global_sales_calculator.oecd.copy()
+
+        oecd_reporting_countries = list(oecd[&#39;PARENT_COUNTRY_CODE&#39;].unique())
+        oecd_reporting_countries += [&#39;KOR&#39;, &#39;NLD&#39;, &#39;IRL&#39;, &#39;FIN&#39;]
+
+        countries_to_display = sorted(eu_27_country_codes).copy()
+
+        for country_code in sorted(oecd_reporting_countries):
+            if country_code not in countries_to_display:
+                countries_to_display.append(country_code)
+
+            else:
+                continue
+
+        output[&#39;COUNTRY_CODE&#39;] = countries_to_display.copy()
+
+        for country_code in countries_to_display:
+
+            own_tax_deficit, collected_from_the_US, collected_from_other_multinationals, total = \
+                self.compute_unilateral_scenario_gains(country_code, return_split=True)
+
+            output[&#39;OWN_TAX_DEFICIT&#39;].append(own_tax_deficit)
+            output[&#39;COLLECTIBLE_FROM_US_MNEs&#39;].append(collected_from_the_US)
+            output[&#39;COLLECTIBLE_FROM_OTHER_MNEs&#39;].append(collected_from_other_multinationals)
+            output[&#39;TOTAL&#39;].append(total)
+
+        output_df = pd.DataFrame.from_dict(output)
+
+        if output_excel:
+            with pd.ExcelWriter(&#39;/Users/Paul-Emmanuel/Desktop/new_table_3.xlsx&#39;, engine=&#39;xlsxwriter&#39;) as writer:
+                output_df.to_excel(writer, sheet_name=&#39;revised_table&#39;, index=False)
+
+        return output_df.copy()
+
+    def build_new_table_3_formatted(self):
+
+        output_df = self.build_new_table_3()
+
+        columns = [&#39;COUNTRY_CODE&#39;] + list(output_df.columns[:-1])
+
+        output_df = output_df[columns].copy()
+
+        for column in output_df.columns[1:]:
+            output_df[column] /= 10**9
+
+            output_df[column] = output_df[column].map(&#39;{:.1f}&#39;.format)
+
+        return output_df.copy()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.build_new_table_3"><code class="name flex">
+<span>def <span class="ident">build_new_table_3</span></span>(<span>self, output_excel=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_new_table_3(self, output_excel=False):
+
+    output = {
+        &#39;OWN_TAX_DEFICIT&#39;: [],
+        &#39;COLLECTIBLE_FROM_US_MNEs&#39;: [],
+        &#39;COLLECTIBLE_FROM_OTHER_MNEs&#39;: [],
+        &#39;TOTAL&#39;: []
+    }
+
+    oecd = self.global_sales_calculator.oecd.copy()
+
+    oecd_reporting_countries = list(oecd[&#39;PARENT_COUNTRY_CODE&#39;].unique())
+    oecd_reporting_countries += [&#39;KOR&#39;, &#39;NLD&#39;, &#39;IRL&#39;, &#39;FIN&#39;]
+
+    countries_to_display = sorted(eu_27_country_codes).copy()
+
+    for country_code in sorted(oecd_reporting_countries):
+        if country_code not in countries_to_display:
+            countries_to_display.append(country_code)
+
+        else:
+            continue
+
+    output[&#39;COUNTRY_CODE&#39;] = countries_to_display.copy()
+
+    for country_code in countries_to_display:
+
+        own_tax_deficit, collected_from_the_US, collected_from_other_multinationals, total = \
+            self.compute_unilateral_scenario_gains(country_code, return_split=True)
+
+        output[&#39;OWN_TAX_DEFICIT&#39;].append(own_tax_deficit)
+        output[&#39;COLLECTIBLE_FROM_US_MNEs&#39;].append(collected_from_the_US)
+        output[&#39;COLLECTIBLE_FROM_OTHER_MNEs&#39;].append(collected_from_other_multinationals)
+        output[&#39;TOTAL&#39;].append(total)
+
+    output_df = pd.DataFrame.from_dict(output)
+
+    if output_excel:
+        with pd.ExcelWriter(&#39;/Users/Paul-Emmanuel/Desktop/new_table_3.xlsx&#39;, engine=&#39;xlsxwriter&#39;) as writer:
+            output_df.to_excel(writer, sheet_name=&#39;revised_table&#39;, index=False)
+
+    return output_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.build_new_table_3_formatted"><code class="name flex">
+<span>def <span class="ident">build_new_table_3_formatted</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_new_table_3_formatted(self):
+
+    output_df = self.build_new_table_3()
+
+    columns = [&#39;COUNTRY_CODE&#39;] + list(output_df.columns[:-1])
+
+    output_df = output_df[columns].copy()
+
+    for column in output_df.columns[1:]:
+        output_df[column] /= 10**9
+
+        output_df[column] = output_df[column].map(&#39;{:.1f}&#39;.format)
+
+    return output_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.compute_unilateral_scenario_gains"><code class="name flex">
+<span>def <span class="ident">compute_unilateral_scenario_gains</span></span>(<span>self, taxing_country_code, minimum_ETR=0.25, return_split=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_unilateral_scenario_gains(
+    self,
+    taxing_country_code,
+    minimum_ETR=0.25,
+    return_split=False
+):
+    if minimum_ETR not in [0.15, 0.21, 0.25, 0.3]:
+        raise Exception(&#39;Only the 4 benchmark minimum ETRs of the June 1st report are accepted.&#39;)
+
+    sales_mapping = self.sales_mapping.copy()
+
+    tax_deficits = pd.read_excel(
+        self.path_to_tax_deficits,
+        sheet_name=f&#39;{int(minimum_ETR * 100)}_percent&#39;,
+        engine=&#39;openpyxl&#39;
+    )
+
+    tax_deficits = tax_deficits[tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] != &#39;..&#39;].copy()
+
+    attribution_ratios = []
+
+    for country_code in tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;].unique():
+        restricted_sales_mapping = sales_mapping[
+            sales_mapping[&#39;PARENT_COUNTRY_CODE&#39;] == country_code
+        ].copy()
+
+        denominator = restricted_sales_mapping[&#39;UNRELATED_PARTY_REVENUES&#39;].sum()
+
+        if taxing_country_code == country_code:
+            attribution_ratios.append(1)
+
+        elif taxing_country_code in restricted_sales_mapping[&#39;ULTIMATE_DESTINATION_CODE&#39;].unique():
+            numerator = restricted_sales_mapping[
+                restricted_sales_mapping[&#39;ULTIMATE_DESTINATION_CODE&#39;] == taxing_country_code
+            ][&#39;UNRELATED_PARTY_REVENUES&#39;].iloc[0]
+
+            attribution_ratios.append(numerator / denominator)
+
+        else:
+            attribution_ratios.append(0)
+
+    tax_deficits[&#39;ATTRIBUTION_RATIOS&#39;] = attribution_ratios
+    tax_deficits[&#39;COLLECTIBLE_TAX_DEFICIT&#39;] = tax_deficits[&#39;tax_deficit&#39;] * tax_deficits[&#39;ATTRIBUTION_RATIOS&#39;]
+
+    imputation = tax_deficits[
+        ~tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;].isin([taxing_country_code, &#39;USA&#39;])
+    ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].sum()
+
+    imputation_adjusted = imputation
+
+    if taxing_country_code == &#39;DEU&#39;:
+        imputation_adjusted /= 2
+
+    if not return_split:
+        return tax_deficits[&#39;COLLECTIBLE_TAX_DEFICIT&#39;].sum() + imputation_adjusted
+
+    else:
+        own_tax_deficit = tax_deficits[
+            tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] == taxing_country_code
+        ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].iloc[0]
+
+        if taxing_country_code == &#39;USA&#39;:
+            collected_from_the_US = 0
+
+        else:
+            collected_from_the_US = tax_deficits[
+                tax_deficits[&#39;Parent jurisdiction (alpha-3 code)&#39;] == &#39;USA&#39;
+            ][&#39;COLLECTIBLE_TAX_DEFICIT&#39;].iloc[0]
+
+        collected_from_other_multinationals = imputation + imputation_adjusted
+
+        total = own_tax_deficit + collected_from_the_US + collected_from_other_multinationals
+
+        return own_tax_deficit, collected_from_the_US, collected_from_other_multinationals, total</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator"><code class="flex name class">
+<span>class <span class="ident">GlobalSalesCalculator</span></span>
+<span>(</span><span>winsorize_export_percs=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GlobalSalesCalculator:
+
+    def __init__(self, winsorize_export_percs=True):
+
+        self.aamne_preprocessor = AnalyticalAMNEPreprocessor()
+
+        self.oecd_preprocessor = CbCRPreprocessor()
+        self.oecd = self.oecd_preprocessor.get_preprocessed_revenue_data()
+
+        self.trade_stat_processor = TradeStatisticsProcessor(
+            year=2016,
+            winsorize_export_percs=winsorize_export_percs,
+            US_only=False
+        )
+
+        self.US_sales_calculator = SalesCalculator(year=2016)
+
+        self.basic_revenue_columns = [&#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;, &#39;UNRELATED_PARTY_REVENUES&#39;].copy()
+
+        self.geo_columns = [
+            &#39;PARENT_COUNTRY_CODE&#39;, &#39;PARENT_COUNTRY_NAME&#39;, &#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;
+        ].copy()
+
+    def get_foreign_sales_split(self):
+
+        foreign_aamne_data = self.aamne_preprocessor.get_extended_foreign_analytical_amne_data()
+
+        oecd_foreign = self.oecd[
+            self.oecd[&#39;PARENT_COUNTRY_CODE&#39;] != self.oecd[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+        ].copy()
+
+        merged_df_foreign = oecd_foreign.merge(
+            foreign_aamne_data,
+            how=&#39;left&#39;,
+            on=&#39;AFFILIATE_COUNTRY_CODE&#39;
+        )
+
+        for revenue_column in self.basic_revenue_columns:
+            for perc_column in [&#39;PERC_TO_AFFILIATE_COUNTRY&#39;, &#39;PERC_TO_HEADQUARTER_COUNTRY&#39;, &#39;PERC_TO_OTHER_COUNTRY&#39;]:
+
+                suffix = perc_column.replace(&#39;PERC&#39;, &#39;&#39;)
+
+                merged_df_foreign[revenue_column + suffix] = \
+                    merged_df_foreign[revenue_column] * merged_df_foreign[perc_column]
+
+        merged_df_foreign.drop(
+            columns=[
+                &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES&#39;, &#39;CONTINENT_CODE&#39;,
+                &#39;PERC_TO_AFFILIATE_COUNTRY&#39;, &#39;PERC_TO_HEADQUARTER_COUNTRY&#39;,
+                &#39;PERC_TO_OTHER_COUNTRY&#39;
+            ],
+            inplace=True
+        )
+
+        return merged_df_foreign.copy()
+
+    def get_domestic_sales_split(self):
+
+        domestic_aamne_data = self.aamne_preprocessor.get_extended_domestic_analytical_amne_data()
+
+        oecd_domestic = self.oecd[
+            self.oecd[&#39;PARENT_COUNTRY_CODE&#39;] == self.oecd[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+        ].copy()
+
+        merged_df_domestic = oecd_domestic.merge(
+            domestic_aamne_data,
+            how=&#39;left&#39;,
+            on=&#39;PARENT_COUNTRY_CODE&#39;
+        )
+
+        for revenue_column in self.basic_revenue_columns:
+            merged_df_domestic[revenue_column + &#39;_TO_HEADQUARTER_COUNTRY&#39;] = \
+                merged_df_domestic[&#39;PERC_DOMESTIC_SALES&#39;] * merged_df_domestic[revenue_column]
+
+            merged_df_domestic[revenue_column + &#39;_TO_AFFILIATE_COUNTRY&#39;] = 0
+
+            merged_df_domestic[revenue_column + &#39;_TO_OTHER_COUNTRY&#39;] = \
+                merged_df_domestic[&#39;PERC_TO_OTHER_COUNTRY&#39;] * merged_df_domestic[revenue_column]
+
+        merged_df_domestic.drop(
+            columns=[
+                &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES&#39;, &#39;CONTINENT_CODE&#39;,
+                &#39;PERC_DOMESTIC_SALES&#39;, &#39;PERC_TO_OTHER_COUNTRY&#39;
+            ],
+            inplace=True
+        )
+
+        return merged_df_domestic.copy()
+
+    def get_complete_revenue_split(self):
+
+        merged_df_foreign = self.get_foreign_sales_split()
+        merged_df_domestic = self.get_domestic_sales_split()
+
+        complete_df = pd.concat([merged_df_domestic, merged_df_foreign], axis=0)
+
+        headquarter_country_columns = []
+        affiliate_country_columns = []
+        other_country_columns = []
+
+        for column in complete_df.columns:
+            if column in self.geo_columns:
+                continue
+
+            elif &#39;HEADQUARTER&#39; in column:
+                headquarter_country_columns.append(column)
+
+            elif &#39;AFFILIATE&#39; in column:
+                affiliate_country_columns.append(column)
+
+            else:
+                other_country_columns.append(column)
+
+        headquarter_df = complete_df[self.geo_columns + headquarter_country_columns].copy()
+        affiliate_df = complete_df[self.geo_columns + affiliate_country_columns].copy()
+        other_country_df = complete_df[self.geo_columns + other_country_columns].copy()
+
+        return headquarter_df, affiliate_df, other_country_df
+
+    def get_already_attributed_sales(self):
+
+        headquarter_df, affiliate_df, _ = self.get_complete_revenue_split()
+
+        headquarter_df[&#39;ULTIMATE_DESTINATION_CODE&#39;] = headquarter_df[&#39;PARENT_COUNTRY_CODE&#39;].values
+        headquarter_df[&#39;ULTIMATE_DESTINATION_NAME&#39;] = headquarter_df[&#39;PARENT_COUNTRY_NAME&#39;].values
+
+        affiliate_df[&#39;ULTIMATE_DESTINATION_CODE&#39;] = affiliate_df[&#39;AFFILIATE_COUNTRY_CODE&#39;].values
+        affiliate_df[&#39;ULTIMATE_DESTINATION_NAME&#39;] = affiliate_df[&#39;AFFILIATE_COUNTRY_NAME&#39;].values
+
+        headquarter_df.rename(
+            columns={
+                &#39;RELATED_PARTY_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;RELATED_PARTY_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;UNRELATED_PARTY_REVENUES&#39;,
+                &#39;TOTAL_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;TOTAL_REVENUES&#39;
+            },
+            inplace=True
+        )
+
+        affiliate_df.rename(
+            columns={
+                &#39;RELATED_PARTY_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;RELATED_PARTY_REVENUES&#39;,
+                &#39;UNRELATED_PARTY_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;UNRELATED_PARTY_REVENUES&#39;,
+                &#39;TOTAL_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;TOTAL_REVENUES&#39;
+            },
+            inplace=True
+        )
+
+        already_attributed = pd.concat([headquarter_df, affiliate_df], axis=0)
+
+        return already_attributed.copy()
+
+    def attribute_other_country_sales(self):
+
+        _, _, to_be_attributed = self.get_complete_revenue_split()
+
+        df = self.trade_stat_processor.load_data_with_imputations()
+
+        merged_df = to_be_attributed.merge(
+            df,
+            how=&#39;left&#39;,
+            on=&#39;AFFILIATE_COUNTRY_CODE&#39;
+        )
+
+        totals = {}
+        merged_df[&#39;KEY&#39;] = merged_df[&#39;PARENT_COUNTRY_CODE&#39;] + merged_df[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+
+        for key in merged_df[&#39;KEY&#39;].unique():
+            restricted_df = merged_df[merged_df[&#39;KEY&#39;] == key].copy()
+
+            totals[key] = restricted_df[
+                restricted_df[&#39;OTHER_COUNTRY_CODE&#39;] != key[:3]
+            ][&#39;ALL_EXPORTS&#39;].sum()
+
+        merged_df[&#39;EXPORT_PERC&#39;] = merged_df.apply(
+            lambda row: row[&#39;ALL_EXPORTS&#39;] / totals[
+                row[&#39;PARENT_COUNTRY_CODE&#39;] + row[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+            ],
+            axis=1
+        )
+
+        merged_df = merged_df[merged_df[&#39;PARENT_COUNTRY_CODE&#39;] != merged_df[&#39;OTHER_COUNTRY_CODE&#39;]].copy()
+
+        columns_to_drop = []
+
+        for revenue_column in [&#39;UNRELATED_PARTY_REVENUES&#39;, &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;]:
+            column_to_drop = revenue_column + &#39;_TO_OTHER_COUNTRY&#39;
+
+            columns_to_drop.append(column_to_drop)
+
+            merged_df[revenue_column] = \
+                merged_df[column_to_drop] * merged_df[&#39;EXPORT_PERC&#39;]
+
+        columns_to_drop += [&#39;ALL_EXPORTS&#39;, &#39;EXPORT_PERC&#39;, &#39;KEY&#39;]
+
+        merged_df.drop(columns=columns_to_drop, inplace=True)
+
+        merged_df.rename(
+            columns={
+                &#39;OTHER_COUNTRY_CODE&#39;: &#39;ULTIMATE_DESTINATION_CODE&#39;
+            },
+            inplace=True
+        )
+
+        return merged_df.copy()
+
+    def get_simplified_sales_mapping_without_US(self):
+
+        already_attributed = self.get_already_attributed_sales()
+
+        already_attributed.drop(
+            columns=[
+                &#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;,
+                &#39;PARENT_COUNTRY_NAME&#39;, &#39;ULTIMATE_DESTINATION_NAME&#39;
+            ],
+            inplace=True
+        )
+
+        merged_df = self.attribute_other_country_sales()
+
+        merged_df.drop(
+            columns=[&#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;PARENT_COUNTRY_NAME&#39;],
+            inplace=True
+        )
+
+        merged_df = pd.concat(
+            [already_attributed, merged_df],
+            axis=0
+        )
+
+        merged_df = merged_df.groupby(
+            [&#39;PARENT_COUNTRY_CODE&#39;, &#39;ULTIMATE_DESTINATION_CODE&#39;]
+        ).sum().reset_index()
+
+        return merged_df[merged_df[&#39;PARENT_COUNTRY_CODE&#39;] != &#39;USA&#39;].copy()
+
+    def get_simplified_sales_mapping(self):
+
+        sales_mapping_excl_US = self.get_simplified_sales_mapping_without_US()
+
+        US_sales_mapping = self.US_sales_calculator.get_final_dataframe()
+
+        US_sales_mapping.drop(
+            columns=[&#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;EXPORT_PERC&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;],
+            inplace=True
+        )
+
+        US_sales_mapping = US_sales_mapping.groupby(&#39;OTHER_COUNTRY_CODE&#39;).sum().reset_index()
+
+        US_sales_mapping[&#39;PARENT_COUNTRY_CODE&#39;] = &#39;USA&#39;
+
+        US_sales_mapping.rename(
+            columns={
+                &#39;OTHER_COUNTRY_CODE&#39;: &#39;ULTIMATE_DESTINATION_CODE&#39;
+            },
+            inplace=True
+        )
+
+        sales_mapping = pd.concat([sales_mapping_excl_US, US_sales_mapping], axis=0)
+
+        return sales_mapping.copy()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.attribute_other_country_sales"><code class="name flex">
+<span>def <span class="ident">attribute_other_country_sales</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def attribute_other_country_sales(self):
+
+    _, _, to_be_attributed = self.get_complete_revenue_split()
+
+    df = self.trade_stat_processor.load_data_with_imputations()
+
+    merged_df = to_be_attributed.merge(
+        df,
+        how=&#39;left&#39;,
+        on=&#39;AFFILIATE_COUNTRY_CODE&#39;
+    )
+
+    totals = {}
+    merged_df[&#39;KEY&#39;] = merged_df[&#39;PARENT_COUNTRY_CODE&#39;] + merged_df[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+
+    for key in merged_df[&#39;KEY&#39;].unique():
+        restricted_df = merged_df[merged_df[&#39;KEY&#39;] == key].copy()
+
+        totals[key] = restricted_df[
+            restricted_df[&#39;OTHER_COUNTRY_CODE&#39;] != key[:3]
+        ][&#39;ALL_EXPORTS&#39;].sum()
+
+    merged_df[&#39;EXPORT_PERC&#39;] = merged_df.apply(
+        lambda row: row[&#39;ALL_EXPORTS&#39;] / totals[
+            row[&#39;PARENT_COUNTRY_CODE&#39;] + row[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+        ],
+        axis=1
+    )
+
+    merged_df = merged_df[merged_df[&#39;PARENT_COUNTRY_CODE&#39;] != merged_df[&#39;OTHER_COUNTRY_CODE&#39;]].copy()
+
+    columns_to_drop = []
+
+    for revenue_column in [&#39;UNRELATED_PARTY_REVENUES&#39;, &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;]:
+        column_to_drop = revenue_column + &#39;_TO_OTHER_COUNTRY&#39;
+
+        columns_to_drop.append(column_to_drop)
+
+        merged_df[revenue_column] = \
+            merged_df[column_to_drop] * merged_df[&#39;EXPORT_PERC&#39;]
+
+    columns_to_drop += [&#39;ALL_EXPORTS&#39;, &#39;EXPORT_PERC&#39;, &#39;KEY&#39;]
+
+    merged_df.drop(columns=columns_to_drop, inplace=True)
+
+    merged_df.rename(
+        columns={
+            &#39;OTHER_COUNTRY_CODE&#39;: &#39;ULTIMATE_DESTINATION_CODE&#39;
+        },
+        inplace=True
+    )
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_already_attributed_sales"><code class="name flex">
+<span>def <span class="ident">get_already_attributed_sales</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_already_attributed_sales(self):
+
+    headquarter_df, affiliate_df, _ = self.get_complete_revenue_split()
+
+    headquarter_df[&#39;ULTIMATE_DESTINATION_CODE&#39;] = headquarter_df[&#39;PARENT_COUNTRY_CODE&#39;].values
+    headquarter_df[&#39;ULTIMATE_DESTINATION_NAME&#39;] = headquarter_df[&#39;PARENT_COUNTRY_NAME&#39;].values
+
+    affiliate_df[&#39;ULTIMATE_DESTINATION_CODE&#39;] = affiliate_df[&#39;AFFILIATE_COUNTRY_CODE&#39;].values
+    affiliate_df[&#39;ULTIMATE_DESTINATION_NAME&#39;] = affiliate_df[&#39;AFFILIATE_COUNTRY_NAME&#39;].values
+
+    headquarter_df.rename(
+        columns={
+            &#39;RELATED_PARTY_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;RELATED_PARTY_REVENUES&#39;,
+            &#39;UNRELATED_PARTY_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;UNRELATED_PARTY_REVENUES&#39;,
+            &#39;TOTAL_REVENUES_TO_HEADQUARTER_COUNTRY&#39;: &#39;TOTAL_REVENUES&#39;
+        },
+        inplace=True
+    )
+
+    affiliate_df.rename(
+        columns={
+            &#39;RELATED_PARTY_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;RELATED_PARTY_REVENUES&#39;,
+            &#39;UNRELATED_PARTY_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;UNRELATED_PARTY_REVENUES&#39;,
+            &#39;TOTAL_REVENUES_TO_AFFILIATE_COUNTRY&#39;: &#39;TOTAL_REVENUES&#39;
+        },
+        inplace=True
+    )
+
+    already_attributed = pd.concat([headquarter_df, affiliate_df], axis=0)
+
+    return already_attributed.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_complete_revenue_split"><code class="name flex">
+<span>def <span class="ident">get_complete_revenue_split</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_complete_revenue_split(self):
+
+    merged_df_foreign = self.get_foreign_sales_split()
+    merged_df_domestic = self.get_domestic_sales_split()
+
+    complete_df = pd.concat([merged_df_domestic, merged_df_foreign], axis=0)
+
+    headquarter_country_columns = []
+    affiliate_country_columns = []
+    other_country_columns = []
+
+    for column in complete_df.columns:
+        if column in self.geo_columns:
+            continue
+
+        elif &#39;HEADQUARTER&#39; in column:
+            headquarter_country_columns.append(column)
+
+        elif &#39;AFFILIATE&#39; in column:
+            affiliate_country_columns.append(column)
+
+        else:
+            other_country_columns.append(column)
+
+    headquarter_df = complete_df[self.geo_columns + headquarter_country_columns].copy()
+    affiliate_df = complete_df[self.geo_columns + affiliate_country_columns].copy()
+    other_country_df = complete_df[self.geo_columns + other_country_columns].copy()
+
+    return headquarter_df, affiliate_df, other_country_df</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_domestic_sales_split"><code class="name flex">
+<span>def <span class="ident">get_domestic_sales_split</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_domestic_sales_split(self):
+
+    domestic_aamne_data = self.aamne_preprocessor.get_extended_domestic_analytical_amne_data()
+
+    oecd_domestic = self.oecd[
+        self.oecd[&#39;PARENT_COUNTRY_CODE&#39;] == self.oecd[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+    ].copy()
+
+    merged_df_domestic = oecd_domestic.merge(
+        domestic_aamne_data,
+        how=&#39;left&#39;,
+        on=&#39;PARENT_COUNTRY_CODE&#39;
+    )
+
+    for revenue_column in self.basic_revenue_columns:
+        merged_df_domestic[revenue_column + &#39;_TO_HEADQUARTER_COUNTRY&#39;] = \
+            merged_df_domestic[&#39;PERC_DOMESTIC_SALES&#39;] * merged_df_domestic[revenue_column]
+
+        merged_df_domestic[revenue_column + &#39;_TO_AFFILIATE_COUNTRY&#39;] = 0
+
+        merged_df_domestic[revenue_column + &#39;_TO_OTHER_COUNTRY&#39;] = \
+            merged_df_domestic[&#39;PERC_TO_OTHER_COUNTRY&#39;] * merged_df_domestic[revenue_column]
+
+    merged_df_domestic.drop(
+        columns=[
+            &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;,
+            &#39;UNRELATED_PARTY_REVENUES&#39;, &#39;CONTINENT_CODE&#39;,
+            &#39;PERC_DOMESTIC_SALES&#39;, &#39;PERC_TO_OTHER_COUNTRY&#39;
+        ],
+        inplace=True
+    )
+
+    return merged_df_domestic.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_foreign_sales_split"><code class="name flex">
+<span>def <span class="ident">get_foreign_sales_split</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_foreign_sales_split(self):
+
+    foreign_aamne_data = self.aamne_preprocessor.get_extended_foreign_analytical_amne_data()
+
+    oecd_foreign = self.oecd[
+        self.oecd[&#39;PARENT_COUNTRY_CODE&#39;] != self.oecd[&#39;AFFILIATE_COUNTRY_CODE&#39;]
+    ].copy()
+
+    merged_df_foreign = oecd_foreign.merge(
+        foreign_aamne_data,
+        how=&#39;left&#39;,
+        on=&#39;AFFILIATE_COUNTRY_CODE&#39;
+    )
+
+    for revenue_column in self.basic_revenue_columns:
+        for perc_column in [&#39;PERC_TO_AFFILIATE_COUNTRY&#39;, &#39;PERC_TO_HEADQUARTER_COUNTRY&#39;, &#39;PERC_TO_OTHER_COUNTRY&#39;]:
+
+            suffix = perc_column.replace(&#39;PERC&#39;, &#39;&#39;)
+
+            merged_df_foreign[revenue_column + suffix] = \
+                merged_df_foreign[revenue_column] * merged_df_foreign[perc_column]
+
+    merged_df_foreign.drop(
+        columns=[
+            &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;,
+            &#39;UNRELATED_PARTY_REVENUES&#39;, &#39;CONTINENT_CODE&#39;,
+            &#39;PERC_TO_AFFILIATE_COUNTRY&#39;, &#39;PERC_TO_HEADQUARTER_COUNTRY&#39;,
+            &#39;PERC_TO_OTHER_COUNTRY&#39;
+        ],
+        inplace=True
+    )
+
+    return merged_df_foreign.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_simplified_sales_mapping"><code class="name flex">
+<span>def <span class="ident">get_simplified_sales_mapping</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_simplified_sales_mapping(self):
+
+    sales_mapping_excl_US = self.get_simplified_sales_mapping_without_US()
+
+    US_sales_mapping = self.US_sales_calculator.get_final_dataframe()
+
+    US_sales_mapping.drop(
+        columns=[&#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;EXPORT_PERC&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;],
+        inplace=True
+    )
+
+    US_sales_mapping = US_sales_mapping.groupby(&#39;OTHER_COUNTRY_CODE&#39;).sum().reset_index()
+
+    US_sales_mapping[&#39;PARENT_COUNTRY_CODE&#39;] = &#39;USA&#39;
+
+    US_sales_mapping.rename(
+        columns={
+            &#39;OTHER_COUNTRY_CODE&#39;: &#39;ULTIMATE_DESTINATION_CODE&#39;
+        },
+        inplace=True
+    )
+
+    sales_mapping = pd.concat([sales_mapping_excl_US, US_sales_mapping], axis=0)
+
+    return sales_mapping.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_simplified_sales_mapping_without_US"><code class="name flex">
+<span>def <span class="ident">get_simplified_sales_mapping_without_US</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_simplified_sales_mapping_without_US(self):
+
+    already_attributed = self.get_already_attributed_sales()
+
+    already_attributed.drop(
+        columns=[
+            &#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;,
+            &#39;PARENT_COUNTRY_NAME&#39;, &#39;ULTIMATE_DESTINATION_NAME&#39;
+        ],
+        inplace=True
+    )
+
+    merged_df = self.attribute_other_country_sales()
+
+    merged_df.drop(
+        columns=[&#39;AFFILIATE_COUNTRY_CODE&#39;, &#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;PARENT_COUNTRY_NAME&#39;],
+        inplace=True
+    )
+
+    merged_df = pd.concat(
+        [already_attributed, merged_df],
+        axis=0
+    )
+
+    merged_df = merged_df.groupby(
+        [&#39;PARENT_COUNTRY_CODE&#39;, &#39;ULTIMATE_DESTINATION_CODE&#39;]
+    ).sum().reset_index()
+
+    return merged_df[merged_df[&#39;PARENT_COUNTRY_CODE&#39;] != &#39;USA&#39;].copy()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="destination_based_sales" href="index.html">destination_based_sales</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider" href="#destination_based_sales.global_sales_calculator.GlobalAnalysisProvider">GlobalAnalysisProvider</a></code></h4>
+<ul class="">
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.build_new_table_3" href="#destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.build_new_table_3">build_new_table_3</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.build_new_table_3_formatted" href="#destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.build_new_table_3_formatted">build_new_table_3_formatted</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.compute_unilateral_scenario_gains" href="#destination_based_sales.global_sales_calculator.GlobalAnalysisProvider.compute_unilateral_scenario_gains">compute_unilateral_scenario_gains</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator">GlobalSalesCalculator</a></code></h4>
+<ul class="">
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.attribute_other_country_sales" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.attribute_other_country_sales">attribute_other_country_sales</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_already_attributed_sales" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_already_attributed_sales">get_already_attributed_sales</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_complete_revenue_split" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_complete_revenue_split">get_complete_revenue_split</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_domestic_sales_split" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_domestic_sales_split">get_domestic_sales_split</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_foreign_sales_split" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_foreign_sales_split">get_foreign_sales_split</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_simplified_sales_mapping" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_simplified_sales_mapping">get_simplified_sales_mapping</a></code></li>
+<li><code><a title="destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_simplified_sales_mapping_without_US" href="#destination_based_sales.global_sales_calculator.GlobalSalesCalculator.get_simplified_sales_mapping_without_US">get_simplified_sales_mapping_without_US</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
