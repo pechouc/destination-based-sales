@@ -269,7 +269,7 @@ class GlobalSalesCalculator:
             axis=0
         )
 
-        merged_df = already_attributed.groupby(
+        merged_df = merged_df.groupby(
             ['PARENT_COUNTRY_CODE', 'ULTIMATE_DESTINATION_CODE']
         ).sum().reset_index()
 
