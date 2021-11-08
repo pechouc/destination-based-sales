@@ -205,7 +205,6 @@ class PerIndustryAnalyser:
 
         data.reset_index(drop=True, inplace=True)
 
-
         # Renaming industries for convenience
         data['INDUSTRY'] = data['INDUSTRY'].map(
             lambda industry: industry_names_mapping.get(industry, industry)
