@@ -1,0 +1,1318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>destination_based_sales.revenue_split API documentation</title>
+<meta name="description" content="This module is used to split the revenue variables of the IRS country-by-country data into three categories (sales to
+the affiliate country, sales to …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>destination_based_sales.revenue_split</code></h1>
+</header>
+<section id="section-intro">
+<p>This module is used to split the revenue variables of the IRS country-by-country data into three categories (sales to
+the affiliate country, sales to the US and sales to any third country), based on BEA data. It therefore relies on other
+Python files, essentially irs.py and bea.py. The methodology is detailed either in the PDF report or in the docstrings
+and comments below.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+This module is used to split the revenue variables of the IRS country-by-country data into three categories (sales to
+the affiliate country, sales to the US and sales to any third country), based on BEA data. It therefore relies on other
+Python files, essentially irs.py and bea.py. The methodology is detailed either in the PDF report or in the docstrings
+and comments below.
+&#34;&#34;&#34;
+
+
+########################################################################################################################
+# --- Imports
+
+import os
+
+import numpy as np
+import pandas as pd
+
+from destination_based_sales.irs import IRSDataPreprocessor
+from destination_based_sales.bea import BEADataPreprocessor
+
+from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values
+
+
+########################################################################################################################
+# --- Diverse
+
+path_to_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+########################################################################################################################
+# --- Content
+
+class RevenueSplitter:
+
+    def __init__(
+        self,
+        year,
+        include_US=True,
+        path_to_dir=path_to_dir
+    ):
+        &#34;&#34;&#34;
+        The logic allowing to split revenue variables is encapsulated in a Python class, RevenueSplitter.
+
+        This is the instantiation function for this class, which requires the following arguments:
+
+        - the year to consider;
+        - a boolean, indicating whether or not to include US-US sales in the split;
+        - and the path to the directory where the Python file is located, to retrieve the necessary data.
+        &#34;&#34;&#34;
+        self.year = year
+
+        self.irs_preprocessor = IRSDataPreprocessor(year=year)
+        self.bea_preprocessor = BEADataPreprocessor(year=year)
+
+        self.include_US = include_US
+
+        # We reconstruct the path to the Excel file that contains the BEA data we use for the split of US-US sales
+        self.path_to_BEA_KR_tables = os.path.join(
+            path_to_dir,
+            &#39;data&#39;,
+            str(year),
+            &#39;Part-I-K1-R2.xls&#39;
+        )
+
+    def merge_dataframes(self, include_US=True):
+        &#34;&#34;&#34;
+        This class method is used to combine the IRS and BEA dataset. If US-US sales are excluded, it consists in a sim-
+        ple merge, with a few duplicate columns to filter out. On the other hand, if US-US sales are included, since
+        their split is based on a secondary file provided by the BEA, we have to operate the split separately and re-
+        introduce it in the merged dataset. Whether to include or not the US-US sales is determined by the &#34;include_US&#34;
+        boolean argument.
+        &#34;&#34;&#34;
+        irs = self.irs_preprocessor.load_final_data()
+        bea = self.bea_preprocessor.load_final_data()
+
+        # We merge the two datasets (IRS and BEA)
+        merged_df = irs.merge(
+            bea,
+            how=&#39;left&#39;,
+            on=&#39;CODE&#39;
+        )
+
+        merged_df.drop(
+            columns=[&#39;AFFILIATE_COUNTRY_NAME_y&#39;, &#39;CONTINENT_NAME_y&#39;, &#39;CONTINENT_CODE_y&#39;, &#39;NAME&#39;],
+            inplace=True
+        )
+
+        merged_df.rename(
+            columns={
+                &#39;AFFILIATE_COUNTRY_NAME_x&#39;: &#39;AFFILIATE_COUNTRY_NAME&#39;,
+                &#39;CONTINENT_NAME_x&#39;: &#39;CONTINENT_NAME&#39;,
+                &#39;CONTINENT_CODE_x&#39;: &#39;CONTINENT_CODE&#39;
+            },
+            inplace=True
+        )
+
+        if include_US:
+            # We load the secondary file from the BEA, with the split of US-US sales
+            df = pd.read_excel(self.path_to_BEA_KR_tables, sheet_name=&#39;Table I.O 1&#39;)
+
+            # Cleaning and reorganising the table
+            column_names = df.loc[4].to_dict().copy()
+            column_names[list(column_names.keys())[0]] = &#39;Industry&#39;
+            column_names[&#39;Unnamed: 1&#39;] = &#39;Total&#39;
+
+            df.rename(columns=column_names, inplace=True)
+
+            # Extracting information on the US-US sales
+            us_sales = df.loc[6].to_dict()
+
+            us_imputation = {}
+
+            # Imputing the BEA-like distribution of US-US sales into the merged DataFrame
+            # Sales to the affiliate country and to the headquarter country are directed to the same final destination
+            for column in merged_df.columns[-11:]:
+
+                if column == &#39;TOTAL&#39;:
+                    us_imputation[column] = us_sales[&#39;Total&#39;]
+
+                elif &#39;US&#39; in column:
+                    us_imputation[column] = us_sales[&#39;To U.S. persons&#39;] * 1
+
+                elif &#39;AFFILIATE_COUNTRY&#39; in column:
+                    us_imputation[column] = us_sales[&#39;To U.S. persons&#39;] * 0
+
+                else:
+                    us_imputation[column] = us_sales[&#39;To foreign affiliates&#39;] + us_sales[&#39;To other foreign persons&#39;]
+
+            for column in merged_df.columns[-11:]:
+                merged_df[column] = merged_df.apply(
+                    lambda row: us_imputation[column] if row[&#39;CODE&#39;] == &#39;USA&#39; else row[column],
+                    axis=1
+                )
+
+            return merged_df.copy()
+
+        else:
+
+            merged_df = merged_df[merged_df[&#39;CODE&#39;] != &#39;USA&#39;].copy()
+
+            return merged_df.copy()
+
+    def add_indicator_variables(self):
+        &#34;&#34;&#34;
+        Building upon the previous method, &#34;merge_dataframes&#34;, this method complements the dataset obtained by merging
+        data from the IRS and those from the BEA with indicator variables that indicate, for each partner country,
+        whether the information from the BEA is complete and allows to split the country-by-country revenue variables.
+        In that sense, this method paves the way for the imputation of missing information (see below).
+
+        NB: for many countries, all indicator variables will take value 0 simply because the partner country of the IRS&#39;
+        country-by-country statistics is absent from BEA data.
+        &#34;&#34;&#34;
+
+        # We get the merged DataFrame
+        merged_df = self.merge_dataframes(include_US=self.include_US)
+
+        mask_US = (merged_df[&#39;CODE&#39;] == &#39;USA&#39;)
+
+        # Is the split of related-party sales complete?
+        related = [&#39;TOTAL_US_RELATED&#39;, &#39;TOTAL_AFFILIATE_COUNTRY_RELATED&#39;, &#39;TOTAL_OTHER_COUNTRY_RELATED&#39;]
+
+        mask_0 = ~merged_df[related[0]].isnull()
+        mask_1 = ~merged_df[related[1]].isnull()
+        mask_2 = ~merged_df[related[2]].isnull()
+
+        mask = np.logical_and(
+            mask_0,
+            np.logical_and(
+                mask_1,
+                mask_2
+            )
+        )
+
+        # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+        merged_df[&#39;IS_RELATED_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+        self.related = related.copy()
+
+        # Is the split of unrelated-party sales complete?
+        unrelated = [&#39;TOTAL_US_UNRELATED&#39;, &#39;TOTAL_AFFILIATE_COUNTRY_UNRELATED&#39;, &#39;TOTAL_OTHER_COUNTRY_UNRELATED&#39;]
+
+        mask_0 = ~merged_df[unrelated[0]].isnull()
+        mask_1 = ~merged_df[unrelated[1]].isnull()
+        mask_2 = ~merged_df[unrelated[2]].isnull()
+
+        mask = np.logical_and(
+            mask_0,
+            np.logical_and(
+                mask_1,
+                mask_2
+            )
+        )
+
+        # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+        merged_df[&#39;IS_UNRELATED_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+        self.unrelated = unrelated.copy()
+
+        # Is the split of total sales complete?
+        total = [&#39;TOTAL_US&#39;, &#39;TOTAL_AFFILIATE_COUNTRY&#39;, &#39;TOTAL_OTHER_COUNTRY&#39;]
+
+        mask_0 = ~merged_df[total[0]].isnull()
+        mask_1 = ~merged_df[total[1]].isnull()
+        mask_2 = ~merged_df[total[2]].isnull()
+
+        mask = np.logical_and(
+            mask_0,
+            np.logical_and(
+                mask_1,
+                mask_2
+            )
+        )
+
+        # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+        merged_df[&#39;IS_TOTAL_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+        self.total = total.copy()
+
+        return merged_df.copy()
+
+    def compute_revenue_percentages(self):
+        &#34;&#34;&#34;
+        In order to split the country-by-country revenue variables into three categories (sales to the host country,
+        sales to the headquarter country and sales to any other country), we move from absolute amounts in the BEA co-
+        lumns to sales percentages. For unrelated-party, related-party and total revenues, we compute the share of these
+        revenues that are directed to the three different categories of destinations. We therefore add 9 new columns to
+        the DataFrame obtained from the &#34;add_indicator_variables&#34; method.
+        &#34;&#34;&#34;
+        merged_df = self.add_indicator_variables()
+
+        bases = [&#39;TOTAL_US&#39;, &#39;TOTAL_AFFILIATE_COUNTRY&#39;, &#39;TOTAL_OTHER_COUNTRY&#39;]
+
+        percentage_columns = []
+
+        for sales_type in [&#39;RELATED&#39;, &#39;UNRELATED&#39;, &#39;TOTAL&#39;]:
+            if sales_type in [&#39;RELATED&#39;, &#39;UNRELATED&#39;]:
+                existing_columns = [column + &#39;_&#39; + sales_type for column in bases]
+
+                total_column = &#39;TOTAL_&#39; + sales_type
+
+            else:
+                existing_columns = bases.copy()
+
+                total_column = &#39;TOTAL_COMPUTED&#39;
+
+            merged_df[total_column] = merged_df[existing_columns].sum(axis=1)
+
+            for i, destination in enumerate([&#39;US&#39;, &#39;AFFILIATE_COUNTRY&#39;, &#39;OTHER_COUNTRY&#39;]):
+                new_column = &#39;_&#39;.join([&#39;PERC&#39;, sales_type, destination])
+
+                percentage_columns.append(new_column)
+
+                merged_df[new_column] = merged_df[existing_columns[i]] / merged_df[total_column]
+
+        self.percentage_columns = percentage_columns.copy()
+
+        for column in percentage_columns:
+            merged_df[column] = merged_df.apply(
+                lambda row: eliminate_irrelevant_percentages(row, column),
+                axis=1
+            )
+
+        return merged_df.copy()
+
+    def build_imputations_dict(self):
+        &#34;&#34;&#34;
+        For partner countries in the IRS data that are absent from BEA data or more generally, for which BEA data are
+        incomplete, missing sales percentages are imputed at the continental level. This method allows to construct a
+        dictionary that associates each of the 4 continent codes the distribution of unrelated-party, related-party and
+        total sales between three types of destinations: host country, headquarter country and any other country.
+        &#34;&#34;&#34;
+        merged_df = self.compute_revenue_percentages()
+
+        imputations = {}
+
+        # We iterate over continents
+        for continent_code in merged_df[&#39;CONTINENT_CODE&#39;].unique():
+
+            # We restrict the dataset to the continent under consideration
+            restricted_df = merged_df[merged_df[&#39;CONTINENT_CODE&#39;] == continent_code].copy()
+
+            # We build a dictionary with continent codes as keys and dictionaries (to be filled) as values
+            imputations[continent_code] = {}
+
+            # We iterate over sales categories
+            for sales_type in [&#39;UNRELATED&#39;, &#39;RELATED&#39;, &#39;TOTAL&#39;]:
+
+                # We restrict the dataset to jurisdictions of the continent under consideration for which BEA data on
+                # the given type of sales are complete
+                indicator_column = &#39;_&#39;.join([&#39;IS&#39;, sales_type, &#39;COMPLETE&#39;])
+                restricted_df = restricted_df[restricted_df[indicator_column] == 1].copy()
+
+                # We aggregate total sales, sales to the host country, sales to the headquarter country and sales to any
+                # other country over the restricted dataset, for a given type of sales
+                sums = restricted_df.sum()
+
+                if sales_type in [&#39;UNRELATED&#39;, &#39;RELATED&#39;]:
+                    suffix = &#39;_&#39; + sales_type
+                    total_column = &#39;TOTAL&#39; + suffix
+
+                else:
+                    suffix = &#39;&#39;
+                    total_column = &#39;TOTAL_COMPUTED&#39;
+
+                for destination in [&#39;US&#39;, &#39;AFFILIATE_COUNTRY&#39;, &#39;OTHER_COUNTRY&#39;]:
+                    column = &#39;TOTAL_&#39; + destination + suffix
+
+                    # key corresponds to the name of the column in which we want to impute the missing value
+                    key = &#39;_&#39;.join([&#39;PERC&#39;, sales_type, destination])
+
+                    # We compute the sales percentage for a given continent, type of sales and destination
+                    imputations[continent_code][key] = sums.loc[column] / sums.loc[total_column]
+
+        return imputations.copy()
+
+    def impute_missing_percentages(self):
+        &#34;&#34;&#34;
+        Building upon the previous method, &#34;build_imputations_dict&#34;, this method loads the dataset from the &#34;compute_
+        revenue_percentages&#34; and complements with the continental imputations applied to partner countries in the IRS
+        data for which we lack some information in the BEA data to distribute revenues.
+        &#34;&#34;&#34;
+
+        # We load the dataset to be complemented
+        merged_df = self.compute_revenue_percentages()
+
+        # We construct the continental imputation dictionary
+        imputations = self.build_imputations_dict()
+
+        # We impute missing values thanks to the pre-constructed dictionary
+        for column in self.percentage_columns:
+            merged_df[column] = merged_df.apply(
+                lambda row: impute_missing_values(row, column, imputations),
+                axis=1
+            )
+
+        # We drop absolute amounts from the BEA data
+        # e are only interested in sales percentages to distribute the IRS revenue variables
+        merged_df.drop(
+            columns=self.related + self.unrelated + self.total + [&#39;TOTAL_FOREIGN&#39;],
+            inplace=True
+        )
+
+        return merged_df.copy()
+
+    def deduce_absolute_amounts(self):
+        &#34;&#34;&#34;
+        From the BEA sales percentages that we compute and complement within the &#34;impute_missing_percentages&#34; method, we
+        deduce a distribution (in absolute amounts) of the revenue variables of the IRS&#39; country-by-country data, based
+        on their estimated ultimate destination (usual three destination types).
+        &#34;&#34;&#34;
+
+        # We load the merged table, extended with imputations
+        merged_df = self.impute_missing_percentages()
+
+        absolute_amount_columns = []
+
+        # We iterate over the sales categories
+        for column in [&#39;UNRELATED_PARTY_REVENUES&#39;, &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;]:
+
+            sales_type = column.split(&#39;_&#39;)[0]
+
+            # And then over ultimate destination types
+            for destination in [&#39;US&#39;, &#39;OTHER_COUNTRY&#39;, &#39;AFFILIATE_COUNTRY&#39;]:
+
+                new_column = column + &#39;_TO_&#39; + destination
+
+                # And we construct the new column as (IRS absolute amounts * BEA sales percentages)
+                merged_df[new_column] = (
+                    merged_df[column] * merged_df[&#39;PERC_&#39; + sales_type + &#39;_&#39; + destination]
+                )
+
+                absolute_amount_columns.append(new_column)
+
+        self.absolute_amount_columns = absolute_amount_columns.copy()
+
+        return merged_df.copy()
+
+    def get_splitted_revenues(self):
+        &#34;&#34;&#34;
+        This method is a simple extension of the previous one, &#34;deduce_absolute_amounts&#34;, used to get the split of the
+        revenue variables in the IRS&#39; country-by-country data. We simply restrict the DataFrame returned by the &#34;deduce_
+        absolute_amounts&#34; methods to our columns of interest.
+        &#34;&#34;&#34;
+
+        merged_df = self.deduce_absolute_amounts()
+
+        merged_df = merged_df[[&#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;CODE&#39;] + self.absolute_amount_columns].copy()
+
+        return merged_df.copy()
+
+    def get_sales_percentages(self):
+        &#34;&#34;&#34;
+        This method is, similarly to &#34;get_splitted_revenues&#34;, an extension of the &#34;deduce_absolute_amounts&#34; method. In-
+        stead of focusing on absolute amount columns, we restrict the DataFrame to sales percentages computed based on
+        BEA data.
+        &#34;&#34;&#34;
+
+        merged_df = self.deduce_absolute_amounts()
+
+        merged_df = merged_df[[&#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;CODE&#39;] + self.percentage_columns].copy()
+
+        return merged_df.copy()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter"><code class="flex name class">
+<span>class <span class="ident">RevenueSplitter</span></span>
+<span>(</span><span>year, include_US=True, path_to_dir='/Users/Paul-Emmanuel/Desktop/destination_based_sales/destination_based_sales')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The logic allowing to split revenue variables is encapsulated in a Python class, RevenueSplitter.</p>
+<p>This is the instantiation function for this class, which requires the following arguments:</p>
+<ul>
+<li>the year to consider;</li>
+<li>a boolean, indicating whether or not to include US-US sales in the split;</li>
+<li>and the path to the directory where the Python file is located, to retrieve the necessary data.</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RevenueSplitter:
+
+    def __init__(
+        self,
+        year,
+        include_US=True,
+        path_to_dir=path_to_dir
+    ):
+        &#34;&#34;&#34;
+        The logic allowing to split revenue variables is encapsulated in a Python class, RevenueSplitter.
+
+        This is the instantiation function for this class, which requires the following arguments:
+
+        - the year to consider;
+        - a boolean, indicating whether or not to include US-US sales in the split;
+        - and the path to the directory where the Python file is located, to retrieve the necessary data.
+        &#34;&#34;&#34;
+        self.year = year
+
+        self.irs_preprocessor = IRSDataPreprocessor(year=year)
+        self.bea_preprocessor = BEADataPreprocessor(year=year)
+
+        self.include_US = include_US
+
+        # We reconstruct the path to the Excel file that contains the BEA data we use for the split of US-US sales
+        self.path_to_BEA_KR_tables = os.path.join(
+            path_to_dir,
+            &#39;data&#39;,
+            str(year),
+            &#39;Part-I-K1-R2.xls&#39;
+        )
+
+    def merge_dataframes(self, include_US=True):
+        &#34;&#34;&#34;
+        This class method is used to combine the IRS and BEA dataset. If US-US sales are excluded, it consists in a sim-
+        ple merge, with a few duplicate columns to filter out. On the other hand, if US-US sales are included, since
+        their split is based on a secondary file provided by the BEA, we have to operate the split separately and re-
+        introduce it in the merged dataset. Whether to include or not the US-US sales is determined by the &#34;include_US&#34;
+        boolean argument.
+        &#34;&#34;&#34;
+        irs = self.irs_preprocessor.load_final_data()
+        bea = self.bea_preprocessor.load_final_data()
+
+        # We merge the two datasets (IRS and BEA)
+        merged_df = irs.merge(
+            bea,
+            how=&#39;left&#39;,
+            on=&#39;CODE&#39;
+        )
+
+        merged_df.drop(
+            columns=[&#39;AFFILIATE_COUNTRY_NAME_y&#39;, &#39;CONTINENT_NAME_y&#39;, &#39;CONTINENT_CODE_y&#39;, &#39;NAME&#39;],
+            inplace=True
+        )
+
+        merged_df.rename(
+            columns={
+                &#39;AFFILIATE_COUNTRY_NAME_x&#39;: &#39;AFFILIATE_COUNTRY_NAME&#39;,
+                &#39;CONTINENT_NAME_x&#39;: &#39;CONTINENT_NAME&#39;,
+                &#39;CONTINENT_CODE_x&#39;: &#39;CONTINENT_CODE&#39;
+            },
+            inplace=True
+        )
+
+        if include_US:
+            # We load the secondary file from the BEA, with the split of US-US sales
+            df = pd.read_excel(self.path_to_BEA_KR_tables, sheet_name=&#39;Table I.O 1&#39;)
+
+            # Cleaning and reorganising the table
+            column_names = df.loc[4].to_dict().copy()
+            column_names[list(column_names.keys())[0]] = &#39;Industry&#39;
+            column_names[&#39;Unnamed: 1&#39;] = &#39;Total&#39;
+
+            df.rename(columns=column_names, inplace=True)
+
+            # Extracting information on the US-US sales
+            us_sales = df.loc[6].to_dict()
+
+            us_imputation = {}
+
+            # Imputing the BEA-like distribution of US-US sales into the merged DataFrame
+            # Sales to the affiliate country and to the headquarter country are directed to the same final destination
+            for column in merged_df.columns[-11:]:
+
+                if column == &#39;TOTAL&#39;:
+                    us_imputation[column] = us_sales[&#39;Total&#39;]
+
+                elif &#39;US&#39; in column:
+                    us_imputation[column] = us_sales[&#39;To U.S. persons&#39;] * 1
+
+                elif &#39;AFFILIATE_COUNTRY&#39; in column:
+                    us_imputation[column] = us_sales[&#39;To U.S. persons&#39;] * 0
+
+                else:
+                    us_imputation[column] = us_sales[&#39;To foreign affiliates&#39;] + us_sales[&#39;To other foreign persons&#39;]
+
+            for column in merged_df.columns[-11:]:
+                merged_df[column] = merged_df.apply(
+                    lambda row: us_imputation[column] if row[&#39;CODE&#39;] == &#39;USA&#39; else row[column],
+                    axis=1
+                )
+
+            return merged_df.copy()
+
+        else:
+
+            merged_df = merged_df[merged_df[&#39;CODE&#39;] != &#39;USA&#39;].copy()
+
+            return merged_df.copy()
+
+    def add_indicator_variables(self):
+        &#34;&#34;&#34;
+        Building upon the previous method, &#34;merge_dataframes&#34;, this method complements the dataset obtained by merging
+        data from the IRS and those from the BEA with indicator variables that indicate, for each partner country,
+        whether the information from the BEA is complete and allows to split the country-by-country revenue variables.
+        In that sense, this method paves the way for the imputation of missing information (see below).
+
+        NB: for many countries, all indicator variables will take value 0 simply because the partner country of the IRS&#39;
+        country-by-country statistics is absent from BEA data.
+        &#34;&#34;&#34;
+
+        # We get the merged DataFrame
+        merged_df = self.merge_dataframes(include_US=self.include_US)
+
+        mask_US = (merged_df[&#39;CODE&#39;] == &#39;USA&#39;)
+
+        # Is the split of related-party sales complete?
+        related = [&#39;TOTAL_US_RELATED&#39;, &#39;TOTAL_AFFILIATE_COUNTRY_RELATED&#39;, &#39;TOTAL_OTHER_COUNTRY_RELATED&#39;]
+
+        mask_0 = ~merged_df[related[0]].isnull()
+        mask_1 = ~merged_df[related[1]].isnull()
+        mask_2 = ~merged_df[related[2]].isnull()
+
+        mask = np.logical_and(
+            mask_0,
+            np.logical_and(
+                mask_1,
+                mask_2
+            )
+        )
+
+        # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+        merged_df[&#39;IS_RELATED_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+        self.related = related.copy()
+
+        # Is the split of unrelated-party sales complete?
+        unrelated = [&#39;TOTAL_US_UNRELATED&#39;, &#39;TOTAL_AFFILIATE_COUNTRY_UNRELATED&#39;, &#39;TOTAL_OTHER_COUNTRY_UNRELATED&#39;]
+
+        mask_0 = ~merged_df[unrelated[0]].isnull()
+        mask_1 = ~merged_df[unrelated[1]].isnull()
+        mask_2 = ~merged_df[unrelated[2]].isnull()
+
+        mask = np.logical_and(
+            mask_0,
+            np.logical_and(
+                mask_1,
+                mask_2
+            )
+        )
+
+        # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+        merged_df[&#39;IS_UNRELATED_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+        self.unrelated = unrelated.copy()
+
+        # Is the split of total sales complete?
+        total = [&#39;TOTAL_US&#39;, &#39;TOTAL_AFFILIATE_COUNTRY&#39;, &#39;TOTAL_OTHER_COUNTRY&#39;]
+
+        mask_0 = ~merged_df[total[0]].isnull()
+        mask_1 = ~merged_df[total[1]].isnull()
+        mask_2 = ~merged_df[total[2]].isnull()
+
+        mask = np.logical_and(
+            mask_0,
+            np.logical_and(
+                mask_1,
+                mask_2
+            )
+        )
+
+        # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+        merged_df[&#39;IS_TOTAL_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+        self.total = total.copy()
+
+        return merged_df.copy()
+
+    def compute_revenue_percentages(self):
+        &#34;&#34;&#34;
+        In order to split the country-by-country revenue variables into three categories (sales to the host country,
+        sales to the headquarter country and sales to any other country), we move from absolute amounts in the BEA co-
+        lumns to sales percentages. For unrelated-party, related-party and total revenues, we compute the share of these
+        revenues that are directed to the three different categories of destinations. We therefore add 9 new columns to
+        the DataFrame obtained from the &#34;add_indicator_variables&#34; method.
+        &#34;&#34;&#34;
+        merged_df = self.add_indicator_variables()
+
+        bases = [&#39;TOTAL_US&#39;, &#39;TOTAL_AFFILIATE_COUNTRY&#39;, &#39;TOTAL_OTHER_COUNTRY&#39;]
+
+        percentage_columns = []
+
+        for sales_type in [&#39;RELATED&#39;, &#39;UNRELATED&#39;, &#39;TOTAL&#39;]:
+            if sales_type in [&#39;RELATED&#39;, &#39;UNRELATED&#39;]:
+                existing_columns = [column + &#39;_&#39; + sales_type for column in bases]
+
+                total_column = &#39;TOTAL_&#39; + sales_type
+
+            else:
+                existing_columns = bases.copy()
+
+                total_column = &#39;TOTAL_COMPUTED&#39;
+
+            merged_df[total_column] = merged_df[existing_columns].sum(axis=1)
+
+            for i, destination in enumerate([&#39;US&#39;, &#39;AFFILIATE_COUNTRY&#39;, &#39;OTHER_COUNTRY&#39;]):
+                new_column = &#39;_&#39;.join([&#39;PERC&#39;, sales_type, destination])
+
+                percentage_columns.append(new_column)
+
+                merged_df[new_column] = merged_df[existing_columns[i]] / merged_df[total_column]
+
+        self.percentage_columns = percentage_columns.copy()
+
+        for column in percentage_columns:
+            merged_df[column] = merged_df.apply(
+                lambda row: eliminate_irrelevant_percentages(row, column),
+                axis=1
+            )
+
+        return merged_df.copy()
+
+    def build_imputations_dict(self):
+        &#34;&#34;&#34;
+        For partner countries in the IRS data that are absent from BEA data or more generally, for which BEA data are
+        incomplete, missing sales percentages are imputed at the continental level. This method allows to construct a
+        dictionary that associates each of the 4 continent codes the distribution of unrelated-party, related-party and
+        total sales between three types of destinations: host country, headquarter country and any other country.
+        &#34;&#34;&#34;
+        merged_df = self.compute_revenue_percentages()
+
+        imputations = {}
+
+        # We iterate over continents
+        for continent_code in merged_df[&#39;CONTINENT_CODE&#39;].unique():
+
+            # We restrict the dataset to the continent under consideration
+            restricted_df = merged_df[merged_df[&#39;CONTINENT_CODE&#39;] == continent_code].copy()
+
+            # We build a dictionary with continent codes as keys and dictionaries (to be filled) as values
+            imputations[continent_code] = {}
+
+            # We iterate over sales categories
+            for sales_type in [&#39;UNRELATED&#39;, &#39;RELATED&#39;, &#39;TOTAL&#39;]:
+
+                # We restrict the dataset to jurisdictions of the continent under consideration for which BEA data on
+                # the given type of sales are complete
+                indicator_column = &#39;_&#39;.join([&#39;IS&#39;, sales_type, &#39;COMPLETE&#39;])
+                restricted_df = restricted_df[restricted_df[indicator_column] == 1].copy()
+
+                # We aggregate total sales, sales to the host country, sales to the headquarter country and sales to any
+                # other country over the restricted dataset, for a given type of sales
+                sums = restricted_df.sum()
+
+                if sales_type in [&#39;UNRELATED&#39;, &#39;RELATED&#39;]:
+                    suffix = &#39;_&#39; + sales_type
+                    total_column = &#39;TOTAL&#39; + suffix
+
+                else:
+                    suffix = &#39;&#39;
+                    total_column = &#39;TOTAL_COMPUTED&#39;
+
+                for destination in [&#39;US&#39;, &#39;AFFILIATE_COUNTRY&#39;, &#39;OTHER_COUNTRY&#39;]:
+                    column = &#39;TOTAL_&#39; + destination + suffix
+
+                    # key corresponds to the name of the column in which we want to impute the missing value
+                    key = &#39;_&#39;.join([&#39;PERC&#39;, sales_type, destination])
+
+                    # We compute the sales percentage for a given continent, type of sales and destination
+                    imputations[continent_code][key] = sums.loc[column] / sums.loc[total_column]
+
+        return imputations.copy()
+
+    def impute_missing_percentages(self):
+        &#34;&#34;&#34;
+        Building upon the previous method, &#34;build_imputations_dict&#34;, this method loads the dataset from the &#34;compute_
+        revenue_percentages&#34; and complements with the continental imputations applied to partner countries in the IRS
+        data for which we lack some information in the BEA data to distribute revenues.
+        &#34;&#34;&#34;
+
+        # We load the dataset to be complemented
+        merged_df = self.compute_revenue_percentages()
+
+        # We construct the continental imputation dictionary
+        imputations = self.build_imputations_dict()
+
+        # We impute missing values thanks to the pre-constructed dictionary
+        for column in self.percentage_columns:
+            merged_df[column] = merged_df.apply(
+                lambda row: impute_missing_values(row, column, imputations),
+                axis=1
+            )
+
+        # We drop absolute amounts from the BEA data
+        # e are only interested in sales percentages to distribute the IRS revenue variables
+        merged_df.drop(
+            columns=self.related + self.unrelated + self.total + [&#39;TOTAL_FOREIGN&#39;],
+            inplace=True
+        )
+
+        return merged_df.copy()
+
+    def deduce_absolute_amounts(self):
+        &#34;&#34;&#34;
+        From the BEA sales percentages that we compute and complement within the &#34;impute_missing_percentages&#34; method, we
+        deduce a distribution (in absolute amounts) of the revenue variables of the IRS&#39; country-by-country data, based
+        on their estimated ultimate destination (usual three destination types).
+        &#34;&#34;&#34;
+
+        # We load the merged table, extended with imputations
+        merged_df = self.impute_missing_percentages()
+
+        absolute_amount_columns = []
+
+        # We iterate over the sales categories
+        for column in [&#39;UNRELATED_PARTY_REVENUES&#39;, &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;]:
+
+            sales_type = column.split(&#39;_&#39;)[0]
+
+            # And then over ultimate destination types
+            for destination in [&#39;US&#39;, &#39;OTHER_COUNTRY&#39;, &#39;AFFILIATE_COUNTRY&#39;]:
+
+                new_column = column + &#39;_TO_&#39; + destination
+
+                # And we construct the new column as (IRS absolute amounts * BEA sales percentages)
+                merged_df[new_column] = (
+                    merged_df[column] * merged_df[&#39;PERC_&#39; + sales_type + &#39;_&#39; + destination]
+                )
+
+                absolute_amount_columns.append(new_column)
+
+        self.absolute_amount_columns = absolute_amount_columns.copy()
+
+        return merged_df.copy()
+
+    def get_splitted_revenues(self):
+        &#34;&#34;&#34;
+        This method is a simple extension of the previous one, &#34;deduce_absolute_amounts&#34;, used to get the split of the
+        revenue variables in the IRS&#39; country-by-country data. We simply restrict the DataFrame returned by the &#34;deduce_
+        absolute_amounts&#34; methods to our columns of interest.
+        &#34;&#34;&#34;
+
+        merged_df = self.deduce_absolute_amounts()
+
+        merged_df = merged_df[[&#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;CODE&#39;] + self.absolute_amount_columns].copy()
+
+        return merged_df.copy()
+
+    def get_sales_percentages(self):
+        &#34;&#34;&#34;
+        This method is, similarly to &#34;get_splitted_revenues&#34;, an extension of the &#34;deduce_absolute_amounts&#34; method. In-
+        stead of focusing on absolute amount columns, we restrict the DataFrame to sales percentages computed based on
+        BEA data.
+        &#34;&#34;&#34;
+
+        merged_df = self.deduce_absolute_amounts()
+
+        merged_df = merged_df[[&#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;CODE&#39;] + self.percentage_columns].copy()
+
+        return merged_df.copy()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.add_indicator_variables"><code class="name flex">
+<span>def <span class="ident">add_indicator_variables</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Building upon the previous method, "merge_dataframes", this method complements the dataset obtained by merging
+data from the IRS and those from the BEA with indicator variables that indicate, for each partner country,
+whether the information from the BEA is complete and allows to split the country-by-country revenue variables.
+In that sense, this method paves the way for the imputation of missing information (see below).</p>
+<p>NB: for many countries, all indicator variables will take value 0 simply because the partner country of the IRS'
+country-by-country statistics is absent from BEA data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_indicator_variables(self):
+    &#34;&#34;&#34;
+    Building upon the previous method, &#34;merge_dataframes&#34;, this method complements the dataset obtained by merging
+    data from the IRS and those from the BEA with indicator variables that indicate, for each partner country,
+    whether the information from the BEA is complete and allows to split the country-by-country revenue variables.
+    In that sense, this method paves the way for the imputation of missing information (see below).
+
+    NB: for many countries, all indicator variables will take value 0 simply because the partner country of the IRS&#39;
+    country-by-country statistics is absent from BEA data.
+    &#34;&#34;&#34;
+
+    # We get the merged DataFrame
+    merged_df = self.merge_dataframes(include_US=self.include_US)
+
+    mask_US = (merged_df[&#39;CODE&#39;] == &#39;USA&#39;)
+
+    # Is the split of related-party sales complete?
+    related = [&#39;TOTAL_US_RELATED&#39;, &#39;TOTAL_AFFILIATE_COUNTRY_RELATED&#39;, &#39;TOTAL_OTHER_COUNTRY_RELATED&#39;]
+
+    mask_0 = ~merged_df[related[0]].isnull()
+    mask_1 = ~merged_df[related[1]].isnull()
+    mask_2 = ~merged_df[related[2]].isnull()
+
+    mask = np.logical_and(
+        mask_0,
+        np.logical_and(
+            mask_1,
+            mask_2
+        )
+    )
+
+    # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+    merged_df[&#39;IS_RELATED_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+    self.related = related.copy()
+
+    # Is the split of unrelated-party sales complete?
+    unrelated = [&#39;TOTAL_US_UNRELATED&#39;, &#39;TOTAL_AFFILIATE_COUNTRY_UNRELATED&#39;, &#39;TOTAL_OTHER_COUNTRY_UNRELATED&#39;]
+
+    mask_0 = ~merged_df[unrelated[0]].isnull()
+    mask_1 = ~merged_df[unrelated[1]].isnull()
+    mask_2 = ~merged_df[unrelated[2]].isnull()
+
+    mask = np.logical_and(
+        mask_0,
+        np.logical_and(
+            mask_1,
+            mask_2
+        )
+    )
+
+    # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+    merged_df[&#39;IS_UNRELATED_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+    self.unrelated = unrelated.copy()
+
+    # Is the split of total sales complete?
+    total = [&#39;TOTAL_US&#39;, &#39;TOTAL_AFFILIATE_COUNTRY&#39;, &#39;TOTAL_OTHER_COUNTRY&#39;]
+
+    mask_0 = ~merged_df[total[0]].isnull()
+    mask_1 = ~merged_df[total[1]].isnull()
+    mask_2 = ~merged_df[total[2]].isnull()
+
+    mask = np.logical_and(
+        mask_0,
+        np.logical_and(
+            mask_1,
+            mask_2
+        )
+    )
+
+    # Takes value 0 if the split is incomplete, 1 if the split is complete and 2 in the US-US case
+    merged_df[&#39;IS_TOTAL_COMPLETE&#39;] = mask * 1 + mask_US * 1
+
+    self.total = total.copy()
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.build_imputations_dict"><code class="name flex">
+<span>def <span class="ident">build_imputations_dict</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>For partner countries in the IRS data that are absent from BEA data or more generally, for which BEA data are
+incomplete, missing sales percentages are imputed at the continental level. This method allows to construct a
+dictionary that associates each of the 4 continent codes the distribution of unrelated-party, related-party and
+total sales between three types of destinations: host country, headquarter country and any other country.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_imputations_dict(self):
+    &#34;&#34;&#34;
+    For partner countries in the IRS data that are absent from BEA data or more generally, for which BEA data are
+    incomplete, missing sales percentages are imputed at the continental level. This method allows to construct a
+    dictionary that associates each of the 4 continent codes the distribution of unrelated-party, related-party and
+    total sales between three types of destinations: host country, headquarter country and any other country.
+    &#34;&#34;&#34;
+    merged_df = self.compute_revenue_percentages()
+
+    imputations = {}
+
+    # We iterate over continents
+    for continent_code in merged_df[&#39;CONTINENT_CODE&#39;].unique():
+
+        # We restrict the dataset to the continent under consideration
+        restricted_df = merged_df[merged_df[&#39;CONTINENT_CODE&#39;] == continent_code].copy()
+
+        # We build a dictionary with continent codes as keys and dictionaries (to be filled) as values
+        imputations[continent_code] = {}
+
+        # We iterate over sales categories
+        for sales_type in [&#39;UNRELATED&#39;, &#39;RELATED&#39;, &#39;TOTAL&#39;]:
+
+            # We restrict the dataset to jurisdictions of the continent under consideration for which BEA data on
+            # the given type of sales are complete
+            indicator_column = &#39;_&#39;.join([&#39;IS&#39;, sales_type, &#39;COMPLETE&#39;])
+            restricted_df = restricted_df[restricted_df[indicator_column] == 1].copy()
+
+            # We aggregate total sales, sales to the host country, sales to the headquarter country and sales to any
+            # other country over the restricted dataset, for a given type of sales
+            sums = restricted_df.sum()
+
+            if sales_type in [&#39;UNRELATED&#39;, &#39;RELATED&#39;]:
+                suffix = &#39;_&#39; + sales_type
+                total_column = &#39;TOTAL&#39; + suffix
+
+            else:
+                suffix = &#39;&#39;
+                total_column = &#39;TOTAL_COMPUTED&#39;
+
+            for destination in [&#39;US&#39;, &#39;AFFILIATE_COUNTRY&#39;, &#39;OTHER_COUNTRY&#39;]:
+                column = &#39;TOTAL_&#39; + destination + suffix
+
+                # key corresponds to the name of the column in which we want to impute the missing value
+                key = &#39;_&#39;.join([&#39;PERC&#39;, sales_type, destination])
+
+                # We compute the sales percentage for a given continent, type of sales and destination
+                imputations[continent_code][key] = sums.loc[column] / sums.loc[total_column]
+
+    return imputations.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.compute_revenue_percentages"><code class="name flex">
+<span>def <span class="ident">compute_revenue_percentages</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In order to split the country-by-country revenue variables into three categories (sales to the host country,
+sales to the headquarter country and sales to any other country), we move from absolute amounts in the BEA co-
+lumns to sales percentages. For unrelated-party, related-party and total revenues, we compute the share of these
+revenues that are directed to the three different categories of destinations. We therefore add 9 new columns to
+the DataFrame obtained from the "add_indicator_variables" method.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_revenue_percentages(self):
+    &#34;&#34;&#34;
+    In order to split the country-by-country revenue variables into three categories (sales to the host country,
+    sales to the headquarter country and sales to any other country), we move from absolute amounts in the BEA co-
+    lumns to sales percentages. For unrelated-party, related-party and total revenues, we compute the share of these
+    revenues that are directed to the three different categories of destinations. We therefore add 9 new columns to
+    the DataFrame obtained from the &#34;add_indicator_variables&#34; method.
+    &#34;&#34;&#34;
+    merged_df = self.add_indicator_variables()
+
+    bases = [&#39;TOTAL_US&#39;, &#39;TOTAL_AFFILIATE_COUNTRY&#39;, &#39;TOTAL_OTHER_COUNTRY&#39;]
+
+    percentage_columns = []
+
+    for sales_type in [&#39;RELATED&#39;, &#39;UNRELATED&#39;, &#39;TOTAL&#39;]:
+        if sales_type in [&#39;RELATED&#39;, &#39;UNRELATED&#39;]:
+            existing_columns = [column + &#39;_&#39; + sales_type for column in bases]
+
+            total_column = &#39;TOTAL_&#39; + sales_type
+
+        else:
+            existing_columns = bases.copy()
+
+            total_column = &#39;TOTAL_COMPUTED&#39;
+
+        merged_df[total_column] = merged_df[existing_columns].sum(axis=1)
+
+        for i, destination in enumerate([&#39;US&#39;, &#39;AFFILIATE_COUNTRY&#39;, &#39;OTHER_COUNTRY&#39;]):
+            new_column = &#39;_&#39;.join([&#39;PERC&#39;, sales_type, destination])
+
+            percentage_columns.append(new_column)
+
+            merged_df[new_column] = merged_df[existing_columns[i]] / merged_df[total_column]
+
+    self.percentage_columns = percentage_columns.copy()
+
+    for column in percentage_columns:
+        merged_df[column] = merged_df.apply(
+            lambda row: eliminate_irrelevant_percentages(row, column),
+            axis=1
+        )
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.deduce_absolute_amounts"><code class="name flex">
+<span>def <span class="ident">deduce_absolute_amounts</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>From the BEA sales percentages that we compute and complement within the "impute_missing_percentages" method, we
+deduce a distribution (in absolute amounts) of the revenue variables of the IRS' country-by-country data, based
+on their estimated ultimate destination (usual three destination types).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def deduce_absolute_amounts(self):
+    &#34;&#34;&#34;
+    From the BEA sales percentages that we compute and complement within the &#34;impute_missing_percentages&#34; method, we
+    deduce a distribution (in absolute amounts) of the revenue variables of the IRS&#39; country-by-country data, based
+    on their estimated ultimate destination (usual three destination types).
+    &#34;&#34;&#34;
+
+    # We load the merged table, extended with imputations
+    merged_df = self.impute_missing_percentages()
+
+    absolute_amount_columns = []
+
+    # We iterate over the sales categories
+    for column in [&#39;UNRELATED_PARTY_REVENUES&#39;, &#39;RELATED_PARTY_REVENUES&#39;, &#39;TOTAL_REVENUES&#39;]:
+
+        sales_type = column.split(&#39;_&#39;)[0]
+
+        # And then over ultimate destination types
+        for destination in [&#39;US&#39;, &#39;OTHER_COUNTRY&#39;, &#39;AFFILIATE_COUNTRY&#39;]:
+
+            new_column = column + &#39;_TO_&#39; + destination
+
+            # And we construct the new column as (IRS absolute amounts * BEA sales percentages)
+            merged_df[new_column] = (
+                merged_df[column] * merged_df[&#39;PERC_&#39; + sales_type + &#39;_&#39; + destination]
+            )
+
+            absolute_amount_columns.append(new_column)
+
+    self.absolute_amount_columns = absolute_amount_columns.copy()
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.get_sales_percentages"><code class="name flex">
+<span>def <span class="ident">get_sales_percentages</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method is, similarly to "get_splitted_revenues", an extension of the "deduce_absolute_amounts" method. In-
+stead of focusing on absolute amount columns, we restrict the DataFrame to sales percentages computed based on
+BEA data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_sales_percentages(self):
+    &#34;&#34;&#34;
+    This method is, similarly to &#34;get_splitted_revenues&#34;, an extension of the &#34;deduce_absolute_amounts&#34; method. In-
+    stead of focusing on absolute amount columns, we restrict the DataFrame to sales percentages computed based on
+    BEA data.
+    &#34;&#34;&#34;
+
+    merged_df = self.deduce_absolute_amounts()
+
+    merged_df = merged_df[[&#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;CODE&#39;] + self.percentage_columns].copy()
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.get_splitted_revenues"><code class="name flex">
+<span>def <span class="ident">get_splitted_revenues</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method is a simple extension of the previous one, "deduce_absolute_amounts", used to get the split of the
+revenue variables in the IRS' country-by-country data. We simply restrict the DataFrame returned by the "deduce_
+absolute_amounts" methods to our columns of interest.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_splitted_revenues(self):
+    &#34;&#34;&#34;
+    This method is a simple extension of the previous one, &#34;deduce_absolute_amounts&#34;, used to get the split of the
+    revenue variables in the IRS&#39; country-by-country data. We simply restrict the DataFrame returned by the &#34;deduce_
+    absolute_amounts&#34; methods to our columns of interest.
+    &#34;&#34;&#34;
+
+    merged_df = self.deduce_absolute_amounts()
+
+    merged_df = merged_df[[&#39;AFFILIATE_COUNTRY_NAME&#39;, &#39;CODE&#39;] + self.absolute_amount_columns].copy()
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.impute_missing_percentages"><code class="name flex">
+<span>def <span class="ident">impute_missing_percentages</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Building upon the previous method, "build_imputations_dict", this method loads the dataset from the "compute_
+revenue_percentages" and complements with the continental imputations applied to partner countries in the IRS
+data for which we lack some information in the BEA data to distribute revenues.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def impute_missing_percentages(self):
+    &#34;&#34;&#34;
+    Building upon the previous method, &#34;build_imputations_dict&#34;, this method loads the dataset from the &#34;compute_
+    revenue_percentages&#34; and complements with the continental imputations applied to partner countries in the IRS
+    data for which we lack some information in the BEA data to distribute revenues.
+    &#34;&#34;&#34;
+
+    # We load the dataset to be complemented
+    merged_df = self.compute_revenue_percentages()
+
+    # We construct the continental imputation dictionary
+    imputations = self.build_imputations_dict()
+
+    # We impute missing values thanks to the pre-constructed dictionary
+    for column in self.percentage_columns:
+        merged_df[column] = merged_df.apply(
+            lambda row: impute_missing_values(row, column, imputations),
+            axis=1
+        )
+
+    # We drop absolute amounts from the BEA data
+    # e are only interested in sales percentages to distribute the IRS revenue variables
+    merged_df.drop(
+        columns=self.related + self.unrelated + self.total + [&#39;TOTAL_FOREIGN&#39;],
+        inplace=True
+    )
+
+    return merged_df.copy()</code></pre>
+</details>
+</dd>
+<dt id="destination_based_sales.revenue_split.RevenueSplitter.merge_dataframes"><code class="name flex">
+<span>def <span class="ident">merge_dataframes</span></span>(<span>self, include_US=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This class method is used to combine the IRS and BEA dataset. If US-US sales are excluded, it consists in a sim-
+ple merge, with a few duplicate columns to filter out. On the other hand, if US-US sales are included, since
+their split is based on a secondary file provided by the BEA, we have to operate the split separately and re-
+introduce it in the merged dataset. Whether to include or not the US-US sales is determined by the "include_US"
+boolean argument.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_dataframes(self, include_US=True):
+    &#34;&#34;&#34;
+    This class method is used to combine the IRS and BEA dataset. If US-US sales are excluded, it consists in a sim-
+    ple merge, with a few duplicate columns to filter out. On the other hand, if US-US sales are included, since
+    their split is based on a secondary file provided by the BEA, we have to operate the split separately and re-
+    introduce it in the merged dataset. Whether to include or not the US-US sales is determined by the &#34;include_US&#34;
+    boolean argument.
+    &#34;&#34;&#34;
+    irs = self.irs_preprocessor.load_final_data()
+    bea = self.bea_preprocessor.load_final_data()
+
+    # We merge the two datasets (IRS and BEA)
+    merged_df = irs.merge(
+        bea,
+        how=&#39;left&#39;,
+        on=&#39;CODE&#39;
+    )
+
+    merged_df.drop(
+        columns=[&#39;AFFILIATE_COUNTRY_NAME_y&#39;, &#39;CONTINENT_NAME_y&#39;, &#39;CONTINENT_CODE_y&#39;, &#39;NAME&#39;],
+        inplace=True
+    )
+
+    merged_df.rename(
+        columns={
+            &#39;AFFILIATE_COUNTRY_NAME_x&#39;: &#39;AFFILIATE_COUNTRY_NAME&#39;,
+            &#39;CONTINENT_NAME_x&#39;: &#39;CONTINENT_NAME&#39;,
+            &#39;CONTINENT_CODE_x&#39;: &#39;CONTINENT_CODE&#39;
+        },
+        inplace=True
+    )
+
+    if include_US:
+        # We load the secondary file from the BEA, with the split of US-US sales
+        df = pd.read_excel(self.path_to_BEA_KR_tables, sheet_name=&#39;Table I.O 1&#39;)
+
+        # Cleaning and reorganising the table
+        column_names = df.loc[4].to_dict().copy()
+        column_names[list(column_names.keys())[0]] = &#39;Industry&#39;
+        column_names[&#39;Unnamed: 1&#39;] = &#39;Total&#39;
+
+        df.rename(columns=column_names, inplace=True)
+
+        # Extracting information on the US-US sales
+        us_sales = df.loc[6].to_dict()
+
+        us_imputation = {}
+
+        # Imputing the BEA-like distribution of US-US sales into the merged DataFrame
+        # Sales to the affiliate country and to the headquarter country are directed to the same final destination
+        for column in merged_df.columns[-11:]:
+
+            if column == &#39;TOTAL&#39;:
+                us_imputation[column] = us_sales[&#39;Total&#39;]
+
+            elif &#39;US&#39; in column:
+                us_imputation[column] = us_sales[&#39;To U.S. persons&#39;] * 1
+
+            elif &#39;AFFILIATE_COUNTRY&#39; in column:
+                us_imputation[column] = us_sales[&#39;To U.S. persons&#39;] * 0
+
+            else:
+                us_imputation[column] = us_sales[&#39;To foreign affiliates&#39;] + us_sales[&#39;To other foreign persons&#39;]
+
+        for column in merged_df.columns[-11:]:
+            merged_df[column] = merged_df.apply(
+                lambda row: us_imputation[column] if row[&#39;CODE&#39;] == &#39;USA&#39; else row[column],
+                axis=1
+            )
+
+        return merged_df.copy()
+
+    else:
+
+        merged_df = merged_df[merged_df[&#39;CODE&#39;] != &#39;USA&#39;].copy()
+
+        return merged_df.copy()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="destination_based_sales" href="index.html">destination_based_sales</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="destination_based_sales.revenue_split.RevenueSplitter" href="#destination_based_sales.revenue_split.RevenueSplitter">RevenueSplitter</a></code></h4>
+<ul class="">
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.add_indicator_variables" href="#destination_based_sales.revenue_split.RevenueSplitter.add_indicator_variables">add_indicator_variables</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.build_imputations_dict" href="#destination_based_sales.revenue_split.RevenueSplitter.build_imputations_dict">build_imputations_dict</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.compute_revenue_percentages" href="#destination_based_sales.revenue_split.RevenueSplitter.compute_revenue_percentages">compute_revenue_percentages</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.deduce_absolute_amounts" href="#destination_based_sales.revenue_split.RevenueSplitter.deduce_absolute_amounts">deduce_absolute_amounts</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.get_sales_percentages" href="#destination_based_sales.revenue_split.RevenueSplitter.get_sales_percentages">get_sales_percentages</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.get_splitted_revenues" href="#destination_based_sales.revenue_split.RevenueSplitter.get_splitted_revenues">get_splitted_revenues</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.impute_missing_percentages" href="#destination_based_sales.revenue_split.RevenueSplitter.impute_missing_percentages">impute_missing_percentages</a></code></li>
+<li><code><a title="destination_based_sales.revenue_split.RevenueSplitter.merge_dataframes" href="#destination_based_sales.revenue_split.RevenueSplitter.merge_dataframes">merge_dataframes</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
