@@ -230,9 +230,13 @@ class TradeStatisticsProcessor:
             merged_df[column] = merged_df[column].fillna(0)
 
         mask_domestic = (merged_df['AFFILIATE_COUNTRY_CODE'] != merged_df['OTHER_COUNTRY_CODE'])
-        mask_US = (merged_df['OTHER_COUNTRY_CODE'] != 'USA')
 
-        mask = np.logical_and(mask_domestic, mask_US)
+        if self.US_only:
+            mask_US = (merged_df['OTHER_COUNTRY_CODE'] != 'USA')
+            mask = np.logical_and(mask_domestic, mask_US)
+
+        else:
+            mask = mask_domestic.copy()
 
         merged_df = merged_df[mask].copy()
 
