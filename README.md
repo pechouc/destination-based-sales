@@ -1,6 +1,6 @@
 # Context
 
-This repository accompanies empirical work on the adjustment of revenue variables in the OECD's aggregated and anonymized [country-by-country data](https://stats.oecd.org/Index.aspx?DataSetCode=CBCR_TABLEI). In particular, it applies the methodology described in the internship report [LINK TO BE COMPLETED] of August 2021.
+This repository accompanies empirical work on the adjustment of revenue variables in the OECD's aggregated and anonymized [country-by-country data](https://stats.oecd.org/Index.aspx?DataSetCode=CBCR_TABLEI). In particular, it applies the methodology described in the [internship report](https://github.com/pechouc/destination-based-sales/blob/main/reports/Internship%20report%20-%20Revised%20version.pdf) of August 2021.
 
 In this study, we explore a key limitation of multinational companies’ country-by-country data: as revenue variables reflect the tax jurisdiction of the affiliates that register the transactions and not the ultimate destination of goods or services, they are heavily distorted by the use of platform jurisdictions, from which sales are operated remotely.
 
