@@ -26,7 +26,7 @@ All these data sources, their use and their preprocessing are described in the r
 
 # Documentation
 
-A not-yet-complete documentation of the code is available online, following this link. It was built with [pdoc](https://pdoc3.github.io/pdoc/).
+A not-yet-complete documentation of the code is available online, following [this link](https://pechouc.github.io/destination-based-sales/index.html). It was built with [pdoc](https://pdoc3.github.io/pdoc/).
 
 # Contact
 
