@@ -36,6 +36,8 @@ class USBalanceOfPaymentsProcessor():
 
         dfs = []
 
+        dfs = []
+
         for sheet_name in ['Sheet0', 'Sheet1']:
 
             sheet = pd.read_excel(
@@ -43,7 +45,7 @@ class USBalanceOfPaymentsProcessor():
                 sheet_name=sheet_name
             )
 
-            sheet = sheet.iloc[4:9, 1:].copy()
+            sheet = sheet.iloc[4:13, 1:].copy()
 
             sheet = sheet.transpose().reset_index(drop=True)
 
@@ -53,7 +55,8 @@ class USBalanceOfPaymentsProcessor():
             ).iloc[1:].reset_index(drop=True)
 
             sheet.columns = [
-                'OTHER_COUNTRY_NAME', 'YEAR', 'ALL_EXPORTS', 'MERCHANDISE_EXPORTS', 'SERVICES_EXPORTS'
+                'OTHER_COUNTRY_NAME', 'YEAR', 'TOTAL_EXPORTS', 'GOODS_EXPORTS', 'MERCHANDISE_EXPORTS',
+                'SERVICES_EXPORTS', 'FINANCIAL_SERVICES', 'INTELLECTUAL_PROPERTY', 'TELECOM'
             ]
 
             dfs.append(sheet)
@@ -67,7 +70,15 @@ class USBalanceOfPaymentsProcessor():
         df['YEAR'] = df['YEAR'].astype(int)
         df = df[df['YEAR'] == self.year].copy()
 
-        return df.drop(columns=['YEAR'])
+        # for column in ['FINANCIAL_SERVICES', 'INTELLECTUAL_PROPERTY', 'TELECOM']:
+        #     df[column] = df[column].map(lambda x: 0 if isinstance(x, str) and x in ['(D)', '(*)'] else x)
+
+        # df['SERVICES_EXPORTS'] -= df['INTELLECTUAL_PROPERTY']
+
+        df['ALL_EXPORTS'] = df['MERCHANDISE_EXPORTS'] + df['SERVICES_EXPORTS']
+        df = df[['OTHER_COUNTRY_NAME', 'ALL_EXPORTS', 'MERCHANDISE_EXPORTS', 'SERVICES_EXPORTS']].copy()
+
+        return df.copy()
 
     def load_data_with_geographies(self):
         df = self.load_raw_data()
