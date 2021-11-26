@@ -17,6 +17,7 @@ import pandas as pd
 from destination_based_sales.revenue_split import RevenueSplitter
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
+from destination_based_sales.bop import USBalanceOfPaymentsProcessor
 from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
     impute_missing_continent_codes, ensure_country_overlap_with_IRS, ServicesDataTransformer, \
     ensure_country_overlap_with_OECD_CbCR, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR
@@ -43,10 +44,18 @@ class TradeStatisticsProcessor:
         year,
         winsorize_export_percs,
         US_only,
+        us_exports_source='BIMTS',
         path_to_merchandise_data=path_to_merchandise_data,
         path_to_services_data=path_to_services_data,
         path_to_geographies=path_to_geographies
     ):
+
+        if us_exports_source not in ['BIMTS', 'BoP']:
+            raise Exception(
+                "US exports can only be drawn from two statistical sources: either BIMTS (us_exports_source='BIMTS') "
+                + "or the balance of payments (BEA's data on international transactions; use 'BoP' as argument)."
+            )
+
         self.year = year
         self.winsorize_export_percs = winsorize_export_percs
 
@@ -64,6 +73,11 @@ class TradeStatisticsProcessor:
             self.unique_OECD_affiliate_countries = temp[
                 ['AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_NAME']
             ].drop_duplicates()
+
+        self.us_exports_source = us_exports_source
+
+        if us_exports_source == 'BoP':
+            self.us_bop_processor = USBalanceOfPaymentsProcessor(year=year)
 
         self.path_to_merchandise_data = path_to_merchandise_data
         self.path_to_services_data = path_to_services_data
@@ -371,10 +385,14 @@ class TradeStatisticsProcessor:
 
         output_df = output_df[output_df['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
 
-        us_exports = self.load_clean_merchandise_data()
-        us_exports = us_exports[us_exports['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
-        us_exports['EXPORT_PERC'] = us_exports['MERCHANDISE_EXPORTS'] / us_exports['MERCHANDISE_EXPORTS'].sum()
-        us_exports.rename(columns={'MERCHANDISE_EXPORTS': 'ALL_EXPORTS'}, inplace=True)
+        if self.us_exports_source == 'BIMTS':
+            us_exports = self.load_clean_merchandise_data()
+            us_exports = us_exports[us_exports['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
+            us_exports['EXPORT_PERC'] = us_exports['MERCHANDISE_EXPORTS'] / us_exports['MERCHANDISE_EXPORTS'].sum()
+            us_exports.rename(columns={'MERCHANDISE_EXPORTS': 'ALL_EXPORTS'}, inplace=True)
+
+        elif self.us_exports_source == 'BoP':
+            us_exports = self.us_bop_processor.load_data_for_adjustment()
 
         if self.winsorize_export_percs:
 

@@ -41,7 +41,13 @@ path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
 class SalesCalculator:
 
-    def __init__(self, year, include_US=True):
+    def __init__(self, year, include_US=True, us_exports_source='BIMTS'):
+
+        if us_exports_source not in ['BIMTS', 'BoP']:
+            raise Exception(
+                "US exports can only be drawn from two statistical sources: either BIMTS (us_exports_source='BIMTS') "
+                + "or the balance of payments (BEA's data on international transactions; use 'BoP' as argument)."
+            )
 
         self.irs_preprocessor = IRSDataPreprocessor(year=year)
         self.irs = self.irs_preprocessor.load_final_data()
@@ -52,7 +58,8 @@ class SalesCalculator:
         self.trade_stat_processor = TradeStatisticsProcessor(
             year=year,
             winsorize_export_percs=True,
-            US_only=True
+            US_only=True,
+            us_exports_source=us_exports_source
         )
         self.trade_statistics = self.trade_stat_processor.load_data_with_imputations()
 
@@ -180,10 +187,16 @@ class AnalysisProvider:
         self,
         year,
         include_US,
+        us_exports_source='BIMTS',
         path_to_GNI_data=path_to_GNI_data,
         path_to_tax_haven_list=path_to_tax_haven_list,
         path_to_geographies=path_to_geographies
     ):
+        if us_exports_source not in ['BIMTS', 'BoP']:
+            raise Exception(
+                "US exports can only be drawn from two statistical sources: either BIMTS (us_exports_source='BIMTS') "
+                + "or the balance of payments (BEA's data on international transactions; use 'BoP' as argument)."
+            )
 
         self.year = year
 
@@ -200,7 +213,7 @@ class AnalysisProvider:
         irs_preprocessor = IRSDataPreprocessor(year=year)
         self.irs = irs_preprocessor.load_final_data()
 
-        calculator = SalesCalculator(year=year, include_US=include_US)
+        calculator = SalesCalculator(year=year, include_US=include_US, us_exports_source=us_exports_source)
         self.sales_mapping = calculator.get_final_dataframe()
 
         print('Computations finalized - Results are stored as attributes.')
