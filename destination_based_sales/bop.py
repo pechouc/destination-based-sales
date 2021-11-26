@@ -144,10 +144,3 @@ class USBalanceOfPaymentsProcessor():
         df['ALL_EXPORTS'] *= 10**6
 
         return df.drop(columns=['MERCHANDISE_EXPORTS', 'SERVICES_EXPORTS'])
-
-
-
-
-
-
-
