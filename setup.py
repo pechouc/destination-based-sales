@@ -5,12 +5,11 @@ with open('requirements.txt') as f:
     content = f.readlines()
 requirements = [x.strip() for x in content if 'git+' not in x]
 
-setup(name='destination_based_sales',
-      version="1.0",
-      description="Project Description",
-      packages=find_packages(),
-      test_suite='tests',
-      # include_package_data: to install data from MANIFEST.in
-      include_package_data=True,
-      scripts=['scripts/destination_based_sales-run'],
-      zip_safe=False)
+setup(
+    name='destination_based_sales',
+    version="1.0",
+    description="Python package accompanying my work on the adjustment of country-by-country revenue variables.",
+    packages=find_packages(),
+    test_suite='tests',
+    zip_safe=False
+)
