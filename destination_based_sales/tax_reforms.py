@@ -11,11 +11,11 @@ from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS
 from tax_deficit_simulator.calculator import TaxDeficitCalculator
 
 
-
 ########################################################################################################################
 # --- Diverse
 
-path = 'https://raw.githubusercontent.com/eutaxobservatory/tax-deficit-simulator/master/tax_deficit_simulator/data/listofeucountries_csv.csv'
+path = 'https://raw.githubusercontent.com/eutaxobservatory/tax-deficit-simulator/'
+path += 'master/tax_deficit_simulator/data/listofeucountries_csv.csv'
 
 eu_27_country_codes = pd.read_csv(
     path,
@@ -24,7 +24,6 @@ eu_27_country_codes = pd.read_csv(
 
 eu_27_country_codes = list(eu_27_country_codes['Alpha-3 code'].unique())
 eu_27_country_codes.remove('GBR')
-
 
 
 ########################################################################################################################
@@ -398,8 +397,6 @@ class TaxReformSimulator:
                 + '"total_amounts" and "focus_on_foreign_collection".'
             )
 
-
-
     def full_sales_apportionment(self, elim_negative_revenues=True):
 
         oecd_sales_mapping = self.oecd_sales_mapping.copy()
@@ -410,7 +407,6 @@ class TaxReformSimulator:
         tax_deficits = tax_deficits[
             tax_deficits['Parent jurisdiction (alpha-3 code)'] != '..'
         ].copy()
-
 
         # ### Grouping the tax deficits of UK Caribbean Islands ---------------------------------------------------- ###
 
@@ -493,7 +489,7 @@ class TaxReformSimulator:
         )
 
         merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
-        unadjusted_temp = merged_df.groupby('AFFILIATE_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
+        # unadjusted_temp = merged_df.groupby('AFFILIATE_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
 
         # ### Deducing the adjusted distribution of revenues ------------------------------------------------------- ###
 
@@ -509,6 +505,6 @@ class TaxReformSimulator:
         )
 
         merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
-        adjusted_temp = merged_df.groupby('OTHER_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES']
+        # adjusted_temp = merged_df.groupby('OTHER_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES']
 
         return restr_tax_deficits.copy()
