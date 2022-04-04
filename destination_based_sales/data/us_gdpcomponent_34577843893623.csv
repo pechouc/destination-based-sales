@@ -1,0 +1,667 @@
+"MEASURE - US dollars at current prices in millions"
+
+,YEAR,"2016","2017","2018"
+"ECONOMY","COMPONENT",
+"          Afghanistan","  Final consumption expenditure",18501.1797241483,17422.115659539,19520.4875598617
+"          Afghanistan","    Household consumption expenditure (including NPISH)",14355.7119497632,13418.5095648713,16010.7906786611
+"          Afghanistan","    General government final consumption expenditure",4145.4677743851,4003.6060946678,3509.6968812007
+"          Albania","  Final consumption expenditure",10939.7727699116,11861.8108936773,13659.8812601572
+"          Albania","    Household consumption expenditure (including NPISH)",9603.0792162826,10364.7505861533,11949.2409684212
+"          Albania","    General government final consumption expenditure",1336.6935536371,1497.0603075239,1710.640291736
+"          Algeria","  Final consumption expenditure",101466.438562272,104631.7415599975,103576.6984448497
+"          Algeria","    Household consumption expenditure (including NPISH)",68035.5131374241,72397.7795803512,73488.475479862
+"          Algeria","    General government final consumption expenditure",33430.9254248479,32233.9619796463,30088.2229649877
+"          Andorra","  Final consumption expenditure",2236.3782141782,2309.5976650632,2472.1254125374
+"          Andorra","    Household consumption expenditure (including NPISH)",1684.7103789573,1750.9875475473,1871.6281282585
+"          Andorra","    General government final consumption expenditure",551.667836327,558.6101175158,600.4972830979
+"          Angola","  Final consumption expenditure",70692.1076939498,85631.19403537879,67740.44369802131
+"          Angola","    Household consumption expenditure (including NPISH)",56655.4303508725,69833.4696560837,57124.1561944972
+"          Angola","    General government final consumption expenditure",14036.6773430773,15797.7243792951,10616.2875035241
+"          Anguilla","  Final consumption expenditure",319.1651533333,235.8830385185,308.65664
+"          Anguilla","    Household consumption expenditure (including NPISH)",266.9869877778,181.895207037,257.9503388889
+"          Anguilla","    General government final consumption expenditure",52.1781655556,53.9878314815,50.7063011111
+"          Antigua and Barbuda","  Final consumption expenditure",1288.5092314815,1461.2786340741,1453.0426796296
+"          Antigua and Barbuda","    Household consumption expenditure (including NPISH)",1064.2538403704,1227.7571525926,1198.0811507407
+"          Antigua and Barbuda","    General government final consumption expenditure",224.2553911111,233.5214814815,254.9615288889
+"          Argentina","  Final consumption expenditure",464850.7633813206,539739.987975537,421998.4136867924
+"          Argentina","    Household consumption expenditure (including NPISH)",366420.7845008583,426200.7832924849,338409.7377987947
+"          Argentina","    General government final consumption expenditure",98429.97888046219,113539.2046830521,83588.6758879977
+"          Armenia","  Final consumption expenditure",9570.6680644556,10645.4403982933,11617.3137230697
+"          Armenia","    Household consumption expenditure (including NPISH)",8151.7741772782,9225.4244039448,10186.3086537313
+"          Armenia","    General government final consumption expenditure",1418.8938871773,1420.0159943485,1431.0050693385
+"          Aruba","  Final consumption expenditure",2317.6592178771,2368.3966480447,2506.0765905028
+"          Aruba","    Household consumption expenditure (including NPISH)",1819.7932960894,1858.2569832402,1966.6497960894
+"          Aruba","    General government final consumption expenditure",497.8659217877,510.1396648045,539.4267944134
+"          Australia","  Final consumption expenditure",987167.8585509878,1063863.887697721,1083879.882465238
+"          Australia","    Household consumption expenditure (including NPISH)",743311.4863694576,799110.5926888326,806554.993431259
+"          Australia","    General government final consumption expenditure",243856.3721815303,264753.2950088885,277324.889033979
+"          Austria","  Final consumption expenditure",284465.1076590921,300382.507243824,324270.882452737
+"          Austria","    Household consumption expenditure (including NPISH)",206731.5132142325,219061.379745718,236282.7447930116
+"          Austria","    General government final consumption expenditure",77733.5944448596,81321.127498106,87988.1376597254
+"          Azerbaijan","  Final consumption expenditure",27090.2522967973,28168.4715037016,30437.9957059244
+"          Azerbaijan","    Household consumption expenditure (including NPISH)",22231.1339313924,23533.6182123669,25506.985225635
+"          Azerbaijan","    General government final consumption expenditure",4859.1183654049,4634.8532913348,4931.0104802894
+"          Bahamas","  Final consumption expenditure",8746.299999999999,9621.1,9922
+"          Bahamas","    Household consumption expenditure (including NPISH)",7363.9,8043.4,8344.6
+"          Bahamas","    General government final consumption expenditure",1382.4,1577.7,1577.4
+"          Bahrain","  Final consumption expenditure",20063.2937047872,20832.0724760638,21106.141393617
+"          Bahrain","    Household consumption expenditure (including NPISH)",14547.5335106383,14934.0371835106,14960.5197101064
+"          Bahrain","    General government final consumption expenditure",5515.7601941489,5898.0352925532,6145.6216835106
+"          Bangladesh","  Final consumption expenditure",165285.9150151391,183416.3463266789,208058.6944322472
+"          Bangladesh","    Household consumption expenditure (including NPISH)",152303.8292157364,168688.5590838854,190919.2898930507
+"          Bangladesh","    General government final consumption expenditure",12982.0857994027,14727.7872427934,17139.4045391964
+"          Barbados","  Final consumption expenditure",4414.1,4411.2,4385.85
+"          Barbados","    Household consumption expenditure (including NPISH)",3765.5,3806.1,3784.8
+"          Barbados","    General government final consumption expenditure",648.6,605.1,601.05
+"          Belarus","  Final consumption expenditure",33484.223711792,38367.3499769278,41597.1585968845
+"          Belarus","    Household consumption expenditure (including NPISH)",26013.9725837594,29801.2416713745,32148.560117458
+"          Belarus","    General government final consumption expenditure",7470.2511280326,8566.1083055533,9448.598479426501
+"          Belgium","  Final consumption expenditure",354680.9079498587,374523.5393396477,406368.3363507448
+"          Belgium","    Household consumption expenditure (including NPISH)",244014.1905770205,258809.7315931769,281358.6329063527
+"          Belgium","    General government final consumption expenditure",110666.7173728382,115713.8077464708,125009.7034443921
+"          Belize","  Final consumption expenditure",1619.716,1599.663,1624.6741615
+"          Belize","    Household consumption expenditure (including NPISH)",1321.3995,1293.6495,1296.8741845
+"          Belize","    General government final consumption expenditure",298.3165,306.0135,327.7999775
+"          Benin","  Final consumption expenditure",9870.745148741,10555.709206588,11532.6145829332
+"          Benin","    Household consumption expenditure (including NPISH)",8655.4427930193,9224.7046864105,10047.8258204928
+"          Benin","    General government final consumption expenditure",1215.3023557217,1331.0045201792,1484.7887624404
+"          Bermuda","  Final consumption expenditure",4184.07977,4321.551718,4326.752874
+"          Bermuda","    Household consumption expenditure (including NPISH)",3347.07977,3491.119718,3478.158874
+"          Bermuda","    General government final consumption expenditure",837,830.432,848.5940000000001
+"          Bhutan","  Final consumption expenditure",1412.8359863111,1597.8443970275,1678.3019199873
+"          Bhutan","    Household consumption expenditure (including NPISH)",1039.8719716753,1186.0784417068,1259.4740436592
+"          Bhutan","    General government final consumption expenditure",372.9640146358,411.7659553361,418.8278763281
+"          Bolivia (Plurinational State of)","  Final consumption expenditure",29314.0955137482,31760.8538350217,34057.5748885673
+"          Bolivia (Plurinational State of)","    Household consumption expenditure (including NPISH)",23388.5672937771,25376.2662807525,26996.9048664255
+"          Bolivia (Plurinational State of)","    General government final consumption expenditure",5925.5282199711,6384.5875542692,7060.6700222865
+"          Bosnia and Herzegovina","  Final consumption expenditure",17004.8363266672,17756.4144869511,19341.8056558413
+"          Bosnia and Herzegovina","    Household consumption expenditure (including NPISH)",13459.3574532031,14090.0480178627,15351.5847185533
+"          Bosnia and Herzegovina","    General government final consumption expenditure",3545.4788740296,3666.3664690884,3990.220937288
+"          Botswana","  Final consumption expenditure",10251.7865990858,11785.4678482426,12623.140939267
+"          Botswana","    Household consumption expenditure (including NPISH)",7405.033083774,8577.895604490401,9225.751535175301
+"          Botswana","    General government final consumption expenditure",2846.7535153117,3207.5722437522,3397.3894040917
+"          Brazil","  Final consumption expenditure",1519709.163667677,1746216.528496753,1598670.823629583
+"          Brazil","    Household consumption expenditure (including NPISH)",1153759.492089791,1330172.663483926,1219975.931805844
+"          Brazil","    General government final consumption expenditure",365949.6715778864,416043.8650128277,378694.8918237388
+"          British Virgin Islands","  Final consumption expenditure",554.914837,521.491417,539.025849
+"          British Virgin Islands","    Household consumption expenditure (including NPISH)",447.317025,420.295889,434.476602
+"          British Virgin Islands","    General government final consumption expenditure",107.597812,101.195528,104.549247
+"          Brunei Darussalam","  Final consumption expenditure",5400.7112889955,5694.5185013142,5925.2494560186
+"          Brunei Darussalam","    Household consumption expenditure (including NPISH)",2411.1988890988,2483.3138731481,2649.962202776
+"          Brunei Darussalam","    General government final consumption expenditure",2989.5123991728,3211.2046274419,3275.2872532426
+"          Bulgaria","  Final consumption expenditure",40893.7195107581,44670.3896665147,50408.509140285
+"          Bulgaria","    Household consumption expenditure (including NPISH)",32486.3950227417,35449.1368754652,39516.4474842213
+"          Bulgaria","    General government final consumption expenditure",8407.3244880164,9221.252791049499,10892.0616560637
+"          Burkina Faso","  Final consumption expenditure",10942.4562224413,11892.4700434489,13059.6367846481
+"          Burkina Faso","    Household consumption expenditure (including NPISH)",8824.0405880121,9389.991598082701,10330.5168540405
+"          Burkina Faso","    General government final consumption expenditure",2118.4156344291,2502.4784453662,2729.1199306076
+"          Burundi","  Final consumption expenditure",3047.0057696802,3341.2927871005,3279.6321988763
+"          Burundi","    Household consumption expenditure (including NPISH)",2513.4346519255,2765.5771505244,2703.7874082438
+"          Burundi","    General government final consumption expenditure",533.5711177547,575.715636576,575.8447906326001
+"          Cabo Verde","  Final consumption expenditure",1338.3225318085,1473.2441496187,1561.5416009897
+"          Cabo Verde","    Household consumption expenditure (including NPISH)",1050.7782504424,1154.7958533152,1211.5306594004
+"          Cabo Verde","    General government final consumption expenditure",287.544281356,318.4482963035,350.0109415893
+"          Cambodia","  Final consumption expenditure",16279.5619912528,17412.4234869065,18564.7717229665
+"          Cambodia","    Household consumption expenditure (including NPISH)",15236.6921921668,16276.1749870979,17354.3000186
+"          Cambodia","    General government final consumption expenditure",1042.869799086,1136.2484998088,1210.4717043662
+"          Cameroon","  Final consumption expenditure",26806.1921726992,28389.8051847337,31570.0041558785
+"          Cameroon","    Household consumption expenditure (including NPISH)",22848.2479001824,24490.1105689263,27272.349604468
+"          Cameroon","    General government final consumption expenditure",3957.9442725168,3899.6946158074,4297.6545514105
+"          Canada","  Final consumption expenditure",1215447.745624133,1297834.327381754,1354556.146365925
+"          Canada","    Household consumption expenditure (including NPISH)",893782.4996700805,956328.9492832001,997720.962625428
+"          Canada","    General government final consumption expenditure",321665.2459540526,342248.9805071814,359475.3431872966
+"          Cayman Islands","  Final consumption expenditure",3175.4542682927,3279.8215853659,3368.52999412
+"          Cayman Islands","    Household consumption expenditure (including NPISH)",2694.413902439,2776.5219512195,2845.457741831
+"          Cayman Islands","    General government final consumption expenditure",481.0403658537,503.2996341463,523.072252289
+"          Central African Republic","  Final consumption expenditure",1796.2462098622,2010.6508721868,2269.7255170833
+"          Central African Republic","    Household consumption expenditure (including NPISH)",1533.2956133117,1719.132690197,1954.285572601
+"          Central African Republic","    General government final consumption expenditure",262.9505965505,291.5181819899,315.4399444823
+"          Chad","  Final consumption expenditure",8720.102997084199,9002.557885894401,9360.247896515501
+"          Chad","    Household consumption expenditure (including NPISH)",7728.3084796842,7993.7226309598,8368.356827207501
+"          Chad","    General government final consumption expenditure",991.7945174001,1008.8352549347,991.8910693081
+"          Chile","  Final consumption expenditure",193286.8257296603,214765.4703491433,232392.8421337437
+"          Chile","    Household consumption expenditure (including NPISH)",158776.6308591804,175674.7979098114,189113.2041402795
+"          Chile","    General government final consumption expenditure",34510.1948704799,39090.6724393319,43279.6379934642
+"          China","  Final consumption expenditure",6182674.102386199,6754472.00214331,7650215.024553634
+"          China","    Household consumption expenditure (including NPISH)",4344482.100921295,4744801.311832279,5352579.68736745
+"          China","    General government final consumption expenditure",1838192.001464905,2009670.690311031,2297635.337186183
+"          China, Hong Kong SAR","  Final consumption expenditure",244505.6523559535,262482.9179097296,282906.1682719908
+"          China, Hong Kong SAR","    Household consumption expenditure (including NPISH)",212559.6315501304,228935.0399384083,247001.5946928622
+"          China, Hong Kong SAR","    General government final consumption expenditure",31946.0208058231,33547.8779713213,35904.5735791287
+"          China, Macao SAR","  Final consumption expenditure",16703.1803402956,17218.7867905823,18310.2959676232
+"          China, Macao SAR","    Household consumption expenditure (including NPISH)",11979.140755498,12316.2207430575,13099.5234246146
+"          China, Macao SAR","    General government final consumption expenditure",4724.0395847976,4902.5660475248,5210.7725430086
+"          China, Taiwan Province of","  Final consumption expenditure",357747.8035802677,388018.7348244907,405541.8619043405
+"          China, Taiwan Province of","    Household consumption expenditure (including NPISH)",280958.4330143544,306338.2287323879,318579.1928211472
+"          China, Taiwan Province of","    General government final consumption expenditure",76789.3705659133,81680.50609210281,86962.66908319329
+"          Colombia","  Final consumption expenditure",236444.410952633,260089.0702229156,278358.3905413934
+"          Colombia","    Household consumption expenditure (including NPISH)",195318.0206382776,213678.7668824434,226974.6925991706
+"          Colombia","    General government final consumption expenditure",41126.3903143554,46410.3033404722,51383.6979422228
+"          Comoros","  Final consumption expenditure",1044.8035109584,1108.9902375607,1197.6743931691
+"          Comoros","    Household consumption expenditure (including NPISH)",937.3649109501,992.3705650122,1076.0641119643
+"          Comoros","    General government final consumption expenditure",107.4386000083,116.6196725485,121.6102812048
+"          Congo","  Final consumption expenditure",6823.3086174352,6636.8728215686,7216.4453286085
+"          Congo","    Household consumption expenditure (including NPISH)",4494.003992380001,4496.4206510183,5221.3619443419
+"          Congo","    General government final consumption expenditure",2329.3046250552,2140.4521705503,1995.0833842665
+"          Congo, Dem. Rep. of the","  Final consumption expenditure",36223.300134863,31256.0021365079,39038.1858485527
+"          Congo, Dem. Rep. of the","    Household consumption expenditure (including NPISH)",32037.3271975507,29181.3553199376,36082.0980043997
+"          Congo, Dem. Rep. of the","    General government final consumption expenditure",4185.9729373123,2074.6468165703,2956.087844153
+"          Cook Islands","  Final consumption expenditure",205.3347104993,229.2054717596,240.0719089436
+"          Cook Islands","    Household consumption expenditure (including NPISH)",105.1697582708,117.4778442646,122.8760948158
+"          Cook Islands","    General government final consumption expenditure",100.1649515323,111.727627495,117.1958141278
+"          Costa Rica","  Final consumption expenditure",46503.2295957653,47350.1408363424,48508.7966729647
+"          Costa Rica","    Household consumption expenditure (including NPISH)",36668.6185025878,37308.5954815748,38274.1796255745
+"          Costa Rica","    General government final consumption expenditure",9834.6110931775,10041.5453547676,10234.6170473903
+"          Côte d'Ivoire","  Final consumption expenditure",36731.0053207733,40536.8576473225,46162.8652272669
+"          Côte d'Ivoire","    Household consumption expenditure (including NPISH)",31958.8601906614,35098.1884124579,40000.2550454122
+"          Côte d'Ivoire","    General government final consumption expenditure",4772.145130112,5438.6692348647,6162.6101818546
+"          Croatia","  Final consumption expenditure",40168.5453318683,42933.6451905249,47349.8530508378
+"          Croatia","    Household consumption expenditure (including NPISH)",30063.1990661853,32132.4546636229,35488.0474458993
+"          Croatia","    General government final consumption expenditure",10105.3462658299,10801.1905267511,11861.8056049384
+"          Cuba","  Final consumption expenditure",80172,84088,86047
+"          Cuba","    Household consumption expenditure (including NPISH)",51029,54221,55987
+"          Cuba","    General government final consumption expenditure",29143,29867,30060
+"          Curaçao","  Final consumption expenditure",2564.3153418994,2740.6764564246,2819.0560184358
+"          Curaçao","    Household consumption expenditure (including NPISH)",2071.7848117318,2216.1836290503,2279.3654731844
+"          Curaçao","    General government final consumption expenditure",492.5305301676,524.4928273743,539.6905458101001
+"          Cyprus","  Final consumption expenditure",16962.1727363254,18214.0755444706,19990.1350829019
+"          Cyprus","    Household consumption expenditure (including NPISH)",13768.8233732921,14822.8856208236,16270.3645679216
+"          Cyprus","    General government final consumption expenditure",3193.3493630333,3391.1899236471,3719.7705149804
+"          Czechia","  Final consumption expenditure",130222.8662809132,144528.4832237735,166413.9837934642
+"          Czechia","    Household consumption expenditure (including NPISH)",93005.390771245,103517.4749390411,118141.8244432597
+"          Czechia","    General government final consumption expenditure",37217.4755096682,41011.0082847325,48272.1593502045
+"          Czechoslovakia","  Final consumption expenditure","_","_","_"
+"          Czechoslovakia","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Czechoslovakia","    General government final consumption expenditure","_","_","_"
+"          Denmark","  Final consumption expenditure",224007.7410216559,235047.3064698575,253294.8653016496
+"          Denmark","    Household consumption expenditure (including NPISH)",146140.5487285523,153969.6362351438,166717.8543260449
+"          Denmark","    General government final consumption expenditure",77867.1922931036,81077.6702347137,86577.0109756047
+"          Djibouti","  Final consumption expenditure",2178.4416460106,2324.761433986,2372.314437801
+"          Djibouti","    Household consumption expenditure (including NPISH)",1599.3565683547,1723.2459211738,1773.9266778697
+"          Djibouti","    General government final consumption expenditure",579.0850776502,601.5155128123,598.3877599201001
+"          Dominica","  Final consumption expenditure",560.7481481481,540.9481481481,638.662962963
+"          Dominica","    Household consumption expenditure (including NPISH)",450.7925925926,415.3666666667,486.7074074074
+"          Dominica","    General government final consumption expenditure",109.9555555556,125.5814814815,151.9555555556
+"          Dominican Republic","  Final consumption expenditure",61147.6191355033,64309.5575196864,67723.4507026849
+"          Dominican Republic","    Household consumption expenditure (including NPISH)",53350.2948196794,55558.8564701279,58432.2576636087
+"          Dominican Republic","    General government final consumption expenditure",7797.3243158239,8750.7010495585,9291.193039076201
+"          Ecuador","  Final consumption expenditure",74486.28599999999,77675.205,80031.51
+"          Ecuador","    Household consumption expenditure (including NPISH)",59889.692,62477.987,64202.3
+"          Ecuador","    General government final consumption expenditure",14596.594,15197.218,15829.21
+"          Egypt","  Final consumption expenditure",255431.1846490547,189112.5354635932,234261.9443474951
+"          Egypt","    Household consumption expenditure (including NPISH)",224549.6262425617,169419.0536712859,213403.3895987608
+"          Egypt","    General government final consumption expenditure",30881.558406493,19693.4817923073,20858.5547487342
+"          El Salvador","  Final consumption expenditure",24175.56,24871.31,25939.71
+"          El Salvador","    Household consumption expenditure (including NPISH)",20228.38,20841.39,21780.99
+"          El Salvador","    General government final consumption expenditure",3947.18,4029.92,4158.72
+"          Equatorial Guinea","  Final consumption expenditure",8214.380485548199,8622.4262501963,9391.3192195928
+"          Equatorial Guinea","    Household consumption expenditure (including NPISH)",5367.3841744846,5731.4273921076,6341.664343972801
+"          Equatorial Guinea","    General government final consumption expenditure",2846.9963110636,2890.9988580887,3049.65487562
+"          Eritrea","  Final consumption expenditure",2014.7683551792,1617.1811406965,1861.3728889552
+"          Eritrea","    Household consumption expenditure (including NPISH)",1605.0759545928,1180.5830098839,1403.5039408955
+"          Eritrea","    General government final consumption expenditure",409.6924005863,436.5981308126,457.8689480597
+"          Estonia","  Final consumption expenditure",17349.3059230562,18899.2791433341,21398.0489732635
+"          Estonia","    Household consumption expenditure (including NPISH)",12457.3577417651,13559.5349191471,15372.9820359663
+"          Estonia","    General government final consumption expenditure",4891.9481812911,5339.7442241871,6025.0669372973
+"          Eswatini","  Final consumption expenditure",3354.297823034,4018.3218269456,4206.1795137147
+"          Eswatini","    Household consumption expenditure (including NPISH)",2419.1949092286,2911.1340390265,3132.2352918924
+"          Eswatini","    General government final consumption expenditure",935.1029138054,1107.1877879192,1073.9442218222
+"          Ethiopia","  Final consumption expenditure",55995.2511488304,59623.3877438696,60891.4507776925
+"          Ethiopia","    Household consumption expenditure (including NPISH)",47960.9026760968,51092.125326774,52669.5024222028
+"          Ethiopia","    General government final consumption expenditure",8034.3484727336,8531.262417095601,8221.9483554897
+"          Ethiopia (...1991)","  Final consumption expenditure","_","_","_"
+"          Ethiopia (...1991)","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Ethiopia (...1991)","    General government final consumption expenditure","_","_","_"
+"          Fiji","  Final consumption expenditure",3971.7226225413,4247.5711929972,4476.2817232016
+"          Fiji","    Household consumption expenditure (including NPISH)",3132.8844928379,3267.6378625916,3282.1084865738
+"          Fiji","    General government final consumption expenditure",932.9812514253,981.9170011149,1103.2491604355
+"          Finland","  Final consumption expenditure",187680.760132273,194168.4709305886,209215.539047843
+"          Finland","    Household consumption expenditure (including NPISH)",130726.1148888557,135901.7752105885,146160.8349058822
+"          Finland","    General government final consumption expenditure",56954.6452434172,58266.6957200001,63054.7041419607
+"          France","  Final consumption expenditure",1932541.010970465,2019566.494300405,2156922.55803274
+"          France","    Household consumption expenditure (including NPISH)",1344510.98411935,1404448.255291098,1506208.062765901
+"          France","    General government final consumption expenditure",588030.0268511141,615118.2390093075,650714.4952668393
+"          French Polynesia","  Final consumption expenditure",5274.9698111313,5510.94823044,5889.6846287205
+"          French Polynesia","    Household consumption expenditure (including NPISH)",3562.299097092,3727.0076047928,3981.8826004211
+"          French Polynesia","    General government final consumption expenditure",1712.6707140393,1783.9406256472,1907.8020282994
+"          Gabon","  Final consumption expenditure",7724.5302502123,7942.5581520812,8500.369259020301
+"          Gabon","    Household consumption expenditure (including NPISH)",5671.2253724471,5967.2086864733,6445.6257590055
+"          Gabon","    General government final consumption expenditure",2053.3048777653,1975.3494656079,2054.7435000148
+"          Gambia","  Final consumption expenditure",1282.8173068491,1413.0057805933,1556.2358176377
+"          Gambia","    Household consumption expenditure (including NPISH)",1158.8839127998,1294.6132230953,1419.760052234
+"          Gambia","    General government final consumption expenditure",123.9333940265,118.392557498,136.4757654037
+"          Georgia","  Final consumption expenditure",12881.6131903791,13594.2647070348,14522.3734336797
+"          Georgia","    Household consumption expenditure (including NPISH)",10563.7044037647,11344.1477294991,12197.8624361668
+"          Georgia","    General government final consumption expenditure",2317.9087861919,2250.1169775357,2324.5109975129
+"          Germany","  Final consumption expenditure",2519334.624931811,2657255.267874122,2864687.411657253
+"          Germany","    Household consumption expenditure (including NPISH)",1829260.776347627,1925033.208764709,2073039.279828234
+"          Germany","    General government final consumption expenditure",690073.8485841845,732222.0591094131,791648.1318290191
+"          Germany, Federal Republic of","  Final consumption expenditure","_","_","_"
+"          Germany, Federal Republic of","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Germany, Federal Republic of","    General government final consumption expenditure","_","_","_"
+"          Ghana","  Final consumption expenditure",45809.7258806077,46616.8275167644,53102.04557053
+"          Ghana","    Household consumption expenditure (including NPISH)",40334.984559824,41423.1807532432,47194.5159341446
+"          Ghana","    General government final consumption expenditure",5474.7413207837,5193.646763751,5907.5296363854
+"          Greece","  Final consumption expenditure",170812.6556432654,178304.1638642497,188444.175394752
+"          Greece","    Household consumption expenditure (including NPISH)",131525.4698891845,137458.0273883379,146945.8578829113
+"          Greece","    General government final consumption expenditure",39287.1857540808,40846.1364759118,41498.3175118408
+"          Greenland","  Final consumption expenditure",2155.1228743691,2253.7695144558,2446.3809331798
+"          Greenland","    Household consumption expenditure (including NPISH)",1008.8182155707,1036.5967640769,1099.6906123078
+"          Greenland","    General government final consumption expenditure",1146.3046587984,1217.1727503789,1346.6903208719
+"          Grenada","  Final consumption expenditure",856.078732963,887.9240692593,910.2159092593
+"          Grenada","    Household consumption expenditure (including NPISH)",724.7013462963,756.5466825926,770.984577037
+"          Grenada","    General government final consumption expenditure",131.3773866667,131.3773866667,139.2313318519
+"          Guatemala","  Final consumption expenditure",62753.7646443016,68384.5983829138,70805.90011423591
+"          Guatemala","    Household consumption expenditure (including NPISH)",55857.5564346394,60822.3050419412,62756.520854849
+"          Guatemala","    General government final consumption expenditure",6896.2082096623,7562.2933409727,8049.3792595199
+"          Guinea","  Final consumption expenditure",8640.5369202365,9257.1615433263,10524.7578483661
+"          Guinea","    Household consumption expenditure (including NPISH)",7187.904933551,7679.9629921835,8750.075482603201
+"          Guinea","    General government final consumption expenditure",1452.6319866854,1577.1985511427,1774.6823657629
+"          Guinea-Bissau","  Final consumption expenditure",1180.9788029085,1327.4556784333,1403.3918255378
+"          Guinea-Bissau","    Household consumption expenditure (including NPISH)",1023.9115071083,1134.9006041534,1201.2948868721
+"          Guinea-Bissau","    General government final consumption expenditure",157.0672958003,192.5550742799,202.0969386675
+"          Guyana","  Final consumption expenditure",3614.7172124019,4016.5303407215,4083.922339334
+"          Guyana","    Household consumption expenditure (including NPISH)",2832.2919330944,3200.4585521404,3178.000951283
+"          Guyana","    General government final consumption expenditure",782.4252793075,816.0717885811,905.921388051
+"          Haiti","  Final consumption expenditure",7705.0966192612,9260.277298898,10437.9052198975
+"          Haiti","    Household consumption expenditure (including NPISH)",7545.6355076827,9067.637780760801,10221.1062443183
+"          Haiti","    General government final consumption expenditure",159.4611115785,192.6395181372,216.7989755792
+"          Honduras","  Final consumption expenditure",19765.2834030225,20896.4638258877,22376.6924617914
+"          Honduras","    Household consumption expenditure (including NPISH)",16700.0745731778,17773.4281958967,19110.2452577558
+"          Honduras","    General government final consumption expenditure",3065.2088298447,3123.035629991,3266.4472040356
+"          Hungary","  Final consumption expenditure",90134.5536782032,100603.303777481,110656.077026035
+"          Hungary","    Household consumption expenditure (including NPISH)",64462.6105592196,71769.53236973171,79134.1627242839
+"          Hungary","    General government final consumption expenditure",25671.9431189837,28833.7714077493,31521.9143017511
+"          Iceland","  Final consumption expenditure",14953.7971322446,18081.2697260418,19310.9869653282
+"          Iceland","    Household consumption expenditure (including NPISH)",10230.2147004406,12331.4890275614,13128.730880127
+"          Iceland","    General government final consumption expenditure",4723.5824318039,5749.7806984804,6182.2560852012
+"          India","  Final consumption expenditure",1594339.066917459,1831785.727554617,1953022.049307182
+"          India","    Household consumption expenditure (including NPISH)",1358212.329772838,1549526.402688175,1645375.639068542
+"          India","    General government final consumption expenditure",236126.7371446212,282259.3248664427,307646.4102386396
+"          Indonesia","  Final consumption expenditure",627662.3726493294,674331.6851519806,687763.019475664
+"          Indonesia","    Household consumption expenditure (including NPISH)",538874.8671300319,581701.4549556767,593879.5577156388
+"          Indonesia","    General government final consumption expenditure",88787.50551929729,92630.23019630399,93883.4617600253
+"          Indonesia (...2002)","  Final consumption expenditure","_","_","_"
+"          Indonesia (...2002)","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Indonesia (...2002)","    General government final consumption expenditure","_","_","_"
+"          Iran (Islamic Republic of)","  Final consumption expenditure",266759.4424716552,281443.2187752147,254877.1583413144
+"          Iran (Islamic Republic of)","    Household consumption expenditure (including NPISH)",210085.8095112425,219536.9874350665,201017.7766060872
+"          Iran (Islamic Republic of)","    General government final consumption expenditure",56673.6329604127,61906.2313401482,53859.381735228
+"          Iraq","  Final consumption expenditure",132296.5834247191,137919.513170886,146701.3894056605
+"          Iraq","    Household consumption expenditure (including NPISH)",99954.6720233012,104731.7965007103,107631.1733543707
+"          Iraq","    General government final consumption expenditure",32341.9114014179,33187.7166701757,39070.2160512898
+"          Ireland","  Final consumption expenditure",138891.0177469284,147678.5941555826,162798.2212401787
+"          Ireland","    Household consumption expenditure (including NPISH)",100744.0033956303,106244.8156065696,116460.1348515317
+"          Ireland","    General government final consumption expenditure",38147.0143512981,41433.778549013,46338.086388647
+"          Israel","  Final consumption expenditure",246194.8893652844,273183.1545734322,288200.8450016659
+"          Israel","    Household consumption expenditure (including NPISH)",174681.1420102935,193074.4483610955,202887.4143110104
+"          Israel","    General government final consumption expenditure",71513.74735499091,80108.70621233679,85313.4306906555
+"          Italy","  Final consumption expenditure",1484708.457118386,1551440.413746356,1654212.818162666
+"          Italy","    Household consumption expenditure (including NPISH)",1127808.608844219,1182032.40967812,1259191.801314822
+"          Italy","    General government final consumption expenditure",356899.8482741667,369408.0040682359,395021.0168478428
+"          Jamaica","  Final consumption expenditure",12886.202862196,13576.463786462,14085.1447486178
+"          Jamaica","    Household consumption expenditure (including NPISH)",10937.9400897589,11594.6101282733,11971.2486606598
+"          Jamaica","    General government final consumption expenditure",1948.2627724372,1981.8536581888,2113.8960879581
+"          Japan","  Final consumption expenditure",3720971.67945456,3653053.372861609,3738012.276617335
+"          Japan","    Household consumption expenditure (including NPISH)",2741359.039713172,2698158.259533054,2756920.257292401
+"          Japan","    General government final consumption expenditure",979612.6397413877,954895.113328556,981092.0193249349
+"          Jordan","  Final consumption expenditure",38796.2063492958,40219.7183098592,40446.4788732394
+"          Jordan","    Household consumption expenditure (including NPISH)",31914.5162084507,32966.1971830986,33108.4507042254
+"          Jordan","    General government final consumption expenditure",6881.6901408451,7253.5211267606,7338.0281690141
+"          Kazakhstan","  Final consumption expenditure",90844.1626724339,105242.2489750973,108287.6774641181
+"          Kazakhstan","    Household consumption expenditure (including NPISH)",74877.5225040916,87667.6881590931,93364.43798697931
+"          Kazakhstan","    General government final consumption expenditure",15966.6401683423,17574.5608160041,14923.2394771387
+"          Kenya","  Final consumption expenditure",63493.8329082796,74652.2612107428,83802.70385145411
+"          Kenya","    Household consumption expenditure (including NPISH)",54541.5209148379,64462.3569723827,72307.6757090726
+"          Kenya","    General government final consumption expenditure",8952.311993441701,10189.9042383601,11495.0281423814
+"          Kiribati","  Final consumption expenditure",263.3186699771,268.7490947614,264.8943622759
+"          Kiribati","    Household consumption expenditure (including NPISH)",190.1737898658,194.095746575,191.3117851451
+"          Kiribati","    General government final consumption expenditure",73.1448801113,74.6533474199,73.5825771308
+"          Korea, Dem. People's Rep. of","  Final consumption expenditure",17670.4075519338,18279.6790872674,18408.607426628
+"          Korea, Dem. People's Rep. of","    Household consumption expenditure (including NPISH)","..","..",".."
+"          Korea, Dem. People's Rep. of","    General government final consumption expenditure","..","..",".."
+"          Korea, Republic of","  Final consumption expenditure",948007.8450104675,1022480.560200378,1105138.804651279
+"          Korea, Republic of","    Household consumption expenditure (including NPISH)",719390.5094558625,772091.6402500907,828285.7551740822
+"          Korea, Republic of","    General government final consumption expenditure",228617.335554605,250388.9199502872,276853.0494771968
+"          Kuwait","  Final consumption expenditure",77606.40501733639,81725.5352607144,86987.5262606231
+"          Kuwait","    Household consumption expenditure (including NPISH)",49482.9531576244,52252.081950178,55116.9971367661
+"          Kuwait","    General government final consumption expenditure",28123.451859712,29473.4533105364,31870.5291205452
+"          Kyrgyzstan","  Final consumption expenditure",6829.0092181598,7642.0598870421,8242.6098149876
+"          Kyrgyzstan","    Household consumption expenditure (including NPISH)",5641.2038885783,6322.5332883984,6822.4856851953
+"          Kyrgyzstan","    General government final consumption expenditure",1187.8053295815,1319.5265986438,1420.1241297923
+"          Lao People's Dem. Rep.","  Final consumption expenditure",12591.6798875613,13333.2415528973,14761.6374576902
+"          Lao People's Dem. Rep.","    Household consumption expenditure (including NPISH)",10383.4756140331,11131.6468896835,12223.3669728246
+"          Lao People's Dem. Rep.","    General government final consumption expenditure",2208.2042735281,2201.5946632138,2538.2704848655
+"          Latvia","  Final consumption expenditure",21999.7347283303,23911.1029046589,26509.831826131
+"          Latvia","    Household consumption expenditure (including NPISH)",16961.7490802216,18385.0494014859,20311.5720051984
+"          Latvia","    General government final consumption expenditure",5037.9856481087,5526.053503173,6198.2598209325
+"          Lebanon","  Final consumption expenditure",51995.7048419542,54827.4256525837,58214.0300206799
+"          Lebanon","    Household consumption expenditure (including NPISH)",45363.3690297645,47821.061675943,49796.3910105406
+"          Lebanon","    General government final consumption expenditure",6632.3358121897,7006.3639766415,8417.639010139301
+"          Lesotho","  Final consumption expenditure",2552.7117809042,2972.1622569707,3060.1416050148
+"          Lesotho","    Household consumption expenditure (including NPISH)",1793.1131697,2097.0991674454,2146.9995756591
+"          Lesotho","    General government final consumption expenditure",759.5986112042,875.0630895253,913.1420293557
+"          Liberia","  Final consumption expenditure",2358,2476,2414.180391
+"          Liberia","    Household consumption expenditure (including NPISH)",1701,1815,1741.125886
+"          Liberia","    General government final consumption expenditure",657,661,673.054506
+"          Libya","  Final consumption expenditure",17693.1969177356,17324.6870209111,23916.4485267039
+"          Libya","    Household consumption expenditure (including NPISH)",8697.443074294301,6954.0820111151,9877.8678229016
+"          Libya","    General government final consumption expenditure",8995.7538434413,10370.6050097959,14038.5807038023
+"          Lithuania","  Final consumption expenditure",34444.9447120487,37484.7283371201,41835.4953767984
+"          Lithuania","    Household consumption expenditure (including NPISH)",27132.3439119136,29700.6793952295,33045.2175500227
+"          Lithuania","    General government final consumption expenditure",7312.6008001351,7784.0489418906,8790.2778267757
+"          Luxembourg","  Final consumption expenditure",27668.5033873744,29677.8406308848,32923.2214062964
+"          Luxembourg","    Household consumption expenditure (including NPISH)",18008.1873996537,19134.1477676906,21108.3726415537
+"          Luxembourg","    General government final consumption expenditure",9660.3159877207,10543.6928631941,11814.8487647427
+"          Madagascar","  Final consumption expenditure",10223.4078694137,11559.8118349221,11781.8015832682
+"          Madagascar","    Household consumption expenditure (including NPISH)",8474.399462199001,9435.451849864099,9909.982253205701
+"          Madagascar","    General government final consumption expenditure",1749.0084072151,2124.359985058,1871.8193300625
+"          Malawi","  Final consumption expenditure",5205.4825753344,6063.9981831316,6856.4489171306
+"          Malawi","    Household consumption expenditure (including NPISH)",4688.9855614724,5462.3177609372,6176.140158019101
+"          Malawi","    General government final consumption expenditure",516.4970138634,601.6804221958,680.3087591115
+"          Malaysia","  Final consumption expenditure",202903.320227489,215667.655106836,248885.4053985275
+"          Malaysia","    Household consumption expenditure (including NPISH)",165050.8956659986,176760.0163874913,206024.0864013497
+"          Malaysia","    General government final consumption expenditure",37852.4245614904,38907.6387193448,42861.3189971778
+"          Maldives","  Final consumption expenditure",2707.1119442795,2936.7058215969,3277.3395700622
+"          Maldives","    Household consumption expenditure (including NPISH)",1928.1112665342,2236.6328999548,2493.7564687171
+"          Maldives","    General government final consumption expenditure",779.0006777453,700.0729216421,783.5831013451
+"          Mali","  Final consumption expenditure",13676.0279275874,14144.2995467278,15473.3299370362
+"          Mali","    Household consumption expenditure (including NPISH)",11384.2530644357,11657.4740667435,12762.9507637322
+"          Mali","    General government final consumption expenditure",2291.7748631534,2486.8254799844,2710.3791733058
+"          Malta","  Final consumption expenditure",7173.5044352791,7635.0631992941,8795.2768072157
+"          Malta","    Household consumption expenditure (including NPISH)",5328.7752334603,5679.5850828235,6447.3030508235
+"          Malta","    General government final consumption expenditure",1844.7292018188,1955.4781164706,2347.9737563922
+"          Marshall Islands","  Final consumption expenditure",252.373639,270.621651,287.412734
+"          Marshall Islands","    Household consumption expenditure (including NPISH)",139.301179,152.038277,162.727294
+"          Marshall Islands","    General government final consumption expenditure",113.072461,118.583374,124.68544
+"          Mauritania","  Final consumption expenditure",4736.6945334579,4848.5176379091,5158.2282600799
+"          Mauritania","    Household consumption expenditure (including NPISH)",3876.67159361,3982.9869014115,4222.9968750053
+"          Mauritania","    General government final consumption expenditure",860.0229398479,865.5307364975,935.2313851027
+"          Mauritius","  Final consumption expenditure",10887.3240163132,11932.8942722516,12912.4827424638
+"          Mauritius","    Household consumption expenditure (including NPISH)",8998.088171092,9922.6225533615,10741.2968237293
+"          Mauritius","    General government final consumption expenditure",1889.2358452211,2010.2717188901,2171.1859187345
+"          Mexico","  Final consumption expenditure",836166.2024023908,890245.6280650324,933038.819826259
+"          Mexico","    Household consumption expenditure (including NPISH)",706634.7312816491,755619.4965969248,790636.8466402015
+"          Mexico","    General government final consumption expenditure",129531.4711207417,134626.1314681076,142401.9731860575
+"          Micronesia (Federated States of)","  Final consumption expenditure",381.983106,428.503809,470.410529
+"          Micronesia (Federated States of)","    Household consumption expenditure (including NPISH)",225.407852,252.859673,277.588786
+"          Micronesia (Federated States of)","    General government final consumption expenditure",156.575253,175.644135,192.821741
+"          Moldova, Republic of","  Final consumption expenditure",8155.156366187,9733.7668633786,11454.4694833304
+"          Moldova, Republic of","    Household consumption expenditure (including NPISH)",6954.6432166951,8280.0539093918,9713.958907583399
+"          Moldova, Republic of","    General government final consumption expenditure",1200.5131494918,1453.7129540409,1740.5105758066
+"          Mongolia","  Final consumption expenditure",7771.9555921852,7571.334805945,8647.587137161299
+"          Mongolia","    Household consumption expenditure (including NPISH)",6134.9254677007,6116.2054275995,7117.9056252023
+"          Mongolia","    General government final consumption expenditure",1637.0301244845,1455.1293783451,1529.681511959
+"          Montenegro","  Final consumption expenditure",4215.1016948196,4527.4232509412,5063.3424607843
+"          Montenegro","    Household consumption expenditure (including NPISH)",3357.2810460156,3632.4898229412,4044.2968142745
+"          Montenegro","    General government final consumption expenditure",857.820648804,894.9334280000001,1019.0456465098
+"          Montserrat","  Final consumption expenditure",88.1007892593,81.1052377778,85.01058925930001
+"          Montserrat","    Household consumption expenditure (including NPISH)",56.5148837037,51.55965,54.4766755556
+"          Montserrat","    General government final consumption expenditure",31.5859055556,29.5455877778,30.5339140741
+"          Morocco","  Final consumption expenditure",80341.7716718382,84376.3081028501,90957.0300551168
+"          Morocco","    Household consumption expenditure (including NPISH)",60393.3160884064,63512.9110696061,68502.76836601971
+"          Morocco","    General government final consumption expenditure",19948.4555834318,20863.397033244,22454.2616890972
+"          Mozambique","  Final consumption expenditure",10975.5297707367,11814.4748019436,12977.3041357957
+"          Mozambique","    Household consumption expenditure (including NPISH)",7828.5977214751,8556.055289964501,9735.438217110899
+"          Mozambique","    General government final consumption expenditure",3146.9320492775,3258.4195119948,3241.8659187014
+"          Myanmar","  Final consumption expenditure",50112.0814505488,50622.816867031,51832.7394205351
+"          Myanmar","    Household consumption expenditure (including NPISH)",36514.1883573957,37692.9682319645,40693.8065344402
+"          Myanmar","    General government final consumption expenditure",13597.8930931531,12929.8486350665,11138.9328860949
+"          Namibia","  Final consumption expenditure",10944.9648119602,12303.5038501003,12844.5787756608
+"          Namibia","    Household consumption expenditure (including NPISH)",8051.3761067662,9003.799299025801,9368.2589292557
+"          Namibia","    General government final consumption expenditure",2893.5887051939,3299.7045511496,3476.3198464806
+"          Nauru","  Final consumption expenditure",171.3905981576,184.746223305,186.0833934135
+"          Nauru","    Household consumption expenditure (including NPISH)",123.7815745066,133.4272629591,134.3929935746
+"          Nauru","    General government final consumption expenditure",47.609023651,51.3189595795,51.6904005861
+"          Nepal","  Final consumption expenditure",20128.9151115036,22153.3464315544,23308.1214262716
+"          Nepal","    Household consumption expenditure (including NPISH)",17710.4500981531,19284.2756143625,20055.3509703098
+"          Nepal","    General government final consumption expenditure",2418.4650133505,2869.0708171918,3252.770455971
+"          Netherlands","  Final consumption expenditure",542991.0684034333,572468.1955388244,626107.8334172544
+"          Netherlands","    Household consumption expenditure (including NPISH)",349589.2916423862,369700.5914929418,403366.8223686271
+"          Netherlands","    General government final consumption expenditure",193401.7767610471,202767.6040458827,222741.0110486273
+"          Netherlands Antilles","  Final consumption expenditure","_","_","_"
+"          Netherlands Antilles","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Netherlands Antilles","    General government final consumption expenditure","_","_","_"
+"          New Caledonia","  Final consumption expenditure",7901.2739639277,8292.5609153563,8969.6673943933
+"          New Caledonia","    Household consumption expenditure (including NPISH)",5752.5369504432,6043.8846108458,6539.4130400728
+"          New Caledonia","    General government final consumption expenditure",2148.7370134845,2248.67630452,2430.2543543204
+"          New Zealand","  Final consumption expenditure",142882.9989036042,154159.2406847104,157904.642191996
+"          New Zealand","    Household consumption expenditure (including NPISH)",108615.5827430779,117274.4228457747,119490.7484821055
+"          New Zealand","    General government final consumption expenditure",34267.4161605263,36884.8178389357,38413.8937098905
+"          Nicaragua","  Final consumption expenditure",11273.1554957942,11550.8160071325,11163.6906326278
+"          Nicaragua","    Household consumption expenditure (including NPISH)",9351.8758505478,9564.2073265579,9177.1452119035
+"          Nicaragua","    General government final consumption expenditure",1921.2796452464,1986.6086805746,1986.5454207242
+"          Niger","  Final consumption expenditure",8641.5110991741,9516.5320329475,10817.5720074394
+"          Niger","    Household consumption expenditure (including NPISH)",7089.2949597739,7831.3048168778,8878.4850194586
+"          Niger","    General government final consumption expenditure",1552.2161394002,1685.2272160697,1939.0869879808
+"          Nigeria","  Final consumption expenditure",350182.546361129,317618.2031408037,346669.2407210636
+"          Nigeria","    Household consumption expenditure (including NPISH)",330039.8507894622,301072.9456556125,323033.6931195437
+"          Nigeria","    General government final consumption expenditure",21787.4491578611,16545.2574851912,23635.5476015199
+"          North Macedonia","  Final consumption expenditure",8788.5868775818,9223.4892565705,10186.0382772472
+"          North Macedonia","    Household consumption expenditure (including NPISH)",7141.818291108,7536.4021500353,8322.971929773499
+"          North Macedonia","    General government final consumption expenditure",1646.7685864739,1687.0871065351,1863.0663474737
+"          Norway","  Final consumption expenditure",257862.2186810971,273553.9391497077,290236.2127267138
+"          Norway","    Household consumption expenditure (including NPISH)",168022.6662233646,177915.4140640741,188572.8865662465
+"          Norway","    General government final consumption expenditure",89839.5524577325,95638.52508563369,101663.3261604673
+"          Oman","  Final consumption expenditure",46743.6948452536,49177.3990143043,49413.0046137841
+"          Oman","    Household consumption expenditure (including NPISH)",27116.3740936281,29384.7692015605,29685.5452457737
+"          Oman","    General government final consumption expenditure",19627.3207516255,19792.6298127438,19727.4593680104
+"          Pacific Islands, Trust Territory","  Final consumption expenditure","_","_","_"
+"          Pacific Islands, Trust Territory","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Pacific Islands, Trust Territory","    General government final consumption expenditure","_","_","_"
+"          Pakistan","  Final consumption expenditure",253456.2163153351,282088.1090667495,267736.2926792129
+"          Pakistan","    Household consumption expenditure (including NPISH)",222073.5904700211,247959.8603519182,234452.0407459158
+"          Pakistan","    General government final consumption expenditure",31382.625845314,34128.2487148313,33284.2519332971
+"          Palau","  Final consumption expenditure",282.932714,284.99772,290.564145
+"          Palau","    Household consumption expenditure (including NPISH)",196.819516,197.653329,197.621724
+"          Palau","    General government final consumption expenditure",86.113197,87.344391,92.942421
+"          Panama","  Final consumption expenditure",36460.508763,38621.340792,40809.817934
+"          Panama","    Household consumption expenditure (including NPISH)",30107.257708,31518.046227,33234.781157
+"          Panama","    General government final consumption expenditure",6353.251055,7103.294565,7575.036776
+"          Panama, excluding Canal Zone","  Final consumption expenditure","_","_","_"
+"          Panama, excluding Canal Zone","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Panama, excluding Canal Zone","    General government final consumption expenditure","_","_","_"
+"          Papua New Guinea","  Final consumption expenditure",16139.2329372869,16989.3561926477,18716.5861370029
+"          Papua New Guinea","    Household consumption expenditure (including NPISH)",12165.6092384518,12095.548762621,13361.1922237116
+"          Papua New Guinea","    General government final consumption expenditure",3973.6236988351,4893.8074300267,5355.3939129863
+"          Paraguay","  Final consumption expenditure",26835.7936559444,29149.6164584403,30714.136130498
+"          Paraguay","    Household consumption expenditure (including NPISH)",22818.4744861898,24929.5644437127,26186.5629013588
+"          Paraguay","    General government final consumption expenditure",4017.3191697547,4220.0520147277,4527.5732291392
+"          Peru","  Final consumption expenditure",150000.8183314382,163239.9566802851,170660.4209677354
+"          Peru","    Household consumption expenditure (including NPISH)",124739.9459600506,135361.0053343161,141550.4223490218
+"          Peru","    General government final consumption expenditure",25260.8723713876,27878.951345969,29109.9986187136
+"          Philippines","  Final consumption expenditure",258829.1832543531,265675.790298875,283762.9994173932
+"          Philippines","    Household consumption expenditure (including NPISH)",224726.1166256718,230422.3268339132,244295.0782201569
+"          Philippines","    General government final consumption expenditure",34103.0666286602,35253.4634649618,39467.9211972173
+"          Poland","  Final consumption expenditure",361720.6119196679,401833.8331275361,447440.6907149413
+"          Poland","    Household consumption expenditure (including NPISH)",277033.2294867841,308725.348385959,343265.5754650371
+"          Poland","    General government final consumption expenditure",84687.3824328838,93108.48474157709,104175.1152499042
+"          Portugal","  Final consumption expenditure",171258.7754759254,180990.7931020744,196871.7773677489
+"          Portugal","    Household consumption expenditure (including NPISH)",134977.4430520806,142951.0207718814,155733.969839116
+"          Portugal","    General government final consumption expenditure",36281.3324238448,38039.772330193,41137.8075286329
+"          Qatar","  Final consumption expenditure",68660.09733461541,69461.7180085165,72600.5494505495
+"          Qatar","    Household consumption expenditure (including NPISH)",39005.9680164835,41068.9203887363,42203.8461538462
+"          Qatar","    General government final consumption expenditure",29654.1293181319,28392.7976197802,30396.7032967033
+"          Romania","  Final consumption expenditure",146259.6170822539,166599.0347502256,193890.7216582027
+"          Romania","    Household consumption expenditure (including NPISH)",117818.7237991223,133343.7165200832,153394.647712233
+"          Romania","    General government final consumption expenditure",28440.8932831317,33255.3182301423,40496.0739459697
+"          Russian Federation","  Final consumption expenditure",912008.0642690087,1114638.898338393,1114875.142384471
+"          Russian Federation","    Household consumption expenditure (including NPISH)",675653.6847892061,825804.0261181189,825952.0377997009
+"          Russian Federation","    General government final consumption expenditure",236354.3794798175,288834.8722202739,288923.1045847545
+"          Rwanda","  Final consumption expenditure",8082.5502708979,8214.969436709,8762.115577078701
+"          Rwanda","    Household consumption expenditure (including NPISH)",6771.6604579847,6825.9649425795,7341.8283205157
+"          Rwanda","    General government final consumption expenditure",1310.8898129132,1389.0044941295,1420.2872565629
+"          Saint Kitts and Nevis","  Final consumption expenditure",861.921147037,861.0125796296001,878.8071525926
+"          Saint Kitts and Nevis","    Household consumption expenditure (including NPISH)",676.6508885185,670.6791355556001,685.3126174074
+"          Saint Kitts and Nevis","    General government final consumption expenditure",185.2702585185,190.3334437037,193.4945351852
+"          Saint Lucia","  Final consumption expenditure",1594.5879507407,1591.8994385185,1580.6556344444
+"          Saint Lucia","    Household consumption expenditure (including NPISH)",1364.0426177778,1354.0767266667,1346.0983803704
+"          Saint Lucia","    General government final consumption expenditure",230.545332963,237.8227118519,234.5572540741
+"          Saint Vincent and the Grenadines","  Final consumption expenditure",785.1426325926,795.5004266667,825.7214011111
+"          Saint Vincent and the Grenadines","    Household consumption expenditure (including NPISH)",630.1726503704,629.3342744444,654.6618714815
+"          Saint Vincent and the Grenadines","    General government final consumption expenditure",154.9699822222,166.1661525926,171.0595296296
+"          Samoa","  Final consumption expenditure",924.8686658895,927.7676983461,938.4188570173
+"          Samoa","    Household consumption expenditure (including NPISH)",768.9677100569001,771.9884524221,780.7626525119
+"          Samoa","    General government final consumption expenditure",155.9009558325,155.779245924,157.6562045053
+"          San Marino","  Final consumption expenditure",854.5902256604001,873.9678795182,921.7637558681
+"          San Marino","    Household consumption expenditure (including NPISH)",565.5725814098,570.27504267,600.438375906
+"          San Marino","    General government final consumption expenditure",289.0176442506,303.6928368482,321.3253799621
+"          Sao Tome and Principe","  Final consumption expenditure",321.6717015597,340.2655417698,428.601042462
+"          Sao Tome and Principe","    Household consumption expenditure (including NPISH)",276.526198796,295.79157132,355.7705642764
+"          Sao Tome and Principe","    General government final consumption expenditure",45.1455027637,44.4739704498,72.8304781856
+"          Saudi Arabia","  Final consumption expenditure",442690.3310029333,451899.2605509334,491824.3246178667
+"          Saudi Arabia","    Household consumption expenditure (including NPISH)",276121.7520602667,283638.4235586667,298197.4918770667
+"          Saudi Arabia","    General government final consumption expenditure",166568.5789426667,168260.8369922667,193626.8327408
+"          Senegal","  Final consumption expenditure",16303.2255422901,17643.3151035815,19254.4192843379
+"          Senegal","    Household consumption expenditure (including NPISH)",13631.6258143131,14780.6496800248,16060.1168035614
+"          Senegal","    General government final consumption expenditure",2671.599727977,2862.6654235567,3194.3024807765
+"          Serbia","  Final consumption expenditure",42016.5081875993,45505.2972938241,51453.2800997392
+"          Serbia","    Household consumption expenditure (including NPISH)",34562.0892903152,37400.1104771808,41963.7427968107
+"          Serbia","    General government final consumption expenditure",7454.4188972841,8105.1868166432,9489.5373029285
+"          Serbia and Montenegro","  Final consumption expenditure","_","_","_"
+"          Serbia and Montenegro","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Serbia and Montenegro","    General government final consumption expenditure","_","_","_"
+"          Seychelles","  Final consumption expenditure",1106.3162756039,1203.4511782266,1304.4087846291
+"          Seychelles","    Household consumption expenditure (including NPISH)",796.8333231558,889.4108782524,941.6809621322
+"          Seychelles","    General government final consumption expenditure",309.4827608437,314.0403154345,362.7278225688
+"          Sierra Leone","  Final consumption expenditure",4210.5819203053,3870.0705943206,4368.3298838411
+"          Sierra Leone","    Household consumption expenditure (including NPISH)",3753.5152453713,3480.8246897747,3990.8422376075
+"          Sierra Leone","    General government final consumption expenditure",457.066674934,389.2459045459,377.4876462336
+"          Singapore","  Final consumption expenditure",148996.0130315112,155494.54170212,167301.6971351958
+"          Singapore","    Household consumption expenditure (including NPISH)",116237.9375943034,120625.1606712892,129792.4762604948
+"          Singapore","    General government final consumption expenditure",32758.0754372078,34869.3810308308,37509.220874701
+"          Sint Maarten (Dutch part)","  Final consumption expenditure",882.0670391061,931.0785251397,801.5530162011
+"          Sint Maarten (Dutch part)","    Household consumption expenditure (including NPISH)",696.243203352,734.2379402235,631.3299815642
+"          Sint Maarten (Dutch part)","    General government final consumption expenditure",185.8238357542,196.8405849162,170.2230346369
+"          Slovakia","  Final consumption expenditure",66349.2967756599,71485.25445092841,79181.9937091105
+"          Slovakia","    Household consumption expenditure (including NPISH)",49377.5303855794,53417.583327566,59448.7941750886
+"          Slovakia","    General government final consumption expenditure",16971.7663900805,18067.6711233624,19733.1995340219
+"          Slovenia","  Final consumption expenditure",32672.9903371873,34485.9715792801,38092.4258102941
+"          Slovenia","    Household consumption expenditure (including NPISH)",24157.1796546375,25533.7859839906,28212.2238092392
+"          Slovenia","    General government final consumption expenditure",8515.8117887016,8952.186724970599,9880.2020010549
+"          Solomon Islands","  Final consumption expenditure",975.4515272522,1039.4288430463,1183.6152166085
+"          Solomon Islands","    Household consumption expenditure (including NPISH)",639.45215999,686.5781971716,780.7039538202999
+"          Solomon Islands","    General government final consumption expenditure",335.9993672622,352.8506458747,402.9112627882
+"          Somalia","  Final consumption expenditure",1184.4975553891,1270.0216500554,1263.954811846
+"          Somalia","    Household consumption expenditure (including NPISH)",1057.4827797971,1133.8359305948,1128.4162743238
+"          Somalia","    General government final consumption expenditure",127.0147755919,136.1857194606,135.5385375221
+"          South Africa","  Final consumption expenditure",237307.939576677,279323.4865754354,298942.3261528538
+"          South Africa","    Household consumption expenditure (including NPISH)",175692.8099904298,206733.5852265672,220603.711324319
+"          South Africa","    General government final consumption expenditure",61615.1295863152,72589.9013488682,78338.6148285348
+"          South Sudan","  Final consumption expenditure",5562.2669072635,5918.5308967465,4944.8227830558
+"          South Sudan","    Household consumption expenditure (including NPISH)",4897.4618238859,5327.4484115973,4163.3853734709
+"          South Sudan","    General government final consumption expenditure",664.8050833776,591.0824851493001,781.4374095778001
+"          Spain","  Final consumption expenditure",951891.1084252169,1010425.253395296,1092381.740614117
+"          Spain","    Household consumption expenditure (including NPISH)",717079.436359686,766039.0651270602,827034.2527607837
+"          Spain","    General government final consumption expenditure",234811.6720655309,244386.1882682357,265347.4878533331
+"          Sri Lanka","  Final consumption expenditure",65456.0575116503,66120.9846719489,68049.32516460121
+"          Sri Lanka","    Household consumption expenditure (including NPISH)",58485.7705415853,58659.9629887347,59982.011345534
+"          Sri Lanka","    General government final consumption expenditure",6970.286970065,7461.0216832142,8067.3138190671
+"          State of Palestine","  Final consumption expenditure",17159.3,17648.5,18047.5
+"          State of Palestine","    Household consumption expenditure (including NPISH)",13534,14301.8,14468.1
+"          State of Palestine","    General government final consumption expenditure",3625.3,3346.7,3579.4
+"          Sudan","  Final consumption expenditure",86726.3070861671,116284.1908860214,45292.2120194434
+"          Sudan","    Household consumption expenditure (including NPISH)",81433.2401989706,107943.8037154964,41545.2737557083
+"          Sudan","    General government final consumption expenditure",5293.0668871965,8340.387170525,3746.9382637351
+"          Sudan (...2011)","  Final consumption expenditure","_","_","_"
+"          Sudan (...2011)","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Sudan (...2011)","    General government final consumption expenditure","_","_","_"
+"          Suriname","  Final consumption expenditure",1556.7701585189,1600.9049541488,1723.968360508
+"          Suriname","    Household consumption expenditure (including NPISH)",1153.8971837549,1187.3629230249,1277.7541357698
+"          Suriname","    General government final consumption expenditure",402.872974764,413.5420311239,446.2142247382
+"          Sweden","  Final consumption expenditure",372417.6715113986,388130.0754203802,398576.323585551
+"          Sweden","    Household consumption expenditure (including NPISH)",236463.3228834023,247343.9492376811,253828.0525148927
+"          Sweden","    General government final consumption expenditure",135954.3486279964,140786.126182699,144748.2710706583
+"          Switzerland, Liechtenstein","  Final consumption expenditure",446554.930250261,454921.7337518511,467078.692684199
+"          Switzerland, Liechtenstein","    Household consumption expenditure (including NPISH)",366720.2159699058,374360.0759097178,384805.3913142333
+"          Switzerland, Liechtenstein","    General government final consumption expenditure",79834.7142803552,80561.6578421333,82273.3013699658
+"          Syrian Arab Republic","  Final consumption expenditure",8886.2014612202,9571.4023207799,11745.2603920737
+"          Syrian Arab Republic","    Household consumption expenditure (including NPISH)",7392.5660523563,7963.4570936091,9771.550791564499
+"          Syrian Arab Republic","    General government final consumption expenditure",1493.6354088639,1607.9452271709,1973.7096005092
+"          Tajikistan","  Final consumption expenditure",6460.1837110396,6951.0528806621,8290.942692611001
+"          Tajikistan","    Household consumption expenditure (including NPISH)",5480.6637590252,5871.6424590607,7017.6502602022
+"          Tajikistan","    General government final consumption expenditure",979.5199520143,1079.4104217184,1273.2924324088
+"          Tanzania, United Republic of","  Final consumption expenditure",35210.8489975075,37595.1450817351,39856.3874255673
+"          Tanzania, United Republic of","    Household consumption expenditure (including NPISH)",30583.6784430405,32941.7229369601,35100.4412718
+"          Tanzania, United Republic of","    General government final consumption expenditure",4627.170554467,4653.422144775,4755.9461537677
+"          Thailand","  Final consumption expenditure",275266.8143997759,296386.8002446766,327733.612391934
+"          Thailand","    Household consumption expenditure (including NPISH)",205432.1807286207,221844.7235143577,246112.765141758
+"          Thailand","    General government final consumption expenditure",69834.6336711552,74542.07673031891,81620.847250176
+"          Timor-Leste","  Final consumption expenditure",1882.923542,1884.047736,1922.416395
+"          Timor-Leste","    Household consumption expenditure (including NPISH)",970.692853,1010.469315,1042.486836
+"          Timor-Leste","    General government final consumption expenditure",912.230689,873.5784210000001,879.929559
+"          Togo","  Final consumption expenditure",5528.2719514084,5709.8036014448,6629.917177185
+"          Togo","    Household consumption expenditure (including NPISH)",4694.3986511234,4887.8618943369,5625.5070287887
+"          Togo","    General government final consumption expenditure",833.873300285,821.941707108,1004.4101483964
+"          Tonga","  Final consumption expenditure",492.7054028787,536.9807189886,577.1310833946
+"          Tonga","    Household consumption expenditure (including NPISH)",406.7350648894,444.4225176739,484.9561396392
+"          Tonga","    General government final consumption expenditure",85.97033798930001,92.55820086129999,92.17494375539999
+"          Trinidad and Tobago","  Final consumption expenditure",18470.4990439798,17843.9831085511,19469.0508751976
+"          Trinidad and Tobago","    Household consumption expenditure (including NPISH)",14856.7348768175,14347.5929847593,15652.1148817294
+"          Trinidad and Tobago","    General government final consumption expenditure",3613.7641670124,3496.3901236444,3816.9359933205
+"          Tunisia","  Final consumption expenditure",38586.5054856381,37045.2896865991,36683.2607107775
+"          Tunisia","    Household consumption expenditure (including NPISH)",30020.2976365979,28731.7854448888,28748.4069213913
+"          Tunisia","    General government final consumption expenditure",8566.2078490402,8313.5042417103,7934.8537893862
+"          Turkey","  Final consumption expenditure",644796.5469877567,626968.0841165092,551523.1069306211
+"          Turkey","    Household consumption expenditure (including NPISH)",516664.3051247211,503443.3324035108,437206.6736060118
+"          Turkey","    General government final consumption expenditure",128132.2418630357,123524.7517129983,114316.4333246094
+"          Turkmenistan","  Final consumption expenditure",7093.3393597143,7589.2073865714,8193.322102857101
+"          Turkmenistan","    Household consumption expenditure (including NPISH)",3825.99506,4171.494874,4520.8746268571
+"          Turkmenistan","    General government final consumption expenditure",3267.3442997143,3417.7125125714,3672.447476
+"          Turks and Caicos Islands","  Final consumption expenditure",631.794597,634.18246,689.351762
+"          Turks and Caicos Islands","    Household consumption expenditure (including NPISH)",407.337235,413.751778,449.469898
+"          Turks and Caicos Islands","    General government final consumption expenditure",224.457362,220.430682,239.881864
+"          Tuvalu","  Final consumption expenditure",65.48456421829999,81.2939447495,89.8142745622
+"          Tuvalu","    Household consumption expenditure (including NPISH)",28.090513237,41.5822128011,46.7615287005
+"          Tuvalu","    General government final consumption expenditure",37.3940509813,39.7117319484,43.0527458617
+"          Uganda","  Final consumption expenditure",21165.8526800043,23009.6562587953,25193.9057702453
+"          Uganda","    Household consumption expenditure (including NPISH)",18935.5711703144,20345.151613217,21705.8076863934
+"          Uganda","    General government final consumption expenditure",2230.2815096899,2664.5046455783,3488.0980838518
+"          Ukraine","  Final consumption expenditure",79539.0170517299,98438.3485046361,117986.5408563623
+"          Ukraine","    Household consumption expenditure (including NPISH)",62172.9179676682,75254.1500003329,90798.1726850362
+"          Ukraine","    General government final consumption expenditure",17366.0990840617,23184.1985043032,27188.3681713261
+"          Union of Soviet Socialist Republics","  Final consumption expenditure","_","_","_"
+"          Union of Soviet Socialist Republics","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Union of Soviet Socialist Republics","    General government final consumption expenditure","_","_","_"
+"          United Arab Emirates","  Final consumption expenditure",173959.2056623554,194803.4791281144,211618.507375902
+"          United Arab Emirates","    Household consumption expenditure (including NPISH)",129233.9176781484,143857.5295025187,161715.9886556841
+"          United Arab Emirates","    General government final consumption expenditure",44725.2879839347,50945.9496255956,49902.5187202178
+"          United Kingdom","  Final consumption expenditure",2261489.414952532,2215796.966669886,2380143.683329512
+"          United Kingdom","    Household consumption expenditure (including NPISH)",1745732.967307353,1717363.626885617,1848619.190217068
+"          United Kingdom","    General government final consumption expenditure",515756.4476451786,498433.3397842689,531524.4931124433
+"          United States of America","  Final consumption expenditure",15500400.1,16154569.3,16957472.6
+"          United States of America","    Household consumption expenditure (including NPISH)",12830941.4,13402807.8,14058130.8
+"          United States of America","    General government final consumption expenditure",2669458.7,2751761.5,2899341.8
+"          Uruguay","  Final consumption expenditure",42496.124869872,48660.9406341103,48532.5581585835
+"          Uruguay","    Household consumption expenditure (including NPISH)",34846.6516812211,40007.6926671409,39807.521672587
+"          Uruguay","    General government final consumption expenditure",7649.4731886508,8653.2479669694,8725.036485996499
+"          Uzbekistan","  Final consumption expenditure",63684.3180570337,43228.1824828083,35278.5112235157
+"          Uzbekistan","    Household consumption expenditure (including NPISH)",51504.389386801,35408.7015432091,28192.73884221
+"          Uzbekistan","    General government final consumption expenditure",12179.9286702328,7819.4809395993,7085.7723813057
+"          Vanuatu","  Final consumption expenditure",640.1402166398,698.4747565081,694.0197576436
+"          Vanuatu","    Household consumption expenditure (including NPISH)",523.8230928785,545.0274539924,539.2656692032
+"          Vanuatu","    General government final consumption expenditure",116.3171237612,153.4473025157,154.7540884404
+"          Venezuela (Bolivarian Rep. of)","  Final consumption expenditure",385852.2461826013,381676.0354410076,244367.3017049019
+"          Venezuela (Bolivarian Rep. of)","    Household consumption expenditure (including NPISH)",332002.1184206104,330996.2048645665,214336.467405893
+"          Venezuela (Bolivarian Rep. of)","    General government final consumption expenditure",53850.1277619771,50679.8305764411,30030.8342990088
+"          Viet Nam","  Final consumption expenditure",154064.4413858542,166809.9929876592,181560.9646027683
+"          Viet Nam","    Household consumption expenditure (including NPISH)",140701.9700141852,152245.7221891256,165695.5895593541
+"          Viet Nam","    General government final consumption expenditure",13362.4713716688,14564.2707985336,15865.3750434142
+"          Yemen","  Final consumption expenditure",25421.1717865059,23454.4402546733,25517.1661808472
+"          Yemen","    Household consumption expenditure (including NPISH)",22315.8665856472,20932.0671434206,22795.0211191848
+"          Yemen","    General government final consumption expenditure",3105.3052008587,2522.3731112527,2722.1450616623
+"          Yemen, Arab Republic","  Final consumption expenditure","_","_","_"
+"          Yemen, Arab Republic","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Yemen, Arab Republic","    General government final consumption expenditure","_","_","_"
+"          Yemen, Democratic","  Final consumption expenditure","_","_","_"
+"          Yemen, Democratic","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Yemen, Democratic","    General government final consumption expenditure","_","_","_"
+"          Yugoslavia, Soc. Fed. Rep. of","  Final consumption expenditure","_","_","_"
+"          Yugoslavia, Soc. Fed. Rep. of","    Household consumption expenditure (including NPISH)","_","_","_"
+"          Yugoslavia, Soc. Fed. Rep. of","    General government final consumption expenditure","_","_","_"
+"          Zambia","  Final consumption expenditure",14140.3999521836,15702.4000951151,15019.105154728
+"          Zambia","    Household consumption expenditure (including NPISH)",10772.7261967569,12153.086059649,11675.206595929
+"          Zambia","    General government final consumption expenditure",3367.6737553297,3549.3140354661,3343.8985587989
+"          Zimbabwe","  Final consumption expenditure",20850.865043,22263.529257,24957.467436
+"          Zimbabwe","    Household consumption expenditure (including NPISH)",17126.635457,17491.357666,18729.151593
+"          Zimbabwe","    General government final consumption expenditure",3724.229586,4772.171591,6228.315843
