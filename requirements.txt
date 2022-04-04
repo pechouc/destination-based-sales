@@ -9,3 +9,4 @@ black
 yapf
 python-gitlab
 twine
+requests>=2.25.0
