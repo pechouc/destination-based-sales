@@ -133,7 +133,7 @@ class BalancedTradeStatsProcessor:
             # If we have the file locally
             services = pd.read_csv(self.path_to_services_data)
 
-        except:
+        except FileNotFoundError:
             response = requests.get(
                 'https://www.wto.org/english/res_e/statis_e/daily_update_e/OECD-WTO_BATIS_data_BPM6.zip'
             )
