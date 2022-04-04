@@ -68,7 +68,7 @@ class AnalyticalAMNEPreprocessor:
 
         # Depending on the boolean passed as argument, we load the OECD's CbCR data or not
         if load_OECD_data:
-            self.cbcr_preprocessor = CbCRPreprocessor()
+            self.cbcr_preprocessor = CbCRPreprocessor(year=2016)
             self.oecd = self.cbcr_preprocessor.get_preprocessed_revenue_data()
 
         else:
@@ -81,7 +81,7 @@ class AnalyticalAMNEPreprocessor:
         If, when instantiating the AnalyticalAMNEPreprocessor object, the option "load_OECD_data=False" was chosen, this
         method allows to load the OECD's country-by-country data and to save it in an "oecd" attribute.
         """
-        self.cbcr_preprocessor = CbCRPreprocessor()
+        self.cbcr_preprocessor = CbCRPreprocessor(year=2016)
         self.oecd = self.cbcr_preprocessor.get_preprocessed_revenue_data()
 
     def load_clean_foreign_analytical_amne_data(self):

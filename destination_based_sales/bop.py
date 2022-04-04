@@ -12,6 +12,24 @@ path_to_dir = os.path.dirname(os.path.abspath(__file__))
 path_to_US_bop_data = os.path.join(path_to_dir, 'data', 'us_bop.xls')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
+GEOGRAPHIES_TO_IMPUTE = {
+    'United Kingdom Islands, Caribbean': {
+        'CODE': 'UKI',
+        'CONTINENT_NAME': 'America',
+        'CONTINENT_CODE': 'AMR'
+    },
+    'South Korea': {
+        'CODE': 'KOR',
+        'CONTINENT_NAME': 'Asia',
+        'CONTINENT_CODE': 'ASIA'
+    },
+    'Vietnam': {
+        'CODE': 'VNM',
+        'CONTINENT_NAME': 'Asia',
+        'CONTINENT_CODE': 'ASIA'
+    }
+}
+
 
 class USBalanceOfPaymentsProcessor():
 
@@ -27,10 +45,10 @@ class USBalanceOfPaymentsProcessor():
         self.path_to_US_bop_data = path_to_US_bop_data
         self.path_to_geographies = path_to_geographies
 
-        self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()
+        geographies = pd.read_csv(self.path_to_geographies)
+        self.geographies = geographies.groupby('CODE').first().reset_index()
 
-        preprocessor = IRSDataPreprocessor(year=year)
-        self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
+        self.GEOGRAPHIES_TO_IMPUTE = GEOGRAPHIES_TO_IMPUTE.copy()
 
     def load_raw_data(self):
 
@@ -45,7 +63,7 @@ class USBalanceOfPaymentsProcessor():
                 sheet_name=sheet_name
             )
 
-            sheet = sheet.iloc[4:13, 1:].copy()
+            sheet = sheet.iloc[4:14, 1:].copy()
 
             sheet = sheet.transpose().reset_index(drop=True)
 
@@ -56,7 +74,7 @@ class USBalanceOfPaymentsProcessor():
 
             sheet.columns = [
                 'OTHER_COUNTRY_NAME', 'YEAR', 'TOTAL_EXPORTS', 'GOODS_EXPORTS', 'MERCHANDISE_EXPORTS',
-                'SERVICES_EXPORTS', 'FINANCIAL_SERVICES', 'INTELLECTUAL_PROPERTY', 'TELECOM'
+                'SERVICES_EXPORTS', 'FINANCIAL_SERVICES', 'INTELLECTUAL_PROPERTY', 'TELECOM', 'GOVERNMENT_SERVICES'
             ]
 
             dfs.append(sheet)
@@ -75,6 +93,15 @@ class USBalanceOfPaymentsProcessor():
 
         # df['SERVICES_EXPORTS'] -= df['INTELLECTUAL_PROPERTY']
 
+        # We net out government services:
+        # - Observations with "(D)" correspond to non-disclosures for confidentiality purposes (one entity involved)
+        # - Observations with "(*)" correspond to amounts comprised between 0 and USD 500,000
+        # We impute 0 in both of these cases as an approximation for very small transactions
+        df['GOVERNMENT_SERVICES'] = df['GOVERNMENT_SERVICES'].map(
+            lambda x: 0 if isinstance(x, str) and x in ['(D)', '(*)'] else x
+        )
+        df['SERVICES_EXPORTS'] -= df['GOVERNMENT_SERVICES']
+
         df['ALL_EXPORTS'] = df['MERCHANDISE_EXPORTS'] + df['SERVICES_EXPORTS']
         df = df[['OTHER_COUNTRY_NAME', 'ALL_EXPORTS', 'MERCHANDISE_EXPORTS', 'SERVICES_EXPORTS']].copy()
 
@@ -83,64 +110,80 @@ class USBalanceOfPaymentsProcessor():
     def load_data_with_geographies(self):
         df = self.load_raw_data()
 
-        geographies = pd.read_csv(self.path_to_geographies)
-
+        # We add the other country code and the other country continent code
         merged_df = df.merge(
-            geographies,
+            self.geographies,
             how='left',
             left_on='OTHER_COUNTRY_NAME', right_on='NAME'
         )
 
-        imputation = {
-            'CODE': 'UKI',
-            'CONTINENT_NAME': 'America',
-            'CONTINENT_CODE': 'AMR'
-        }
+        # We impute these codes for each country whose name is not identified in geographies.csv
+        for country_name, imputation in self.GEOGRAPHIES_TO_IMPUTE.items():
+            for column in ['CODE', 'CONTINENT_NAME', 'CONTINENT_CODE']:
+                merged_df[column] = merged_df.apply(
+                    (
+                        lambda row: imputation[column]
+                        if row['OTHER_COUNTRY_NAME'] == country_name
+                        else row[column],
+                    ),
+                    axis=1
+                )
 
-        for column in ['CODE', 'CONTINENT_NAME', 'CONTINENT_CODE']:
-            merged_df[column] = merged_df.apply(
-                (
-                    lambda row: imputation[column]
-                    if row['OTHER_COUNTRY_NAME'] == 'United Kingdom Islands, Caribbean'
-                    else row[column],
-                ),
-                axis=1
-            )
+        # We do not need the full names anymore
+        merged_df = merged_df.drop(columns=['NAME', 'OTHER_COUNTRY_NAME', 'CONTINENT_NAME'])
 
-        merged_df = merged_df.drop(columns=['NAME']).dropna()
-
+        # We eliminate the continental aggregates for which a code is found in geographies.csv
         merged_df = merged_df[~merged_df['CODE'].isin(['EUR', 'AFR', 'AMR', 'ASIA'])].copy()
+
+        # We eliminate all the rows for which codes were not found in geographies.csv as they correspond to geographic
+        # aggregates that either induce double-counting (continental total) or cannot be matched with the aggregates in
+        # OECD CbCR or in IRS data ("Other ..." aggregates)
+        merged_df = merged_df.dropna()
+
+        # We restrict the continent codes to the 4 that are relevant in the following steps of the adjustment
+        merged_df['CONTINENT_CODE'] = merged_df['CONTINENT_CODE'].map(
+            lambda x: 'AMR' if x in ['NAMR', 'SAMR'] else x
+        )
+        merged_df['CONTINENT_CODE'] = merged_df['CONTINENT_CODE'].map(
+            lambda x: 'APAC' if x in ['ASIA', 'OCN'] else x
+        )
+
+        # We rename columns in the standardized way
+        merged_df = merged_df.rename(
+            columns={
+                'CODE': 'OTHER_COUNTRY_CODE',
+                'CONTINENT_CODE': 'OTHER_COUNTRY_CONTINENT_CODE'
+            }
+        )
 
         return merged_df.copy()
 
-    def load_data_with_IRS_overlap(self):
+    def load_final_merchandise_data(self):
         df = self.load_data_with_geographies()
 
-        df = df.rename(columns={'CODE': 'OTHER_COUNTRY_CODE'})
+        # We add the two columns that are still missing to match the standardized trade statistics format
+        df['AFFILIATE_COUNTRY_CODE'] = 'USA'
+        df['AFFILIATE_COUNTRY_CONTINENT_CODE'] = 'AMR'
 
-        df['OTHER_COUNTRY_CODE'] = df.apply(
-            lambda row: ensure_country_overlap_with_IRS(
-                row,
-                self.unique_IRS_country_codes,
-                self.UK_CARIBBEAN_ISLANDS
-            ),
-            axis=1
-        )
+        # We drop irrelevant columns
+        df = df.drop(columns=['ALL_EXPORTS', 'SERVICES_EXPORTS'])
 
-        df = df.drop(
-            columns=['OTHER_COUNTRY_NAME', 'CONTINENT_CODE', 'CONTINENT_NAME']
-        )
-
-        df = df.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
+        # We move from USD millions to USD
+        df['MERCHANDISE_EXPORTS'] *= 10**6
 
         return df.copy()
 
-    def load_data_for_adjustment(self):
-        df = self.load_data_with_IRS_overlap()
+    def load_final_services_data(self):
+        df = self.load_data_with_geographies()
 
+        # We add the two columns that are still missing to match the standardized trade statistics format
         df['AFFILIATE_COUNTRY_CODE'] = 'USA'
+        df['AFFILIATE_COUNTRY_CONTINENT_CODE'] = 'AMR'
 
-        df['EXPORT_PERC'] = df['ALL_EXPORTS'] / df['ALL_EXPORTS'].sum()
-        df['ALL_EXPORTS'] *= 10**6
+        # We drop irrelevant columns
+        df = df.drop(columns=['ALL_EXPORTS', 'MERCHANDISE_EXPORTS'])
 
-        return df.drop(columns=['MERCHANDISE_EXPORTS', 'SERVICES_EXPORTS'])
+        # We move from USD millions to USD
+        df['SERVICES_EXPORTS'] *= 10**6
+
+        return df.copy()

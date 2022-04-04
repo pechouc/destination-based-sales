@@ -288,6 +288,8 @@ class RevenueSplitter:
                 # the given type of sales are complete
                 indicator_column = '_'.join(['IS', sales_type, 'COMPLETE'])
                 restricted_df = restricted_df[restricted_df[indicator_column] == 1].copy()
+                # NB: at this stage, the row with "USA" as affiliate country code is systematically excluded since for
+                # it, the indicator variables take the value 2
 
                 # We aggregate total sales, sales to the host country, sales to the headquarter country and sales to any
                 # other country over the restricted dataset, for a given type of sales
@@ -333,7 +335,7 @@ class RevenueSplitter:
             )
 
         # We drop absolute amounts from the BEA data
-        # e are only interested in sales percentages to distribute the IRS revenue variables
+        # We are only interested in sales percentages to distribute the IRS revenue variables
         merged_df.drop(
             columns=self.related + self.unrelated + self.total + ['TOTAL_FOREIGN'],
             inplace=True

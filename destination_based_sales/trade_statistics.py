@@ -1,10 +1,3 @@
-"""
-This module is used to load and preprocess the OECD's balanced trade statistics (both in services (BaTIS) and in mer-
-chandise trade (BIMTS)). These statistics allow to attribute the "sales to any other country" of US and non-US multina-
-tional companies to their (hypothetical) eventual destination. The preprocessing logic is encapsulated in a Python
-class, TradeStatisticsProcessor.
-"""
-
 
 ########################################################################################################################
 # --- Imports
@@ -14,115 +7,156 @@ import os
 import numpy as np
 import pandas as pd
 
-from destination_based_sales.revenue_split import RevenueSplitter
+from destination_based_sales.comtrade import UNComtradeProcessor
+from destination_based_sales.balanced_trade import BalancedTradeStatsProcessor
+from destination_based_sales.bop import USBalanceOfPaymentsProcessor
+
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
-from destination_based_sales.bop import USBalanceOfPaymentsProcessor
-from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
-    impute_missing_continent_codes, ensure_country_overlap_with_IRS, ServicesDataTransformer, \
-    ensure_country_overlap_with_OECD_CbCR, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR
 
+from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, ensure_country_overlap_with_IRS, \
+    ensure_country_overlap_with_OECD_CbCR
 
-########################################################################################################################
-# --- Diverse
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
-
-path_to_merchandise_data = os.path.join(path_to_dir, 'data', 'merchandise_trade_statistics.csv')
-path_to_services_data = os.path.join(path_to_dir, 'data', 'services_trade_statistics.csv')
-
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
-
-########################################################################################################################
-# --- Content
 
 class TradeStatisticsProcessor:
 
     def __init__(
         self,
         year,
-        winsorize_export_percs,
         US_only,
-        us_exports_source='BIMTS',
-        path_to_merchandise_data=path_to_merchandise_data,
-        path_to_services_data=path_to_services_data,
+        US_merchandise_exports_source,
+        US_services_exports_source,
+        non_US_merchandise_exports_source,
+        non_US_services_exports_source,
+        winsorize_export_percs,
+        non_US_winsorizing_threshold=None,
+        US_winsorizing_threshold=None,
+        service_flows_to_exclude=None,
         path_to_geographies=path_to_geographies
     ):
 
-        if us_exports_source not in ['BIMTS', 'BoP']:
-            raise Exception(
-                "US exports can only be drawn from two statistical sources: either BIMTS (us_exports_source='BIMTS') "
-                + "or the balance of payments (BEA's data on international transactions; use 'BoP' as argument)."
-            )
+        # Checking the chosen mix of data sources
+        if US_merchandise_exports_source not in ['BIMTS', 'BoP', 'Comtrade']:
+            raise Exception('US merchandise exports can only be sourced from "BIMTS", "BoP" or "Comtrade".')
 
+        if US_services_exports_source not in ['BaTIS', 'BoP']:
+            raise Exception('US merchandise exports can only be sourced from "BaTIS" or "BoP".')
+
+        if non_US_merchandise_exports_source not in ['BIMTS', 'Comtrade']:
+            raise Exception('Non-US merchandise exports can only be sourced from "BIMTS" or "Comtrade".')
+
+        if non_US_services_exports_source not in ['BaTIS']:
+            raise Exception('US merchandise exports can only be sourced from "BaTIS".')
+
+        # Saving useful attributes
         self.year = year
+        self.US_only = US_only
         self.winsorize_export_percs = winsorize_export_percs
+        self.service_flows_to_exclude = service_flows_to_exclude
 
         if winsorize_export_percs:
-            self.winsorizing_threshold = (0.5 / 100)
-            self.winsorizing_threshold_US = (0.1 / 100)
+            if non_US_winsorizing_threshold is None or US_winsorizing_threshold is None:
+                raise Exception('If you want to winsorize export distributions, winsorizing thresholds must be passed.')
 
-        self.US_only = US_only
+            self.winsorizing_threshold = non_US_winsorizing_threshold / 100
+            self.winsorizing_threshold_US = US_winsorizing_threshold / 100
 
-        if not US_only:
-            oecd_preprocessor = CbCRPreprocessor()
-            temp = oecd_preprocessor.get_preprocessed_revenue_data()
+        # Saving the data source mix attributes
+        self.US_merchandise_exports_source = US_merchandise_exports_source
+        self.US_services_exports_source = US_services_exports_source
+        self.non_US_merchandise_exports_source = non_US_merchandise_exports_source
+        self.non_US_services_exports_source = non_US_services_exports_source
 
-            self.unique_OECD_country_codes = temp['AFFILIATE_COUNTRY_CODE'].unique()
-            self.unique_OECD_affiliate_countries = temp[
-                ['AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_NAME']
-            ].drop_duplicates()
-
-        self.us_exports_source = us_exports_source
-
-        if us_exports_source == 'BoP':
-            self.us_bop_processor = USBalanceOfPaymentsProcessor(year=year)
-
-        self.path_to_merchandise_data = path_to_merchandise_data
-        self.path_to_services_data = path_to_services_data
-
+        # Loading geographies
         self.path_to_geographies = path_to_geographies
-        self.geographies = pd.read_csv(self.path_to_geographies)
+        self.geographies = pd.read_csv(path_to_geographies)
 
+        # Loading BaTIS data once and for all if needed as it can be quite long
+        if 'BaTIS' in [non_US_services_exports_source, US_services_exports_source]:
+            processor = BalancedTradeStatsProcessor(
+                year=self.year,
+                service_flows_to_exclude=self.service_flows_to_exclude
+            )
+            self.services_batis = processor.load_clean_services_data()
+
+        # Useful for the overlap with IRS and OECD country-by-country data
         self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()
-        self.CONTINENT_CODES_TO_IMPUTE_TRADE = CONTINENT_CODES_TO_IMPUTE_TRADE.copy()
-        self.CONTINENT_CODES_TO_IMPUTE_OECD_CBCR = CONTINENT_CODES_TO_IMPUTE_OECD_CBCR.copy()
 
-        preprocessor = IRSDataPreprocessor(year=year)
-        self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
+        # If we are focusing only on the adjustment of US multinationals' sales, we match the IRS dataset
+        # We also do if the year considered in 2018 since, for this one, we do not have the OECD's CbCR data yet
+        if self.US_only or self.year == 2018:
+            preprocessor = IRSDataPreprocessor(year=year)
+            self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
 
-    def load_clean_merchandise_data(self):
+        else:
+            oecd_preprocessor = CbCRPreprocessor(year=year)
+            temp = oecd_preprocessor.get_preprocessed_revenue_data()
+            self.unique_OECD_country_codes = temp['AFFILIATE_COUNTRY_CODE'].unique()
 
-        merchandise = pd.read_csv(self.path_to_merchandise_data)
+    def load_merchandise_and_services_data(self):
 
-        merchandise = merchandise[merchandise['TIME'] == self.year].copy()
+        # ### Loading US exports data
 
-        merchandise.drop(
-            columns=[
-                'Reporter Country', 'Partner Country', 'COMMODITY',
-                'Commodity HS2017', 'MEASURE', 'Measure', 'TIME',
-                'Time', 'Flag Codes', 'Flags'
-            ],
-            inplace=True
-        )
+        # Merchandise
+        if self.US_merchandise_exports_source == 'BIMTS':
+            processor = BalancedTradeStatsProcessor(year=self.year)
+            us_merchandise = processor.load_clean_merchandise_data()
+            us_merchandise = us_merchandise[us_merchandise['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
 
-        merchandise.rename(
-            columns={
-                'REPORTER': 'AFFILIATE_COUNTRY_CODE',
-                'PARTNER': 'OTHER_COUNTRY_CODE',
-                'Value': 'MERCHANDISE_EXPORTS'
-            },
-            inplace=True
-        )
+        elif self.US_merchandise_exports_source == 'BoP':
+            processor = USBalanceOfPaymentsProcessor(year=self.year)
+            us_merchandise = processor.load_final_merchandise_data()
 
-        merchandise = merchandise.merge(
-            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
-            how='inner',
-            left_on='OTHER_COUNTRY_CODE', right_on='CODE'
-        )
+        else:   # Alternative is to use Comtrade
+            processor = UNComtradeProcessor(year=self.year)
+            us_merchandise = processor.load_data_with_geographies()
+            us_merchandise = us_merchandise[us_merchandise['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
 
-        if self.US_only:
+        # Services
+        if self.US_services_exports_source == 'BaTIS':
+            services_batis = self.services_batis.copy()
+            us_services = services_batis[services_batis['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
+
+        else:   # Alternative is to use the US BoP
+            processor = USBalanceOfPaymentsProcessor(year=self.year)
+            us_services = processor.load_final_services_data()
+
+        # ### Loading non-US exports data
+
+        # Merchandise
+        if self.non_US_merchandise_exports_source == 'BIMTS':
+            processor = BalancedTradeStatsProcessor(year=self.year)
+            merchandise = processor.load_clean_merchandise_data()
+            merchandise = merchandise[merchandise['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+
+        else:   # Alternative is to use Comtrade
+            processor = UNComtradeProcessor(year=self.year)
+            merchandise = processor.load_data_with_geographies()
+            merchandise = merchandise[merchandise['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+
+        # Services
+        if self.non_US_services_exports_source == 'BaTIS':
+            services_batis = self.services_batis.copy()
+            services = services_batis[services_batis['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+
+        # Concatening the resulting DataFrames
+        merchandise = pd.concat([merchandise, us_merchandise], axis=0)
+        services = pd.concat([services, us_services], axis=0)
+
+        return merchandise.copy(), services.copy()
+
+    def load_overlapping_merchandise_and_exports_data(self):
+
+        merchandise, services = self.load_merchandise_and_services_data()
+
+        if self.US_only or self.year == 2018:
+            # In that case, we must ensure consistency with the IRS' country-by-country data
+
+            # For merchandise exports
             merchandise['OTHER_COUNTRY_CODE'] = merchandise.apply(
                 lambda row: ensure_country_overlap_with_IRS(
                     row,
@@ -132,7 +166,19 @@ class TradeStatisticsProcessor:
                 axis=1
             )
 
+            # For exports of services
+            services['OTHER_COUNTRY_CODE'] = services.apply(
+                lambda row: ensure_country_overlap_with_IRS(
+                    row,
+                    self.unique_IRS_country_codes,
+                    self.UK_CARIBBEAN_ISLANDS
+                ),
+                axis=1
+            )
+
         else:
+            # In that case, we must ensure consistency with the OECD's country-by-country data
+
             merchandise['OTHER_COUNTRY_CODE'] = merchandise.apply(
                 lambda row: ensure_country_overlap_with_OECD_CbCR(
                     row,
@@ -142,279 +188,226 @@ class TradeStatisticsProcessor:
                 axis=1
             )
 
-        merchandise.drop(columns=['CODE', 'CONTINENT_CODE'], inplace=True)
-
-        merchandise = merchandise.groupby(['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE']).sum().reset_index()
-
-        return merchandise.copy()
-
-    def load_clean_services_data(self):
-
-        services = pd.read_csv(self.path_to_services_data)
-
-        services = services[services['TIME'] == self.year].copy()
-
-        services = services[services['Measure'] == 'Final balanced value'].copy()
-
-        services.drop(
-            columns=[
-                'Reporter Country', 'Partner Country', 'EXPRESSION', 'Expression',
-                'SERVICE', 'Service', 'MEASURE', 'Measure', 'TIME', 'Year',
-                'Unit Code', 'Unit', 'PowerCode', 'Reference Period Code',
-                'Reference Period', 'Flag Codes', 'Flags'
-            ],
-            inplace=True
-        )
-
-        services['Value'] = services['Value'] * services['PowerCode Code'].map(lambda x: 10**x)
-
-        services.drop(columns=['PowerCode Code'], inplace=True)
-
-        services = services[~services['LOCATION'].isin(['OECD', 'EU27_2020'])].copy()
-        services = services[
-            ~services['PARTNER'].isin(
-                ['NOC', 'OECD', 'EU27_2020', 'E_EU', 'WLD']
-            )
-        ].copy()
-
-        services['LOCATION'] = services['LOCATION'].map(lambda x: 'XXK' if x == 'XKV' else x)
-        services['PARTNER'] = services['PARTNER'].map(lambda x: 'XXK' if x == 'XKV' else x)
-
-        services.rename(
-            columns={
-                'LOCATION': 'AFFILIATE_COUNTRY_CODE',
-                'PARTNER': 'OTHER_COUNTRY_CODE',
-                'Value': 'SERVICES_EXPORTS'
-            },
-            inplace=True
-        )
-
-        services.reset_index(drop=True, inplace=True)
-
-        services = services.merge(
-            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
-            how='left',
-            left_on='OTHER_COUNTRY_CODE', right_on='CODE'
-        )
-
-        if self.US_only:
-            services['OTHER_COUNTRY_CODE'] = services.apply(
-                lambda row: ensure_country_overlap_with_IRS(
-                    row,
-                    self.unique_IRS_country_codes,
-                    self.UK_CARIBBEAN_ISLANDS
-                ),
-                axis=1
-            )
-
-        else:
             services['OTHER_COUNTRY_CODE'] = services.apply(
                 lambda row: ensure_country_overlap_with_OECD_CbCR(
                     row,
-                    self.unique_IRS_country_codes,
+                    self.unique_OECD_country_codes,
                     self.UK_CARIBBEAN_ISLANDS
                 ),
                 axis=1
             )
 
-        services.drop(columns=['CODE', 'CONTINENT_CODE'], inplace=True)
+        merchandise = merchandise.groupby(
+            [
+                'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_CONTINENT_CODE',
+                'OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE'
+            ]
+        ).sum().reset_index()
 
-        services = services.groupby(['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE']).sum().reset_index()
+        services = services.groupby(
+            [
+                'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_CONTINENT_CODE',
+                'OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE'
+            ]
+        ).sum().reset_index()
 
-        transformer = ServicesDataTransformer()
+        return merchandise.copy(), services.copy()
 
-        transformer.fit(services)
+    def load_merged_data(self):
+        merchandise, services = self.load_overlapping_merchandise_and_exports_data()
 
-        services = transformer.transform(services)
-
-        return services.copy()
-
-    def load_merged_dataframe(self):
-
-        merchandise = self.load_clean_merchandise_data()
-        services = self.load_clean_services_data()
-
+        # We execute an OUTER merge
         merged_df = merchandise.merge(
             services,
             how='outer',
-            on=['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE']
+            on=[
+                'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_CONTINENT_CODE',
+                'OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE'
+            ]
         )
 
-        for column in merged_df.columns:
+        # We replace missing values by 0 (assumptions described in the report)
+        for column in ['MERCHANDISE_EXPORTS', 'SERVICES_EXPORTS']:
             merged_df[column] = merged_df[column].fillna(0)
 
-        if self.US_only:
-            mask_domestic = (merged_df['AFFILIATE_COUNTRY_CODE'] != merged_df['OTHER_COUNTRY_CODE'])
-            mask_US = (merged_df['OTHER_COUNTRY_CODE'] != 'USA')
-            mask = np.logical_and(mask_domestic, mask_US)
-            merged_df = merged_df[mask].copy()
-
-        else:
-            mask_domestic = (merged_df['AFFILIATE_COUNTRY_CODE'] != merged_df['OTHER_COUNTRY_CODE'])
-            merged_df = merged_df[mask_domestic].copy()
-
+        # We compute total exports as the sum of merchandise and services exports
         merged_df['ALL_EXPORTS'] = merged_df['MERCHANDISE_EXPORTS'] + merged_df['SERVICES_EXPORTS']
-
-        totals = {}
-
-        for country in merged_df['AFFILIATE_COUNTRY_CODE'].unique():
-
-            restricted_df = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'] == country].copy()
-
-            totals[country] = restricted_df['ALL_EXPORTS'].sum()
-
-        merged_df['TOTAL_EXPORTS'] = merged_df['AFFILIATE_COUNTRY_CODE'].map(totals)
-
-        merged_df['EXPORT_PERC'] = merged_df['ALL_EXPORTS'] / merged_df['TOTAL_EXPORTS']
 
         return merged_df.copy()
 
     def compute_exports_per_continent(self):
+        merged_df = self.load_merged_data()
 
-        merged_df = self.load_merged_dataframe()
-
-        continents = merged_df.merge(
-            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
-            how='left',
-            left_on='AFFILIATE_COUNTRY_CODE', right_on='CODE'
-        )
-
-        continents.drop(columns='CODE', inplace=True)
-
-        continents['CONTINENT_CODE'] = continents['CONTINENT_CODE'].map(
-            lambda x: 'AMR' if x in ['NAMR', 'SAMR'] else x
-        )
-
-        continents['CONTINENT_CODE'] = continents['CONTINENT_CODE'].map(
-            lambda x: 'APAC' if x in ['ASIA', 'OCN'] else x
-        )
-
+        # We want a distribution of exports for each continent
         exports_per_continent = {}
 
-        for continent in continents['CONTINENT_CODE'].unique():
-            restricted_df = continents[continents['CONTINENT_CODE'] == continent].copy()
+        for continent in merged_df['AFFILIATE_COUNTRY_CONTINENT_CODE'].unique():
+            # Iterating over unique affiliate country continent codes, we compute each distribution of exports
+            restricted_df = merged_df[merged_df['AFFILIATE_COUNTRY_CONTINENT_CODE'] == continent].copy()
 
-            restricted_df = restricted_df[['OTHER_COUNTRY_CODE', 'ALL_EXPORTS']].copy()
+            restricted_df = restricted_df[
+                ['OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE', 'ALL_EXPORTS']
+            ].copy()
 
-            restricted_df = restricted_df.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
+            restricted_df = restricted_df.groupby(
+                ['OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE']
+            ).sum().reset_index()
 
+            # And we store it in the dedicated dictionary
             exports_per_continent[continent] = restricted_df.copy()
 
+        # If we want to match the OECD's CbCR data, we also need a distribution of exports for the "Other groups"
+        # We assume that it corresponds to the mean distribution of exports over all countries
         if not self.US_only:
             other_groups_df = merged_df[
-                ['OTHER_COUNTRY_CODE', 'ALL_EXPORTS']
-            ].groupby('OTHER_COUNTRY_CODE').sum().reset_index()
+                ['OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE', 'ALL_EXPORTS']
+            ].copy()
+
+            other_groups_df = other_groups_df.groupby(
+                ['OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE']
+            ).sum().reset_index()
 
             exports_per_continent['OTHER_GROUPS'] = other_groups_df.copy()
 
         return exports_per_continent.copy()
 
-    def load_data_with_imputations(self):
+    def load_extended_exports_distributions(self):
 
-        merged_df = self.load_merged_dataframe()
-
-        splitter = RevenueSplitter(year=self.year)
-
-        splitted_revenues = splitter.get_splitted_revenues()
-
+        # We load unextended data and the exports distributions of each continent
+        merged_df = self.load_merged_data()
         exports_per_continent = self.compute_exports_per_continent()
 
-        if self.US_only:
-            missing_countries = splitted_revenues[
-                ~splitted_revenues['CODE'].isin(merged_df['AFFILIATE_COUNTRY_CODE'])
-            ][['AFFILIATE_COUNTRY_NAME', 'CODE']]
+        # We first determine the complete set of affiliate countries that we want to cover
+        if self.US_only or self.year == 2018:
 
-        else:
-            missing_countries = self.unique_OECD_affiliate_countries.copy()
-            missing_countries = missing_countries[
-                ~missing_countries['AFFILIATE_COUNTRY_CODE'].isin(merged_df['AFFILIATE_COUNTRY_CODE'])
-            ].copy()
-            missing_countries.rename(columns={'AFFILIATE_COUNTRY_CODE': 'CODE'}, inplace=True)
+            # In this case, we want to cover all the affiliate countries present in the IRS' country-by-country data
+            processor = IRSDataPreprocessor(year=self.year)
+            all_countries = processor.load_final_data()
 
-        missing_countries = missing_countries.merge(
-            self.geographies[['CODE', 'CONTINENT_CODE']].drop_duplicates(),
-            how='left',
-            on='CODE'
-        )
-
-        if self.US_only:
-            missing_countries['CONTINENT_CODE'] = missing_countries.apply(
-                lambda row: impute_missing_continent_codes(row, self.CONTINENT_CODES_TO_IMPUTE_TRADE),
-                axis=1
+            all_countries = all_countries.rename(
+                columns={
+                    'CODE': 'AFFILIATE_COUNTRY_CODE',
+                    'CONTINENT_CODE': 'AFFILIATE_COUNTRY_CONTINENT_CODE'
+                }
             )
 
+            all_countries = all_countries[
+                ['AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_CONTINENT_CODE']
+            ].drop_duplicates()
+
         else:
-            continent_codes_to_impute = self.CONTINENT_CODES_TO_IMPUTE_TRADE.copy()
 
-            for k, v in self.CONTINENT_CODES_TO_IMPUTE_OECD_CBCR.items():
-                continent_codes_to_impute[k] = v
+            # In this case, we want to cover all the affiliate countries present in the OECD's country-by-country data
+            processor = CbCRPreprocessor(year=self.year)
+            all_countries = processor.get_preprocessed_revenue_data()
 
-            missing_countries['CONTINENT_CODE'] = missing_countries.apply(
-                lambda row: impute_missing_continent_codes(row, continent_codes_to_impute),
-                axis=1
+            all_countries = all_countries.rename(
+                columns={
+                    'CONTINENT_CODE': 'AFFILIATE_COUNTRY_CONTINENT_CODE'
+                }
             )
 
-        missing_countries['CONTINENT_CODE'] = missing_countries['CONTINENT_CODE'].map(
-            lambda x: 'AMR' if x in ['NAMR', 'SAMR'] else x
-        )
+            all_countries = all_countries[
+                ['AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_CONTINENT_CODE']
+            ].drop_duplicates()
 
-        missing_countries['CONTINENT_CODE'] = missing_countries['CONTINENT_CODE'].map(
-            lambda x: 'APAC' if x in ['ASIA', 'OCN'] else x
-        )
+        # For what affiliate countries are we missing a valid distribution of exports in our trade statistics?
+        # Countries that are either absent from the DataFrame or that only display 0 exports for all partners
+        # The latter case may happen in some cases depending on the chosen mix of data sources
+        temp = merged_df.groupby('AFFILIATE_COUNTRY_CODE').sum()['ALL_EXPORTS']
+        self.valid_exports_distributions = list(temp[temp > 0].index)
 
-        missing_countries.drop_duplicates(inplace=True)
+        missing_countries = all_countries[
+            ~all_countries['AFFILIATE_COUNTRY_CODE'].isin(self.valid_exports_distributions)
+        ].copy()
 
-        output_df = merged_df[
-            ['AFFILIATE_COUNTRY_CODE', 'OTHER_COUNTRY_CODE', 'ALL_EXPORTS', 'EXPORT_PERC']
+        # Starting from the exports data that we do have in the "merged_df" DataFrame, we add all the missing countries
+        output_df = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'].isin(self.valid_exports_distributions)].copy()
+
+        output_df = output_df[
+            [
+                'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_CONTINENT_CODE',
+                'OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE', 'ALL_EXPORTS'
+            ]
         ].copy()
 
         for _, row in missing_countries.iterrows():
 
-            df = exports_per_continent[row['CONTINENT_CODE']].copy()
+            # We will impute the distribution of exports of the corresponding continent
+            imputed_df = exports_per_continent[row['AFFILIATE_COUNTRY_CONTINENT_CODE']].copy()
 
-            df = df[df['OTHER_COUNTRY_CODE'] != row['CODE']].copy()
+            # We simply eliminate the missing affiliate country from the destinations
+            imputed_df = imputed_df[imputed_df['OTHER_COUNTRY_CODE'] != row['AFFILIATE_COUNTRY_CODE']].copy()
 
-            df['EXPORT_PERC'] = df['ALL_EXPORTS'] / df['ALL_EXPORTS'].sum()
+            # And we add the two columns that are missing to match the format of the merged_df DataFrame
+            imputed_df['AFFILIATE_COUNTRY_CODE'] = row['AFFILIATE_COUNTRY_CODE']
+            imputed_df['AFFILIATE_COUNTRY_CONTINENT_CODE'] = row['AFFILIATE_COUNTRY_CONTINENT_CODE']
 
-            df['AFFILIATE_COUNTRY_CODE'] = row['CODE']
+            # We append the imputed DataFrame to the central one
+            output_df = pd.concat([output_df, imputed_df], axis=0)
 
-            output_df = pd.concat(
-                [output_df, df],
-                axis=0
-            )
+        return output_df.copy()
 
-        output_df = output_df[output_df['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+    def get_final_exports_distributions(self):
 
-        if self.us_exports_source == 'BIMTS':
-            us_exports = self.load_clean_merchandise_data()
-            us_exports = us_exports[us_exports['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
-            us_exports['EXPORT_PERC'] = us_exports['MERCHANDISE_EXPORTS'] / us_exports['MERCHANDISE_EXPORTS'].sum()
-            us_exports.rename(columns={'MERCHANDISE_EXPORTS': 'ALL_EXPORTS'}, inplace=True)
+        # We load extended data
+        output_df = self.load_extended_exports_distributions()
 
-        elif self.us_exports_source == 'BoP':
-            us_exports = self.us_bop_processor.load_data_for_adjustment()
+        # ### We first add the EXPORT_PERC column
 
-        if self.winsorize_export_percs:
+        # We compute the total exports for each affiliate country in the dataset
+        totals = {}
 
-            output_df = output_df[output_df['EXPORT_PERC'] > self.winsorizing_threshold].copy()
+        for country_code in output_df['AFFILIATE_COUNTRY_CODE'].unique():
 
-            totals = {}
+            restricted_df = output_df[output_df['AFFILIATE_COUNTRY_CODE'] == country_code].copy()
+            totals[country_code] = restricted_df['ALL_EXPORTS'].sum()
 
-            for country_code in output_df['AFFILIATE_COUNTRY_CODE'].unique():
+            # TEMPORARY PRINT STATEMENT
+            if totals[country_code] == 0:
+                print(country_code)
 
-                restricted_df = output_df[output_df['AFFILIATE_COUNTRY_CODE'] == country_code].copy()
+        # This allows to add a temporary TOTAL_EXPORTS column
+        output_df['TOTAL_EXPORTS'] = output_df['AFFILIATE_COUNTRY_CODE'].map(totals)
 
-                totals[country_code] = restricted_df['ALL_EXPORTS'].sum()
+        # From which we deduce the EXPORT_PERC column
+        output_df['EXPORT_PERC'] = output_df['ALL_EXPORTS'] / output_df['TOTAL_EXPORTS']
 
-            output_df['TOTAL_EXPORTS'] = output_df['AFFILIATE_COUNTRY_CODE'].map(totals)
+        # And the TOTAL_EXPORTS column is not useful anymore
+        output_df = output_df.drop(columns=['TOTAL_EXPORTS'])
 
-            output_df['EXPORT_PERC'] = output_df['ALL_EXPORTS'] / output_df['TOTAL_EXPORTS']
+        if not self.winsorize_export_percs:
+            # We do not need to winsorize and we can therefore return the DataFrame as is
+            return output_df.reset_index(drop=True)
 
-            output_df.drop(columns=['TOTAL_EXPORTS'], inplace=True)
+        else:
 
-            us_exports = us_exports[us_exports['EXPORT_PERC'] > self.winsorizing_threshold_US].copy()
-            us_exports['EXPORT_PERC'] = us_exports['ALL_EXPORTS'] / us_exports['ALL_EXPORTS'].sum()
+            # ### In this case, we need to winsorize the exports distributions
 
-        output_df = pd.concat([output_df, us_exports], axis=0)
+            # Winsorizing the US exports distribution
+            us_extract = output_df[output_df['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
 
-        return output_df.reset_index(drop=True)
+            us_extract = us_extract[us_extract['EXPORT_PERC'] > self.winsorizing_threshold_US].copy()
+
+            us_extract['EXPORT_PERC'] = us_extract['ALL_EXPORTS'] / us_extract['ALL_EXPORTS'].sum()
+
+            # Winsorizing the non-US exports distributions
+            non_us_extract = output_df[output_df['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+
+            non_us_extract = non_us_extract[non_us_extract['EXPORT_PERC'] > self.winsorizing_threshold].copy()
+
+            new_totals = {}
+
+            for country_code in non_us_extract['AFFILIATE_COUNTRY_CODE'].unique():
+
+                restricted_df = non_us_extract[non_us_extract['AFFILIATE_COUNTRY_CODE'] == country_code].copy()
+                new_totals[country_code] = restricted_df['ALL_EXPORTS'].sum()
+
+            non_us_extract['TOTAL_EXPORTS'] = non_us_extract['AFFILIATE_COUNTRY_CODE'].map(new_totals)
+            non_us_extract['EXPORT_PERC'] = non_us_extract['ALL_EXPORTS'] / non_us_extract['TOTAL_EXPORTS']
+            non_us_extract = non_us_extract.drop(columns=['TOTAL_EXPORTS'])
+
+            # We can concatenate the winsorized exports distributions and return the resulting DataFrame
+            output_df = pd.concat([us_extract, non_us_extract], axis=0)
+
+            return output_df.reset_index(drop=True)

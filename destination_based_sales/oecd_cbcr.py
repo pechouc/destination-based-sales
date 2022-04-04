@@ -37,6 +37,7 @@ class CbCRPreprocessor:
 
     def __init__(
         self,
+        year,
         load_raw_data=True,
         path_to_geographies=path_to_geographies,
         continent_code_imputations=CONTINENT_CODES_TO_IMPUTE_OECD_CBCR,
@@ -66,6 +67,8 @@ class CbCRPreprocessor:
         - "fetch_data_online": a boolean indicating whether to fetch the country-by-country data online (if set to True)
         or locally from the "data" folder (if set to False).
         """
+        self.year = year
+
         if fetch_data_online:
             # If relevant, we construct the URL from which we can load the CSV country-by-country dataset
             self.url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
@@ -73,7 +76,7 @@ class CbCRPreprocessor:
             self.dimensions = 'ALL/'
             self.agency_name = 'OECD'
 
-            self.path_to_OECD_data = (
+            self.path_to_OECD_CbCR_data = (
                 self.url_base + self.dataset_identifier + self.dimensions + self.agency_name + '?contenttype=csv'
             )
 
@@ -119,11 +122,11 @@ class CbCRPreprocessor:
 
         cbcr = self.data.copy()
 
-        # We focus on the positive-profit sub-sample only
+        # We keep the full sample, including loss-making entities
         cbcr = cbcr[cbcr['PAN'] == 'PANELA'].copy()
 
-        # And on the 2016 year
-        cbcr = cbcr[cbcr['Year'] == 2016].copy()
+        # And focus on the year of interest
+        cbcr = cbcr[cbcr['Year'] == self.year].copy()
 
         cbcr.drop(
             columns=['PAN', 'Grouping', 'Flag Codes', 'Flags', 'YEA', 'Year'],
@@ -187,6 +190,14 @@ class CbCRPreprocessor:
             ['PARENT_COUNTRY_CODE', 'PARENT_COUNTRY_NAME', 'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_NAME']
         ).sum().reset_index()
 
+        # We rename the "XKV" code used for Kosovo into "XXK", covered in the "geographies.csv" file
+        oecd['PARENT_COUNTRY_CODE'] = oecd['PARENT_COUNTRY_CODE'].map(
+            lambda country_code: {'XKV': 'XXK'}.get(country_code, country_code)
+        )
+        oecd['AFFILIATE_COUNTRY_CODE'] = oecd['AFFILIATE_COUNTRY_CODE'].map(
+            lambda country_code: {'XKV': 'XXK'}.get(country_code, country_code)
+        )
+
         # We add continent codes to the dataset from the "geographies.csv" file
         geographies = pd.read_csv(self.path_to_geographies)
 
@@ -214,6 +225,16 @@ class CbCRPreprocessor:
 
         # In 2016, one row (India - Bouvet Island) which is full of 0s; we eliminate it
         oecd = oecd[oecd['CONTINENT_CODE'] != 'ATC'].copy()
+
+        # Eventually, we rename the alpha-3 codes for continental aggregates of the type "Other Europe"
+        oecd['AFFILIATE_COUNTRY_CODE'] = oecd['AFFILIATE_COUNTRY_CODE'].map(
+            lambda country_code: {
+                'OTE': 'OEUR',   # Other Europe
+                'OAM': 'OAMR',   # Other Americas
+                'OAF': 'OAFR',   # Other Africa
+                'OAS': 'OASIAOCN'   # Other Asia
+            }.get(country_code, country_code)
+        )
 
         return oecd.copy()
 
