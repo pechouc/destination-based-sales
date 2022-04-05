@@ -946,11 +946,20 @@ class USAnalysesProvider:
 
             plt.xlabel(df_sorted.columns[-1])
 
+            file_name_suffix = ''
+
         else:
             plt.bar(
                 y_pos,
                 df_sorted[df_sorted.columns[-1]],
                 color=colors
+            )
+
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'UK Caribbean Islands' if x == 'United Kingdom Islands, Caribbean' else x
+            )
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'St. Vincent and the Gr.' if x == 'Saint Vincent and the Grenadines' else x
             )
 
             plt.xticks(
@@ -961,6 +970,8 @@ class USAnalysesProvider:
 
             plt.ylabel(df_sorted.columns[-1])
 
+            file_name_suffix = 'v'
+
         plt.tight_layout()
 
         if save_PNG:
@@ -969,7 +980,7 @@ class USAnalysesProvider:
             plt.savefig(
                 os.path.join(
                     path_to_folder,
-                    f'focus_on_tax_havens_{self.year}_US_only{"_excl" if temp_bool else ""}.png')
+                    f'focus_on_tax_havens_{self.year}_US_only{"_excl" if temp_bool else ""}_{file_name_suffix}.png')
             )
 
         plt.show()
@@ -2104,11 +2115,20 @@ class GlobalAnalysesProvider:
 
             plt.xlabel(df_sorted.columns[-1])
 
+            file_name_suffix = ''
+
         else:
             plt.bar(
                 y_pos,
                 df_sorted[df_sorted.columns[-1]],
                 color=colors
+            )
+
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'UK Caribbean Islands' if x == 'United Kingdom Islands, Caribbean' else x
+            )
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'St. Vincent and the Gr.' if x == 'Saint Vincent and the Grenadines' else x
             )
 
             plt.xticks(
@@ -2119,13 +2139,18 @@ class GlobalAnalysesProvider:
 
             plt.ylabel(df_sorted.columns[-1])
 
+            file_name_suffix = 'v'
+
         plt.tight_layout()
 
         if save_PNG:
             plt.savefig(
                 os.path.join(
                     path_to_folder,
-                    f'focus_on_tax_havens_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}.png'
+                    (
+                        f'focus_on_tax_havens_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}'
+                        + f'_{file_name_suffix}.png'
+                    )
                 )
             )
 

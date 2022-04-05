@@ -393,7 +393,14 @@ class SimplifiedGlobalSalesCalculator:
 
         if self.aamne_domestic_sales_perc:
             # If relevant, we replace the BEA domestic sales percentages with the ones from the Analytical AMNE database
-            indices = merged_df[merged_df['PARENT_COUNTRY_CODE'] == merged_df['AFFILIATE_COUNTRY_CODE']].index
+            indices = merged_df[
+                np.logical_and(
+                    merged_df['PARENT_COUNTRY_CODE'] == merged_df['AFFILIATE_COUNTRY_CODE'],
+                    merged_df['PARENT_COUNTRY_CODE'] != 'USA'
+                )
+            ].index
+
+            # indices = merged_df[merged_df['PARENT_COUNTRY_CODE'] == merged_df['AFFILIATE_COUNTRY_CODE']].index
 
             for i in indices:
                 for col in merged_df.columns:
