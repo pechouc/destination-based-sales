@@ -377,8 +377,8 @@ class TaxReformSimulator:
             output_df = output_df.rename(
                 columns={
                     'Parent jurisdiction (whitespaces cleaned)': 'Taxing country',
-                    'UNADJ_ADDITIONAL_REVENUES': 'Based on unadjusted sales (billion EUR)',
-                    'ADJ_ADDITIONAL_REVENUES': 'Based on adjusted sales (billion EUR)'
+                    'UNADJ_ADDITIONAL_REVENUES': 'Based on unadjusted sales (million EUR)',
+                    'ADJ_ADDITIONAL_REVENUES': 'Based on adjusted sales (million EUR)'
                 }
             )
 
