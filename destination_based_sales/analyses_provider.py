@@ -27,7 +27,8 @@ from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_GNI_data = os.path.join(path_to_dir, 'data', 'gross_national_income.csv')
-path_to_UNCTAD_consumption_exp = os.path.join(path_to_dir, 'data', 'us_gdpcomponent_34577843893623.csv')
+# path_to_UNCTAD_consumption_exp = os.path.join(path_to_dir, 'data', 'us_gdpcomponent_34577843893623.csv')
+path_to_UNCTAD_consumption_exp = os.path.join(path_to_dir, 'data', 'us_gdpcomponent_98866982281181.csv')
 
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
@@ -148,16 +149,22 @@ class USAnalysesProvider:
         ).reset_index(drop=True)
 
         df = df[df['ITEM'].map(lambda x: x.strip()) == 'Final consumption expenditure'].copy()
-        df = df[df[['2016', '2017', '2018']].sum(axis=1) != '___'].copy()
 
-        for col in ['2016', '2017', '2018']:
+        list_of_years = ['2016', '2017', '2018', '2019', '2020']
+        df = df[df[list_of_years].sum(axis=1) != '_' * len(list_of_years)].copy()
+
+        for col in list_of_years:
             df[col] = df[col].astype(float)
 
         df = df.drop(columns='ITEM')
 
         df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(lambda x: x.strip())
+
         df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(
-            lambda country_name: {'Switzerland, Liechtenstein': 'Switzerland'}.get(country_name, country_name)
+            lambda country_name: {'France': 'France incl. Monaco'}.get(country_name, country_name)
+        )
+        df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(
+            lambda country_name: {'France, metropolitan': 'France'}.get(country_name, country_name)
         )
 
         geographies = pd.read_csv(self.path_to_geographies)
@@ -197,7 +204,7 @@ class USAnalysesProvider:
             }
         )
 
-        return df.copy()
+        return df.dropna().copy()
 
     def get_table_1(self, formatted=True, sales_type='unrelated'):
 

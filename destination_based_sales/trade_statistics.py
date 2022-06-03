@@ -88,7 +88,7 @@ class TradeStatisticsProcessor:
 
         # If we are focusing only on the adjustment of US multinationals' sales, we match the IRS dataset
         # We also do if the year considered in 2018 since, for this one, we do not have the OECD's CbCR data yet
-        if self.US_only or self.year == 2018:
+        if self.US_only or self.year in [2018, 2019]:
             preprocessor = IRSDataPreprocessor(year=year)
             self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
 
@@ -153,7 +153,7 @@ class TradeStatisticsProcessor:
 
         merchandise, services = self.load_merchandise_and_services_data()
 
-        if self.US_only or self.year == 2018:
+        if self.US_only or self.year in [2018, 2019]:
             # In that case, we must ensure consistency with the IRS' country-by-country data
 
             # For merchandise exports
@@ -278,7 +278,7 @@ class TradeStatisticsProcessor:
         exports_per_continent = self.compute_exports_per_continent()
 
         # We first determine the complete set of affiliate countries that we want to cover
-        if self.US_only or self.year == 2018:
+        if self.US_only or self.year in [2018, 2019]:
 
             # In this case, we want to cover all the affiliate countries present in the IRS' country-by-country data
             processor = IRSDataPreprocessor(year=self.year)

@@ -136,7 +136,7 @@ class BalancedTradeStatsProcessor:
             services = services[services['Year'] == self.year].copy()
 
         except KeyError:
-            url_to_file = 'https://github.com/pechouc/destination-based-sales/blob/tax_reform_bis/'
+            url_to_file = 'https://github.com/pechouc/destination-based-sales/blob/main/'
             url_to_file += 'destination_based_sales/data/OECD-WTO_BATIS_BPM6_Jan2021_bulk.csv?raw=true'
 
             services = pd.read_csv(url_to_file)

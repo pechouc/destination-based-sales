@@ -11,7 +11,7 @@ from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 first_outputs = {}
 second_outputs = {}
 
-for year in [2016, 2017, 2018]:
+for year in [2016, 2017, 2018, 2019]:
     US_only = False if year in [2016, 2017] else True
 
     # We will test a first combination of data sources
