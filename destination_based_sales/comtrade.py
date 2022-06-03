@@ -33,7 +33,7 @@ class UNComtradeProcessor():
         data = data.drop(columns='Year')
 
         # Eliminating certain reporting entities in which we are not interested
-        data = data[~data['Reporter'].isin(['EU-28', 'ASEAN', 'Other Asia, nes'])].copy()
+        data = data[~data['Reporter'].isin(['EU-28', 'EU', 'ASEAN', 'Other Asia, nes'])].copy()
 
         # Eliminating certain partner entities in which we are not interested
         data = data[
