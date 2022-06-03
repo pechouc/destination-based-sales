@@ -134,10 +134,12 @@ class BalancedTradeStatsProcessor:
         # We only keep rows that correspond to the year considered
         try:
             services = services[services['Year'] == self.year].copy()
-        except:
-            abc = 'https://github.com/pechouc/destination-based-sales/blob/tax_reform_bis/destination_based_sales/data/'
-            abc += 'OECD-WTO_BATIS_BPM6_Jan2021_bulk.csv?raw=true'
-            services = pd.read_csv(abc)
+
+        except KeyError:
+            url_to_file = 'https://github.com/pechouc/destination-based-sales/blob/tax_reform_bis/'
+            url_to_file += 'destination_based_sales/data/OECD-WTO_BATIS_BPM6_Jan2021_bulk.csv?raw=true'
+
+            services = pd.read_csv(url_to_file)
             services = services[services['Year'] == self.year].copy()
 
         # We only consider countries and eliminate geographical aggregates from reporters and partners
