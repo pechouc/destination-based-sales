@@ -33,7 +33,7 @@ class UNComtradeProcessor():
         data = data.drop(columns='Year')
 
         # Eliminating certain reporting entities in which we are not interested
-        data = data[~data['Reporter'].isin(['EU-28', 'ASEAN', 'Other Asia, nes'])].copy()
+        data = data[~data['Reporter'].isin(['EU-28', 'EU', 'ASEAN', 'Other Asia, nes'])].copy()
 
         # Eliminating certain partner entities in which we are not interested
         data = data[
@@ -60,11 +60,11 @@ class UNComtradeProcessor():
             values='Trade Value (US$)'
         ).reset_index()
 
-        data_reshaped['RM'] = data_reshaped['RM'].fillna(0)
+        data_reshaped['Re-Import'] = data_reshaped['Re-Import'].fillna(0)
 
-        data_reshaped['NET_IMPORTS'] = data_reshaped['M'] - data_reshaped['RM']
+        data_reshaped['NET_IMPORTS'] = data_reshaped['Import'] - data_reshaped['Re-Import']
 
-        data_reshaped = data_reshaped.drop(columns=['M', 'RM'])
+        data_reshaped = data_reshaped.drop(columns=['Import', 'Re-Import'])
 
         # We flip the dataset from a mapping of imports into a mapping of exports
         # We simply rename the reporting country as the destination and the partner as the exporter

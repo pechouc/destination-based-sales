@@ -56,8 +56,8 @@ class PerIndustryAnalyser:
         - the string path to the list of tax havens;
         - the string path to the "geographies.csv" file.
         """
-        if year not in [2016, 2017, 2018]:
-            raise Exception('For now, only the financial years from 2016 to 2018 (included) are covered.')
+        if year not in [2016, 2017, 2018, 2019]:
+            raise Exception('For now, only the financial years from 2016 to 2019 (included) are covered.')
 
         self.year = year
 
@@ -93,7 +93,7 @@ class PerIndustryAnalyser:
         )
 
         # Eliminating irrelevant columns and rows
-        data = data[data.columns[:6]].copy()
+        data = data[data.columns[:9]].copy()
 
         data.columns = [
             'INDUSTRY',
@@ -112,29 +112,30 @@ class PerIndustryAnalyser:
         data.reset_index(drop=True, inplace=True)
 
         # Adding the right industry name to each observation
-        industry_indices = list(data[~data['INDUSTRY'].isnull()].index)
+        # industry_indices = list(data[~data['INDUSTRY'].isnull()].index)
 
-        industries = {}
+        # industries = {}
 
-        for i in range(len(industry_indices)):
+        # for i in range(len(industry_indices)):
 
-            if i < len(industry_indices) - 1:
-                restricted_df = data.loc[industry_indices[i]:industry_indices[i + 1] - 1].copy()
+        #     if i < len(industry_indices) - 1:
+        #         restricted_df = data.loc[industry_indices[i]:industry_indices[i + 1] - 1].copy()
 
-            else:
-                restricted_df = data.loc[industry_indices[i]:].copy()
+        #     else:
+        #         restricted_df = data.loc[industry_indices[i]:].copy()
 
-            industry = restricted_df['INDUSTRY'].iloc[0]
-            restricted_df['INDUSTRY'] = industry
-            industries[industry] = restricted_df.copy()
+        #     industry = restricted_df['INDUSTRY'].iloc[0]
+        #     restricted_df['INDUSTRY'] = industry
+        #     industries[industry] = restricted_df.copy()
 
-        data = industries[list(industries.keys())[0]].copy()
+        # data = industries[list(industries.keys())[0]].copy()
 
-        for key, value in industries.items():
-            if key == list(industries.keys())[0]:
-                continue
+        # for key, value in industries.items():
+        #     if key == list(industries.keys())[0]:
+        #         continue
 
-            data = pd.concat([data, value], axis=0)
+        #     data = pd.concat([data, value], axis=0)
+        data['INDUSTRY'] = data['INDUSTRY'].ffill()
 
         # Eliminating irrelevant observations
         if exclude_all_jurisdictions:

@@ -8,4 +8,3 @@ dist/
 *.iml
 .DS_Store
 .idea/
-destination_based_sales/data/OECD-WTO_BATIS_BPM6_Jan2021_bulk.csv

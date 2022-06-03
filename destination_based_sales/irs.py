@@ -118,6 +118,9 @@ class IRSDataPreprocessor:
         irs['AFFILIATE_COUNTRY_NAME'] = irs['AFFILIATE_COUNTRY_NAME'].map(
             lambda country_name: 'Congo' if country_name.endswith('(Brazzaville)') else country_name
         )
+        irs['AFFILIATE_COUNTRY_NAME'] = irs['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country_name: 'US Virgin Islands' if country_name == 'U.S. Virgin Islands' else country_name
+        )
 
         irs.reset_index(drop=True, inplace=True)
 
