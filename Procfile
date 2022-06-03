@@ -1,1 +1,1 @@
-web: gunicorn destination_based_sales:app
+web: gunicorn app:app
