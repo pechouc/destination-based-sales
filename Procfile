@@ -1,1 +1,1 @@
-web: gunicorn wsgi:app
+web: gunicorn destination_based_sales:app
