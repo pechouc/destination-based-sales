@@ -129,21 +129,9 @@ class BalancedTradeStatsProcessor:
             )
 
         # This part can be quite long as the dataset is very heavy
-        try:
-            # If we have the file locally
-            services = pd.read_csv(self.path_to_services_data)
+        services = pd.read_csv(self.path_to_services_data)
 
-        except FileNotFoundError:
-            response = requests.get(
-                'https://www.wto.org/english/res_e/statis_e/daily_update_e/OECD-WTO_BATIS_data_BPM6.zip'
-            )
-
-            archive = zipfile.ZipFile(
-                io.BytesIO(response.content),
-                'r'
-            )
-
-            services = pd.read_csv(archive.open('OECD-WTO_BATIS_BPM6_Jan2021_bulk.csv'))
+        print(services.columns)
 
         # We only keep rows that correspond to the year considered
         services = services[services['Year'] == self.year].copy()
