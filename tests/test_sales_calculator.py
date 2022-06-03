@@ -7,7 +7,7 @@ from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 
 def test_us_sales_calculator_missing_values():
 
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         calculator = USSalesCalculator(
             year=year,
             US_only=False,
@@ -30,7 +30,7 @@ def test_us_sales_calculator_missing_values():
 
 def test_us_sales_calculator_matching_totals():
 
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         # Fetching the adjusted sales mapping and grouping by affiliate country
         calculator = USSalesCalculator(
             year=year,
@@ -74,7 +74,7 @@ def test_us_sales_calculator_matching_totals():
 
 def test_us_sales_calculator_duplicate_country_pairs():
 
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         calculator = USSalesCalculator(
             year=year,
             US_only=False,

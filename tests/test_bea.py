@@ -5,7 +5,7 @@ from destination_based_sales.bea import BEADataPreprocessor, ExtendedBEADataLoad
 
 
 def test_missing_values():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         processor = BEADataPreprocessor(year=year)
 
         df = processor.load_final_data()
@@ -18,7 +18,7 @@ def test_missing_values():
 
 
 def test_grand_total():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         processor = BEADataPreprocessor(year=year)
 
         df = processor.load_final_data()
@@ -31,7 +31,7 @@ def test_grand_total():
 
 
 def test_total_foreign():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         processor = BEADataPreprocessor(year=year)
 
         df = processor.load_final_data()
@@ -44,7 +44,7 @@ def test_total_foreign():
 
 
 def test_total_us():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         processor = BEADataPreprocessor(year=year)
 
         df = processor.load_final_data()
@@ -57,7 +57,7 @@ def test_total_us():
 
 
 def test_total_affiliate_country():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         processor = BEADataPreprocessor(year=year)
 
         df = processor.load_final_data()
@@ -72,7 +72,7 @@ def test_total_affiliate_country():
 
 
 def test_total_other_country():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         processor = BEADataPreprocessor(year=year)
 
         df = processor.load_final_data()
@@ -87,7 +87,7 @@ def test_total_other_country():
 
 
 def test_missing_values_extended_BEA():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         loader = ExtendedBEADataLoader(year=year)
 
         df = loader.get_extended_sales_percentages()
@@ -98,7 +98,7 @@ def test_missing_values_extended_BEA():
 
 
 def test_summed_percentages_extended_BEA():
-    for year in [2016, 2017, 2018]:
+    for year in [2016, 2017, 2018, 2019]:
         loader = ExtendedBEADataLoader(year=year)
 
         df = loader.get_extended_sales_percentages()
