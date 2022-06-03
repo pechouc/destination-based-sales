@@ -131,8 +131,6 @@ class BalancedTradeStatsProcessor:
         # This part can be quite long as the dataset is very heavy
         services = pd.read_csv(self.path_to_services_data)
 
-        print(services.columns)
-
         # We only keep rows that correspond to the year considered
         services = services[services['Year'] == self.year].copy()
 
