@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn --chdir destination_based_sales app:app
