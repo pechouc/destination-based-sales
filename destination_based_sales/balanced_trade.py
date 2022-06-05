@@ -7,6 +7,8 @@ import pandas as pd
 import requests
 import zipfile
 
+import warnings
+
 from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
     impute_missing_continent_codes
 
@@ -49,7 +51,14 @@ class BalancedTradeStatsProcessor:
         merchandise = pd.read_csv(self.path_to_merchandise_data)
 
         # Focusing on the year of interest
-        merchandise = merchandise[merchandise['TIME'] == self.year].copy()
+        if self.year == 2019:
+            year_considered = 2018
+            warnings.warn('BIMTS data not available for 2019; using the 2018 statistics instead.')
+
+        else:
+            year_considered = self.year
+
+        merchandise = merchandise[merchandise['TIME'] == year_considered].copy()
 
         # Eliminating irrelevant columns
         merchandise.drop(
