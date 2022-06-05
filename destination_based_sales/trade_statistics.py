@@ -245,9 +245,14 @@ class TradeStatisticsProcessor:
             return merged_df.copy()
 
         else:
-            extract = extract.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
+            extract = extract.groupby(
+                [
+                    'OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE'
+                ]
+            ).sum().reset_index()
 
             extract['AFFILIATE_COUNTRY_CODE'] = 'UKI'
+            extract['AFFILIATE_COUNTRY_CONTINENT_CODE'] = 'AMR'
 
             output_df = pd.concat([merged_df, extract], axis=0)
 
@@ -338,8 +343,6 @@ class TradeStatisticsProcessor:
         missing_countries = all_countries[
             ~all_countries['AFFILIATE_COUNTRY_CODE'].isin(self.valid_exports_distributions)
         ].copy()
-
-        print(missing_countries['AFFILIATE_COUNTRY_CODE'].unique())
 
         # Starting from the exports data that we do have in the "merged_df" DataFrame, we add all the missing countries
         output_df = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'].isin(self.valid_exports_distributions)].copy()
