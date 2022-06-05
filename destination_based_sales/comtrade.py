@@ -61,23 +61,40 @@ class UNComtradeProcessor():
         ).reset_index()
 
         data_reshaped['Re-Import'] = data_reshaped['Re-Import'].fillna(0)
+        data_reshaped['Re-Export'] = data_reshaped['Re-Export'].fillna(0)
 
         data_reshaped['NET_IMPORTS'] = data_reshaped['Import'] - data_reshaped['Re-Import']
+        data_reshaped['NET_EXPORTS'] = data_reshaped['Export'] - data_reshaped['Re-Export']
 
-        data_reshaped = data_reshaped.drop(columns=['Import', 'Re-Import'])
+        data_reshaped = data_reshaped.drop(columns=['Import', 'Re-Import', 'Export', 'Re-Export'])
 
         # We flip the dataset from a mapping of imports into a mapping of exports
         # We simply rename the reporting country as the destination and the partner as the exporter
-        data_reshaped = data_reshaped.rename(
+        base_df = data_reshaped.rename(
             columns={
-                'Year': 'YEAR',
                 'Reporter ISO': 'OTHER_COUNTRY_CODE',
                 'Partner ISO': 'AFFILIATE_COUNTRY_CODE',
                 'NET_IMPORTS': 'MERCHANDISE_EXPORTS'
             }
         )
+        base_df = base_df.drop(columns='NET_EXPORTS').dropna().copy()
 
-        return data_reshaped.copy()
+        # We add exports whenever the destination country does not report any trade data
+        data_reshaped_exports = data_reshaped.drop(columns='NET_IMPORTS').dropna().copy()
+        data_reshaped_exports = data_reshaped_exports[
+            ~data_reshaped_exports['Partner ISO'].isin(base_df['OTHER_COUNTRY_CODE'].unique())
+        ]
+        df_to_append = data_reshaped_exports.rename(
+            columns={
+                'Partner ISO': 'OTHER_COUNTRY_CODE',
+                'Reporter ISO': 'AFFILIATE_COUNTRY_CODE',
+                'NET_EXPORTS': 'MERCHANDISE_EXPORTS'
+            }
+        )
+
+        output_df = pd.concat([base_df, df_to_append], axis=0)
+
+        return output_df.copy()
 
     def load_data_with_geographies(self):
         data = self.load_net_imports_data()
@@ -90,7 +107,7 @@ class UNComtradeProcessor():
         )
 
         data['CONTINENT_CODE'] = data['CONTINENT_CODE'].map(
-            lambda x: 'AMR' if x in ['NAMR', 'SAMR'] else x
+            lambda x: 'AMR' if x in ['NAMR', 'SAMR', 'ATC'] else x  # Attributing Antarctica to Americas (arbitrary)
         )
         data['CONTINENT_CODE'] = data['CONTINENT_CODE'].map(
             lambda x: 'APAC' if x in ['ASIA', 'OCN'] else x
