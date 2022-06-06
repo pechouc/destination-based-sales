@@ -235,6 +235,29 @@ class TradeStatisticsProcessor:
 
         return merged_df.copy()
 
+    def load_merged_data_with_UKI(self):
+
+        merged_df = self.load_merged_data()
+
+        extract = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'].isin(self.UK_CARIBBEAN_ISLANDS)].copy()
+
+        if extract.empty:
+            return merged_df.copy()
+
+        else:
+            extract = extract.groupby(
+                [
+                    'OTHER_COUNTRY_CODE', 'OTHER_COUNTRY_CONTINENT_CODE'
+                ]
+            ).sum().reset_index()
+
+            extract['AFFILIATE_COUNTRY_CODE'] = 'UKI'
+            extract['AFFILIATE_COUNTRY_CONTINENT_CODE'] = 'AMR'
+
+            output_df = pd.concat([merged_df, extract], axis=0)
+
+            return output_df.copy()
+
     def compute_exports_per_continent(self):
         merged_df = self.load_merged_data()
 
@@ -274,7 +297,7 @@ class TradeStatisticsProcessor:
     def load_extended_exports_distributions(self):
 
         # We load unextended data and the exports distributions of each continent
-        merged_df = self.load_merged_data()
+        merged_df = self.load_merged_data_with_UKI()
         exports_per_continent = self.compute_exports_per_continent()
 
         # We first determine the complete set of affiliate countries that we want to cover

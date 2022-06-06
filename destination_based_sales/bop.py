@@ -54,8 +54,6 @@ class USBalanceOfPaymentsProcessor():
 
         dfs = []
 
-        dfs = []
-
         for sheet_name in ['Sheet0', 'Sheet1']:
 
             sheet = pd.read_excel(
