@@ -1556,7 +1556,22 @@ class GlobalAnalysesProvider:
 
             new_columns.append(new_column)
 
-            merged_df[new_column] = merged_df[column] / merged_df[column].sum() * 100
+            if column == f'{self.macro_indicator_prefix}_{self.year}':
+                temp = merged_df[
+                    ['AFFILIATE_COUNTRY_CODE', column]
+                ].groupby(
+                    'AFFILIATE_COUNTRY_CODE'
+                ).first().reset_index()
+                temp[new_column] = temp[column] / temp[column].sum() * 100
+
+                merged_df = merged_df.merge(
+                    temp,
+                    how='inner',
+                    on='AFFILIATE_COUNTRY_CODE'
+                )
+
+            else:
+                merged_df[new_column] = merged_df[column] / merged_df[column].sum() * 100
 
         return merged_df.copy()
 
@@ -1932,7 +1947,22 @@ class GlobalAnalysesProvider:
 
             new_columns.append(new_column)
 
-            sales_mapping[new_column] = sales_mapping[column] / sales_mapping[column].sum() * 100
+            if column == f'{self.macro_indicator_prefix}_{self.year}':
+                temp = sales_mapping[
+                    ['AFFILIATE_COUNTRY_CODE', column]
+                ].groupby(
+                    'AFFILIATE_COUNTRY_CODE'
+                ).first().reset_index()
+                temp[new_column] = temp[column] / temp[column].sum() * 100
+
+                sales_mapping = sales_mapping.merge(
+                    temp,
+                    how='inner',
+                    on='AFFILIATE_COUNTRY_CODE'
+                )
+
+            else:
+                sales_mapping[new_column] = sales_mapping[column] / sales_mapping[column].sum() * 100
 
         return sales_mapping.copy()
 
