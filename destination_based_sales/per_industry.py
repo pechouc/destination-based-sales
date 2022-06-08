@@ -26,6 +26,7 @@ from destination_based_sales.utils import CONTINENT_CODES_TO_IMPUTE_TRADE
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 path_to_GNI_data = os.path.join(path_to_dir, 'data', 'gross_national_income.csv')
+path_to_CONS_data = os.path.join(path_to_dir, 'data', 'us_gdpcomponent_98866982281181.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 path_to_industry_names_mapping = os.path.join(path_to_dir, 'data', 'industry_names_mapping.json')
@@ -42,6 +43,7 @@ class PerIndustryAnalyser:
     def __init__(
         self,
         year,
+        macro_indicator,
         path_to_dir=path_to_dir,
         path_to_tax_haven_list=path_to_tax_haven_list,
         path_to_geographies=path_to_geographies
@@ -60,6 +62,20 @@ class PerIndustryAnalyser:
             raise Exception('For now, only the financial years from 2016 to 2019 (included) are covered.')
 
         self.year = year
+
+        self.macro_indicator = macro_indicator
+
+        if macro_indicator == 'CONS':
+            self.macro_indicator_name = 'consumption expenditures'
+
+        elif macro_indicator == 'GNI':
+            self.macro_indicator_name = 'GNI'
+
+        else:
+            raise Exception(
+                'Macroeconomic indicator can either be Gross National Income (pass "macro_indicator=GNI" as argument) '
+                + 'or the UNCTAD consumption expenditure indicator (pass "macro_indicator=CONS" as argument).'
+            )
 
         # We load the list of tax havens in a dedicated attribute
         self.path_to_tax_haven_list = path_to_tax_haven_list
@@ -93,7 +109,7 @@ class PerIndustryAnalyser:
         )
 
         # Eliminating irrelevant columns and rows
-        data = data[data.columns[:9]].copy()
+        data = data[data.columns[:6]].copy()
 
         data.columns = [
             'INDUSTRY',
@@ -248,7 +264,93 @@ class PerIndustryAnalyser:
 
         return data.copy()
 
-    def get_industry_overview_table(self, output_excel=True):
+    def load_data_with_CONS(self, dropna=False, path_to_CONS_data=path_to_CONS_data):
+        """
+        Building upon the previous method, "load_clean_data", this method allows to load and preprocess the industry-
+        specific country-by-country data while adding the final consumption expenditures of each partner country, for
+        the corresponding year. It takes two arguments:
+
+        - a boolean, "dropna", indicating whether or not to exclude the partner countries for which we lack the GNI;
+        - the string path to the file containing consumption expenditure data.
+        """
+
+        # Loading and cleaning industry-specific country-by-country data
+        data = self.load_clean_data()
+
+        df = pd.read_csv(path_to_CONS_data, encoding='latin')
+
+        df = df.reset_index()
+        df.columns = df.iloc[0]
+        df = df.iloc[2:].copy()
+
+        df = df.rename(
+            columns={
+                np.nan: 'COUNTRY_NAME',
+                'YEAR': 'ITEM'
+            }
+        ).reset_index(drop=True)
+
+        df = df[df['ITEM'].map(lambda x: x.strip()) == 'Final consumption expenditure'].copy()
+
+        list_of_years = ['2016', '2017', '2018', '2019', '2020']
+        df = df[df[list_of_years].sum(axis=1) != '_' * len(list_of_years)].copy()
+
+        for col in list_of_years:
+            df[col] = df[col].astype(float)
+
+        df = df.drop(columns='ITEM')
+
+        df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(lambda x: x.strip())
+
+        df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(
+            lambda country_name: {'France': 'France incl. Monaco'}.get(country_name, country_name)
+        )
+        df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(
+            lambda country_name: {'France, metropolitan': 'France'}.get(country_name, country_name)
+        )
+
+        geographies = pd.read_csv(self.path_to_geographies)
+
+        df = df.merge(
+            geographies,
+            how='left',
+            left_on='COUNTRY_NAME', right_on='NAME'
+        )
+
+        df['CONTINENT_CODE'] = df['CONTINENT_CODE'].map(
+            lambda x: 'APAC' if x in ['ASIA', 'OCN'] or x is None else x
+        )
+
+        df['CONTINENT_CODE'] = df['CONTINENT_CODE'].map(
+            lambda x: 'AMR' if x in ['SAMR', 'NAMR'] else x
+        )
+
+        df = df[['COUNTRY_NAME', 'CODE', 'CONTINENT_CODE', str(self.year)]].copy()
+
+        df = df.rename(
+            columns={
+                'CODE': 'COUNTRY_CODE',
+                str(self.year): f'CONS_{str(self.year)}'
+            }
+        )
+
+        df = df[['COUNTRY_CODE', f'CONS_{str(self.year)}']].copy()
+
+        # Merging the two datasets on partner country codes
+        data = data.merge(
+            df,
+            how='left',
+            left_on='AFFILIATE_COUNTRY_CODE', right_on='COUNTRY_CODE'
+        )
+
+        data.drop(columns=['COUNTRY_CODE'], inplace=True)
+
+        if dropna:
+            data.dropna(inplace=True)
+
+        return data.copy()
+
+    def get_industry_overview_table(self, output_excel=True, path_to_folder='/Users/Paul-Emmanuel/Desktop/'):
         """
         This method allows to output the industry overview table that shows, for each year in the sample period, the
         distribution of US total unrelated-party revenues and foreign unrelated-party revenues between industries. It
@@ -258,9 +360,9 @@ class PerIndustryAnalyser:
         """
         final_output = {}
 
-        for year in [2016, 2017, 2018]:
+        for year in [2016, 2017, 2018, 2019]:
             # We instantiate an industry-specific analyser for each year
-            analyser = PerIndustryAnalyser(year=year)
+            analyser = PerIndustryAnalyser(year=year, macro_indicator=self.macro_indicator)
 
             # Loading the data
             data = analyser.load_clean_data(exclude_all_jurisdictions=False)
@@ -302,13 +404,53 @@ class PerIndustryAnalyser:
 
         # Outputting the Excel file if relevant
         if output_excel:
-            path_to_excel_file = '/Users/Paul-Emmanuel/Desktop/industry_overview_table_PYTHON_OUTPUT.xlsx'
+            path_to_excel_file = path_to_folder + 'industry_overview_table_PYTHON_OUTPUT.xlsx'
 
             with pd.ExcelWriter(path_to_excel_file, engine='xlsxwriter') as writer:
                 for key, value in final_output.items():
                     value.to_excel(writer, sheet_name=str(key), index=False)
 
         return final_output.copy()
+
+    def get_industry_overview_table_simplified(self):
+        # Loading the data
+        data = self.load_clean_data(exclude_all_jurisdictions=False)
+
+        # Focusing on industry totals and US-US rows
+        data = data[data['AFFILIATE_COUNTRY_NAME'].isin(['All jurisdictions', 'United States'])].copy()
+
+        # Eliminating irrelevant columns
+        data.drop(
+            columns=[
+                'AFFILIATE_COUNTRY_CODE', 'NB_REPORTING_MNEs',
+                'RELATED_PARTY_REVENUES', 'TOTAL_REVENUES'
+            ],
+            inplace=True
+        )
+
+        # We pivot the DataFrame to show the revenues of each industry in all jurisdictions and in the US
+        df = data.pivot(
+            index='INDUSTRY',
+            columns='AFFILIATE_COUNTRY_NAME',
+            values='UNRELATED_PARTY_REVENUES'
+        ).reset_index()
+
+        # Foreign unrelated-party revenues simply correspond to the total minus the US-US revenues
+        df['FOREIGN_UPR'] = df['All jurisdictions'] - df['United States']
+
+        # We move from absolute amounts to shares / a distribution
+        df['Share of total unrelated-party revenues (%)'] = (
+            df['All jurisdictions'] / df['All jurisdictions'].sum() * 100
+        )
+        df['Share of foreign unrelated-party revenues (%)'] = df['FOREIGN_UPR'] / df['FOREIGN_UPR'].sum() * 100
+
+        df.drop(columns=['All jurisdictions', 'United States', 'FOREIGN_UPR'], inplace=True)
+
+        # Ranking industries based on decreasing importance in the distribution
+        df.sort_values(by='Share of foreign unrelated-party revenues (%)', ascending=False, inplace=True)
+
+        return df.rename(columns={'INDUSTRY': 'Industry'}).reset_index(drop=True)
+
 
     def plot_industry_specific_charts(self, save_PNG=False, path_to_folder=None):
         """
@@ -326,8 +468,12 @@ class PerIndustryAnalyser:
         if save_PNG and path_to_folder is None:
             raise Exception('To save the figure as a PNG, you must indicate the target folder as an argument.')
 
-        # Loading cleaned data with GNI data (eliminating rows for which we have no GNI data)
-        data = self.load_data_with_GNI(dropna=True)
+        if self.macro_indicator == 'GNI':
+            # Loading cleaned data with GNI data (eliminating rows for which we have no GNI data)
+            data = self.load_data_with_GNI(dropna=True)
+        else:
+            # Loading cleaned data with consumption expenditure data (eliminating rows for which we have no data)
+            data = self.load_data_with_CONS(dropna=True)
 
         fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(25, 40))
 
@@ -346,17 +492,18 @@ class PerIndustryAnalyser:
             restricted_df['SHARE_OF_UNRELATED_PARTY_REVENUES'] = (
                 restricted_df['UNRELATED_PARTY_REVENUES'].astype(float) /
                 restricted_df['UNRELATED_PARTY_REVENUES'].sum()
-            )
+            ) * 100
 
             # Computing each partner country's share of GNI
-            restricted_df[f'SHARE_OF_GNI_{self.year}'] = (
-                restricted_df[f'GNI_{self.year}'] / restricted_df[f'GNI_{self.year}'].sum()
-            )
+            restricted_df[f'SHARE_OF_{self.macro_indicator}_{self.year}'] = (
+                restricted_df[f'{self.macro_indicator}_{self.year}']
+                / restricted_df[f'{self.macro_indicator}_{self.year}'].sum()
+            ) * 100
 
             # Computing the correlation between the two shares for the industry under consideration
             correlation = np.corrcoef(
                 restricted_df['SHARE_OF_UNRELATED_PARTY_REVENUES'],
-                restricted_df[f'SHARE_OF_GNI_{self.year}']
+                restricted_df[f'SHARE_OF_{self.macro_indicator}_{self.year}']
             )[1, 0]
 
             # Distinguishing non-havens, tax havens and NAFTA members
@@ -368,7 +515,7 @@ class PerIndustryAnalyser:
 
             restricted_df.rename(
                 columns={
-                    f'SHARE_OF_GNI_{self.year}': f'Share of total {self.year} GNI (%)',
+                    f'SHARE_OF_{self.macro_indicator}_{self.year}': f'Share of total {self.year} {self.macro_indicator_name} (%)',
                     'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of total unrelated-party revenues (%)'
                 },
                 inplace=True
@@ -376,7 +523,7 @@ class PerIndustryAnalyser:
 
             # Building the graph with the indicative regression line and the scattered plot
             sns.regplot(
-                x=f'Share of total {self.year} GNI (%)',
+                x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
                 y='Share of total unrelated-party revenues (%)',
                 data=restricted_df,
                 ci=None,
@@ -384,7 +531,7 @@ class PerIndustryAnalyser:
             )
 
             sns.scatterplot(
-                x=f'Share of total {self.year} GNI (%)',
+                x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
                 y='Share of total unrelated-party revenues (%)',
                 data=restricted_df,
                 hue='Category',
@@ -398,6 +545,8 @@ class PerIndustryAnalyser:
             # Title indicating the industry being considered and the correlation between the share of foreign unrelated-
             # party revenues and the share of GNI
             ax.set_title(f'{industry} - Correlation of {round(correlation, 2)}')
+
+        axes.flatten()[-1].set_axis_off()
 
         plt.show()
 

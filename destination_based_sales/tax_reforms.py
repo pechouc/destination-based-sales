@@ -2,11 +2,14 @@
 ########################################################################################################################
 # --- Imports
 
+import os
+
 import numpy as np
 import pandas as pd
 
+from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 from destination_based_sales.sales_calculator import SimplifiedGlobalSalesCalculator
-from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS
+from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, define_category
 
 from tax_deficit_simulator.calculator import TaxDeficitCalculator
 
@@ -14,16 +17,8 @@ from tax_deficit_simulator.calculator import TaxDeficitCalculator
 ########################################################################################################################
 # --- Diverse
 
-path = 'https://raw.githubusercontent.com/eutaxobservatory/tax-deficit-simulator/'
-path += 'master/tax_deficit_simulator/data/listofeucountries_csv.csv'
-
-eu_27_country_codes = pd.read_csv(
-    path,
-    delimiter=';'
-)
-
-eu_27_country_codes = list(eu_27_country_codes['Alpha-3 code'].unique())
-eu_27_country_codes.remove('GBR')
+path_to_dir = os.path.dirname(os.path.abspath(__file__))
+path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
 
 ########################################################################################################################
@@ -35,10 +30,12 @@ class TaxReformSimulator:
 
         self.year = year
 
-        # Storing the global sales calculator and the unadjusted / adjusted sales mappings
+        # Storing the global sales calculator and the unadjusted / adjusted sales mappings without any filtering based
+        # on the detail of the bilateral breakdown provided in CbCR statistics
         self.sales_calculator = SimplifiedGlobalSalesCalculator(
             year=self.year,
             aamne_domestic_sales_perc=False,
+            breakdown_threshold=0,
             US_merchandise_exports_source='Comtrade',
             US_services_exports_source='BaTIS',
             non_US_merchandise_exports_source='Comtrade',
@@ -50,8 +47,26 @@ class TaxReformSimulator:
         )
 
         self.oecd_sales_mapping = self.sales_calculator.oecd.copy()
-
         self.adjusted_sales_mapping = self.sales_calculator.get_final_sales_mapping()
+
+        # Storing the global sales calculator and the unadjusted / adjusted sales mappings with the benchmark filtering
+        # based on the detail of the bilateral breakdown provided in CbCR statistics
+        self.restr_sales_calculator = SimplifiedGlobalSalesCalculator(
+            year=self.year,
+            aamne_domestic_sales_perc=False,
+            breakdown_threshold=60,
+            US_merchandise_exports_source='Comtrade',
+            US_services_exports_source='BaTIS',
+            non_US_merchandise_exports_source='Comtrade',
+            non_US_services_exports_source='BaTIS',
+            winsorize_export_percs=True,
+            US_winsorizing_threshold=0.5,
+            non_US_winsorizing_threshold=0.5,
+            service_flows_to_exclude=[]
+        )
+
+        self.restr_oecd_sales_mapping = self.restr_sales_calculator.oecd.copy()
+        self.restr_adjusted_sales_mapping = self.restr_sales_calculator.get_final_sales_mapping()
 
         # Storing the tax deficits to redistribute
         self.tax_deficit_calculator = TaxDeficitCalculator(
@@ -68,7 +83,11 @@ class TaxReformSimulator:
 
         self.tax_deficit_calculator.load_clean_data()
 
-        self.tax_deficits = self.tax_deficit_calculator.get_total_tax_deficits(minimum_ETR=0.15)
+        tax_deficits = self.tax_deficit_calculator.get_total_tax_deficits(minimum_ETR=0.15)
+        tax_deficits['tax_deficit'] /= self.tax_deficit_calculator.USD_to_EUR
+        tax_deficits['tax_deficit'] /= self.tax_deficit_calculator.multiplier_2021
+
+        self.tax_deficits = tax_deficits.copy()
 
     def compute_Barake_et_al_unilateral_scenarios(self, elim_negative_revenues=True):
 
@@ -264,6 +283,8 @@ class TaxReformSimulator:
     def get_formatted_unilateral_scenario_comparison(self, table_type):
         output_df = self.compute_Barake_et_al_unilateral_scenarios()
 
+        eu_27_country_codes = self.tax_deficit_simulator.eu_27_country_codes.copy()
+
         # Identifying EU countries and non-EU OECD-reporting countries
         output_df['Category'] = output_df['Parent jurisdiction (alpha-3 code)'].isin(eu_27_country_codes) * 1
 
@@ -343,9 +364,9 @@ class TaxReformSimulator:
             output_df = output_df.rename(
                 columns={
                     'Parent jurisdiction (whitespaces cleaned)': 'Taxing country',
-                    'tax_deficit': 'Own tax deficit (€bn)',
-                    'UNADJ_TOTAL_TAX_DEFICITS': 'Based on unadjusted sales (billion EUR)',
-                    'ADJ_TOTAL_TAX_DEFICITS': 'Based on adjusted sales (billion EUR)'
+                    'tax_deficit': 'Own tax deficit (billion USD)',
+                    'UNADJ_TOTAL_TAX_DEFICITS': 'Based on unadjusted sales (billion USD)',
+                    'ADJ_TOTAL_TAX_DEFICITS': 'Based on adjusted sales (billion USD)'
                 }
             )
 
@@ -377,8 +398,8 @@ class TaxReformSimulator:
             output_df = output_df.rename(
                 columns={
                     'Parent jurisdiction (whitespaces cleaned)': 'Taxing country',
-                    'UNADJ_ADDITIONAL_REVENUES': 'Based on unadjusted sales (million EUR)',
-                    'ADJ_ADDITIONAL_REVENUES': 'Based on adjusted sales (million EUR)'
+                    'UNADJ_ADDITIONAL_REVENUES': 'Based on unadjusted sales (million USD)',
+                    'ADJ_ADDITIONAL_REVENUES': 'Based on adjusted sales (million USD)'
                 }
             )
 
@@ -397,10 +418,12 @@ class TaxReformSimulator:
                 + '"total_amounts" and "focus_on_foreign_collection".'
             )
 
-    def full_sales_apportionment(self, elim_negative_revenues=True):
-
-        oecd_sales_mapping = self.oecd_sales_mapping.copy()
-        adjusted_sales_mapping = self.adjusted_sales_mapping.copy()
+    def get_relevant_tax_deficits(self, verbose=True):
+        """
+        With this method, we restrict the estimated tax deficits to the set of countries for which we have prepared an
+        adjusted sales mapping.
+        """
+        unique_parent_countries = self.restr_oecd_sales_mapping['PARENT_COUNTRY_CODE'].unique()
 
         tax_deficits = self.tax_deficits.copy()
 
@@ -427,6 +450,89 @@ class TaxReformSimulator:
 
         restr_tax_deficits = pd.concat([restr_tax_deficits, UKI_extract], axis=0)
         restr_tax_deficits['tax_deficit'] = restr_tax_deficits['tax_deficit'].astype(float)
+
+        # ### Restricting to countries for which we have sales mappings -------------------------------------------- ###
+
+        restr_tax_deficits = tax_deficits[
+            tax_deficits['Parent jurisdiction (alpha-3 code)'].isin(unique_parent_countries)
+        ].copy()
+
+        if verbose:
+            numerator = restr_tax_deficits['tax_deficit'].sum() / 10**9
+            denominator = tax_deficits['tax_deficit'].sum() / 10**9
+            ratio = numerator / denominator * 100
+
+            print(
+                f'We restrict the set of relevant tax deficit estimates to {len(unique_parent_countries)}'
+                + ' unique parent countries for which we have satisfying unadjusted and adjusted sales mappings.'
+            )
+
+            print(
+                f'They represent a total tax deficit of {round(numerator, 2)} billion USD.'
+            )
+
+            print(
+                f'Vs. a full sample estimate of {round(denominator, 2)} billion USD.'
+            )
+
+            print(
+                f'So the "coverage rate" for the estimated tax deficits is of {round(ratio, 1)}%.'
+            )
+
+        return restr_tax_deficits.copy()
+
+    def get_set_of_countries_focus_table(self):
+
+        # Identifying the partner jurisdictions reported by all the relevant parent countries
+        df = self.restr_oecd_sales_mapping.copy()
+
+        df = df.groupby('AFFILIATE_COUNTRY_CODE').nunique()['PARENT_COUNTRY_CODE'].reset_index()
+
+        df = df.rename(columns={'PARENT_COUNTRY_CODE': 'PARENT_COUNT'})
+
+        df = df[
+            df['PARENT_COUNT'] == self.restr_oecd_sales_mapping['PARENT_COUNTRY_CODE'].nunique()
+        ].copy()
+
+        recurring_partner_codes = list(
+            df['AFFILIATE_COUNTRY_CODE'].unique()
+        )
+
+        # Full set of countries on which we focus
+        full_set = np.unique(recurring_partner_codes)
+
+        full_set = pd.DataFrame(full_set)
+        full_set.columns = ['COUNTRY_CODE']
+
+        geographies = pd.read_csv(path_to_geographies)
+        geographies = geographies.groupby('CODE').first()['NAME'].reset_index()
+
+        full_set = full_set.merge(
+            geographies,
+            how='left',
+            left_on='COUNTRY_CODE', right_on='CODE'
+        )
+
+        full_set['NAME'] = full_set.apply(
+            lambda row: {'UKI': 'UK Caribbean Islands'}.get(row['COUNTRY_CODE'], row['NAME']),
+            axis=1
+        )
+
+        full_set = full_set.drop(columns=['COUNTRY_CODE'])
+
+        full_set = full_set.sort_values(by='NAME').reset_index(drop=True)
+
+        return full_set.copy()
+
+    def get_full_sales_apportionment(self, elim_negative_revenues=True):
+
+        oecd_sales_mapping = self.restr_oecd_sales_mapping.copy()
+        adjusted_sales_mapping = self.restr_adjusted_sales_mapping.copy()
+
+        restr_tax_deficits = self.get_relevant_tax_deficits(verbose=False)
+
+        focus_set = self.get_set_of_countries_focus_table()
+        focus_set_codes = focus_set['CODE'].unique()
 
         # ### Preparing the unadjusted sales mapping --------------------------------------------------------------- ###
 
@@ -468,6 +574,7 @@ class TaxReformSimulator:
         parent_totals = restr_adjusted_mapping.groupby(
             'PARENT_COUNTRY_CODE'
         ).sum().to_dict()['UNRELATED_PARTY_REVENUES']
+
         restr_adjusted_mapping['URP_PERCENTAGE'] = (
             restr_adjusted_mapping['UNRELATED_PARTY_REVENUES']
             / restr_adjusted_mapping['PARENT_COUNTRY_CODE'].map(parent_totals)
@@ -488,8 +595,12 @@ class TaxReformSimulator:
             ]
         )
 
+        merged_df = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'].isin(focus_set_codes)].copy()
+
         merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
-        # unadjusted_temp = merged_df.groupby('AFFILIATE_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
+        unadjusted_temp = merged_df.groupby('AFFILIATE_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
+
+        self.unadjusted_temp = unadjusted_temp.copy()
 
         # ### Deducing the adjusted distribution of revenues ------------------------------------------------------- ###
 
@@ -504,7 +615,101 @@ class TaxReformSimulator:
             ]
         )
 
-        merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
-        # adjusted_temp = merged_df.groupby('OTHER_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES']
+        merged_df = merged_df[merged_df['OTHER_COUNTRY_CODE'].isin(focus_set_codes)].copy()
 
-        return restr_tax_deficits.copy()
+        merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
+        adjusted_temp = merged_df.groupby('OTHER_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
+
+        self.adjusted_temp = adjusted_temp.copy()
+
+        # ### Deducing the unadjusted distribution of revenues from foreign MNEs only ------------------------------ ###
+
+        merged_df = restr_oecd_mapping.merge(
+            restr_tax_deficits,
+            how='left',
+            left_on='PARENT_COUNTRY_CODE', right_on='Parent jurisdiction (alpha-3 code)'
+        ).drop(
+            columns=[
+                'Parent jurisdiction (alpha-3 code)',
+                'Parent jurisdiction (whitespaces cleaned)'
+            ]
+        )
+
+        merged_df = merged_df[merged_df['AFFILIATE_COUNTRY_CODE'].isin(focus_set_codes)].copy()
+
+        merged_df = merged_df[merged_df['PARENT_COUNTRY_CODE'] != merged_df['AFFILIATE_COUNTRY_CODE']].copy()
+
+        merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
+        unadjusted_foreign_temp = merged_df.groupby('AFFILIATE_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
+
+        self.unadjusted_foreign_temp = unadjusted_foreign_temp.copy()
+
+        # ### Deducing the unadjusted distribution of revenues from foreign MNEs only ------------------------------ ###
+
+        merged_df = restr_adjusted_mapping.merge(
+            restr_tax_deficits,
+            how='left',
+            left_on='PARENT_COUNTRY_CODE', right_on='Parent jurisdiction (alpha-3 code)'
+        ).drop(
+            columns=[
+                'Parent jurisdiction (alpha-3 code)',
+                'Parent jurisdiction (whitespaces cleaned)'
+            ]
+        )
+
+        merged_df = merged_df[merged_df['OTHER_COUNTRY_CODE'].isin(focus_set_codes)].copy()
+
+        merged_df = merged_df[merged_df['PARENT_COUNTRY_CODE'] != merged_df['OTHER_COUNTRY_CODE']].copy()
+
+        merged_df['ATTRIBUTED_REVENUES'] = merged_df['URP_PERCENTAGE'] * merged_df['tax_deficit']
+        adjusted_foreign_temp = merged_df.groupby('OTHER_COUNTRY_CODE').sum()['ATTRIBUTED_REVENUES'].to_dict()
+
+        self.adjusted_foreign_temp = adjusted_foreign_temp.copy()
+
+        # ### Gathering the different results in a single table ---------------------------------------------------- ###
+
+        focus_set[
+            'Full apportionment based on unadjusted sales (billion USD)'
+        ] = focus_set['CODE'].map(
+            lambda x: unadjusted_temp.get(x, 0)
+        ) / 10**9
+
+        focus_set[
+            'Full apportionment based on adjusted sales (billion USD)'
+        ] = focus_set['CODE'].map(
+            lambda x: adjusted_temp.get(x, 0)
+        ) / 10**9
+
+        focus_set[
+            'Foreign collection only, based on unadjusted sales (million USD)'
+        ] = focus_set['CODE'].map(
+            lambda x: unadjusted_foreign_temp.get(x, 0)
+        ) / 10**6
+
+        focus_set[
+            'Foreign collection only, based on adjusted sales (million USD)'
+        ] = focus_set['CODE'].map(
+            lambda x: adjusted_foreign_temp.get(x, 0)
+        ) / 10**6
+
+        # ### Formatting the table --------------------------------------------------------------------------------- ###
+
+        ser = focus_set.sum()
+        ser.loc['NAME'] = 'Full sample - Total'
+        focus_set = pd.concat([focus_set, pd.DataFrame(ser).T], axis=0)
+
+        ser = focus_set[focus_set['IS_TAX_HAVEN'] == 0].sum()
+        ser.loc['NAME'] = 'Non-havens - Total'
+        ser.loc['IS_TAX_HAVEN'] = 0.5
+        focus_set = pd.concat([focus_set, pd.DataFrame(ser).T], axis=0)
+
+        ser = focus_set[focus_set['IS_TAX_HAVEN'] == 1].sum()
+        ser.loc['NAME'] = 'Tax havens - Total'
+        ser.loc['IS_TAX_HAVEN'] = 1.5
+        focus_set = pd.concat([focus_set, pd.DataFrame(ser).T], axis=0)
+
+        focus_set = focus_set.sort_values(by=['IS_TAX_HAVEN', 'NAME'])
+        focus_set = focus_set.drop(columns=['IS_TAX_HAVEN', 'CODE'])
+        focus_set = focus_set.rename(columns={'NAME': 'Country name'})
+
+        return focus_set.copy()

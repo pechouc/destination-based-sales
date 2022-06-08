@@ -223,7 +223,7 @@ class ExtendedBEADataLoader:
 
         # Defining the complete set of affiliate countries to cover eventually
         if year in [2016, 2017]:
-            oecd_preprocessor = CbCRPreprocessor(year=year)
+            oecd_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=0)
             oecd = oecd_preprocessor.get_preprocessed_revenue_data()
 
             self.target_countries = oecd[

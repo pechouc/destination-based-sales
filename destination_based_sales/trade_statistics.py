@@ -93,7 +93,7 @@ class TradeStatisticsProcessor:
             self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
 
         else:
-            oecd_preprocessor = CbCRPreprocessor(year=year)
+            oecd_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=0)
             temp = oecd_preprocessor.get_preprocessed_revenue_data()
             self.unique_OECD_country_codes = temp['AFFILIATE_COUNTRY_CODE'].unique()
 
@@ -321,7 +321,7 @@ class TradeStatisticsProcessor:
         else:
 
             # In this case, we want to cover all the affiliate countries present in the OECD's country-by-country data
-            processor = CbCRPreprocessor(year=self.year)
+            processor = CbCRPreprocessor(year=self.year, breakdown_threshold=0)
             all_countries = processor.get_preprocessed_revenue_data()
 
             all_countries = all_countries.rename(
