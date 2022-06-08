@@ -270,7 +270,7 @@ class USAnalysesProvider:
 
         return df.copy()
 
-    def get_intermediary_dataframe_1(self, include_macro_indicator):
+    def get_intermediary_dataframe_1(self, include_macro_indicator, verbose=False):
 
         irs = self.irs.copy()
 
@@ -284,7 +284,41 @@ class USAnalysesProvider:
                 left_on='CODE', right_on='COUNTRY_CODE'
             )
 
-            merged_df = merged_df[~merged_df[f'{self.macro_indicator_prefix}_{self.year}'].isnull()]
+            if verbose:
+                print(
+                    merged_df[f'{self.macro_indicator_prefix}_{self.year}'].isnull().sum(),
+                    'foreign partner countries are eliminated because we lack the macroeconomic indicator for them.'
+                )
+
+                temp = merged_df[merged_df['AFFILIATE_COUNTRY_NAME'] != 'United States'].copy()
+                temp = (
+                    temp[
+                        temp[f'{self.macro_indicator_prefix}_{self.year}'].isnull()
+                    ]['UNRELATED_PARTY_REVENUES'].sum()
+                    / temp['UNRELATED_PARTY_REVENUES'].sum() * 100
+                )
+
+                print(
+                    'They represent',
+                    round(temp, 2),
+                    'of the foreign unrelated-party revenues in the table.'
+                )
+
+                temp = merged_df[merged_df['AFFILIATE_COUNTRY_NAME'] != 'United States'].copy()
+                temp = (
+                    temp[
+                        temp['CODE'].isin(self.tax_haven_country_codes)
+                    ][f'{self.macro_indicator_prefix}_{self.year}'].sum()
+                    / temp[f'{self.macro_indicator_prefix}_{self.year}'].sum() * 100
+                )
+
+                print(
+                    'Tax havens represent',
+                    round(temp, 2),
+                    'of the final consumption expenditures in the table.'
+                )
+
+            merged_df = merged_df[~merged_df[f'{self.macro_indicator_prefix}_{self.year}'].isnull()].copy()
 
             columns_of_interest.append(f'{self.macro_indicator_prefix}_{self.year}')
 
@@ -336,9 +370,9 @@ class USAnalysesProvider:
 
         return output.copy()
 
-    def get_table_2_b(self, formatted=True):
+    def get_table_2_b(self, formatted=True, verbose=False):
 
-        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=True)
+        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=True, verbose=verbose)
 
         output = merged_df[
             [
@@ -403,10 +437,15 @@ class USAnalysesProvider:
 
             comment = (
                 f'Correlation between unrelated-party revenues and {self.macro_indicator_name} '
-                + f'in {self.year}: {round(correlation, 5)}'
+                + f'in {self.year}: {round(correlation, 2)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 
@@ -727,10 +766,15 @@ class USAnalysesProvider:
 
             comment = (
                 'Correlation between unrelated-party revenues and '
-                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
+                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 
@@ -930,7 +974,12 @@ class USAnalysesProvider:
             ascending=ascending
         ).copy()
 
-        plt.rcParams.update({'font.size': 13})
+        plt.rcParams.update(
+            {
+                'axes.titlesize': 20,
+                'axes.labelsize': 20
+            }
+        )
 
         plt.figure(figsize=figsize)
 
@@ -1616,7 +1665,12 @@ class GlobalAnalysesProvider:
                 + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 

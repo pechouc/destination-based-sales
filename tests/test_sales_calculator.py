@@ -102,6 +102,7 @@ def test_simplified_global_sales_calculator_missing_values():
         calculator = SimplifiedGlobalSalesCalculator(
             year=year,
             aamne_domestic_sales_perc=False,
+            breakdown_threshold=60,
             US_merchandise_exports_source='Comtrade',
             US_services_exports_source='BaTIS',
             non_US_merchandise_exports_source='Comtrade',
@@ -125,6 +126,7 @@ def test_simplified_global_sales_calculator_duplicate_country_pairs():
         calculator = SimplifiedGlobalSalesCalculator(
             year=year,
             aamne_domestic_sales_perc=False,
+            breakdown_threshold=60,
             US_merchandise_exports_source='Comtrade',
             US_services_exports_source='BaTIS',
             non_US_merchandise_exports_source='Comtrade',
@@ -151,6 +153,7 @@ def test_simplified_global_sales_calculator_matching_totals():
         calculator = SimplifiedGlobalSalesCalculator(
             year=year,
             aamne_domestic_sales_perc=False,
+            breakdown_threshold=60,
             US_merchandise_exports_source='Comtrade',
             US_services_exports_source='BaTIS',
             non_US_merchandise_exports_source='Comtrade',
@@ -169,7 +172,7 @@ def test_simplified_global_sales_calculator_matching_totals():
         ).sum().reset_index()
 
         # Fetching the OECD revenue data for comparison
-        preprocessor = CbCRPreprocessor(year=year)
+        preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=60)
         oecd = preprocessor.get_preprocessed_revenue_data()
         oecd = oecd[
             [

@@ -452,7 +452,7 @@ class PerIndustryAnalyser:
         return df.rename(columns={'INDUSTRY': 'Industry'}).reset_index(drop=True)
 
 
-    def plot_industry_specific_charts(self, save_PNG=False, path_to_folder=None):
+    def plot_industry_specific_charts(self, verbose=False, save_PNG=False, path_to_folder=None):
         """
         This method allows to output the graphs that show the relationship between partner jurisdictions’ share of US
         multinational companies’ foreign unrelated-party revenues and their share of Gross National Income (GNI),
@@ -494,11 +494,23 @@ class PerIndustryAnalyser:
                 restricted_df['UNRELATED_PARTY_REVENUES'].sum()
             ) * 100
 
-            # Computing each partner country's share of GNI
+            # Computing each partner country's share of the macroeconomic indicator
             restricted_df[f'SHARE_OF_{self.macro_indicator}_{self.year}'] = (
                 restricted_df[f'{self.macro_indicator}_{self.year}']
                 / restricted_df[f'{self.macro_indicator}_{self.year}'].sum()
             ) * 100
+
+            if industry == 'Information' and verbose:
+                temp = restricted_df[restricted_df['AFFILIATE_COUNTRY_CODE'] == 'IRL'].copy()
+                idx = temp.index[0]
+                print(
+                    'Share of Ireland in INFORMATION unrelated-party revenues:',
+                    temp.loc[idx, 'SHARE_OF_UNRELATED_PARTY_REVENUES']
+                )
+                print(
+                    'Corresponding share of the macroeconomic indicator:',
+                    temp.loc[idx, f'SHARE_OF_{self.macro_indicator}_{self.year}']
+                )
 
             # Computing the correlation between the two shares for the industry under consideration
             correlation = np.corrcoef(
