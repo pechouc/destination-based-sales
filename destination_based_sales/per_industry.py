@@ -451,7 +451,6 @@ class PerIndustryAnalyser:
 
         return df.rename(columns={'INDUSTRY': 'Industry'}).reset_index(drop=True)
 
-
     def plot_industry_specific_charts(self, verbose=False, save_PNG=False, path_to_folder=None):
         """
         This method allows to output the graphs that show the relationship between partner jurisdictions’ share of US
@@ -525,9 +524,11 @@ class PerIndustryAnalyser:
             )
             restricted_df['Category'] = restricted_df['Category'].map({0: 'Other', 1: 'Tax haven', 2: 'NAFTA member'})
 
+            new_col_name_macro = f'Share of total {self.year} {self.macro_indicator_name} (%)'
+
             restricted_df.rename(
                 columns={
-                    f'SHARE_OF_{self.macro_indicator}_{self.year}': f'Share of total {self.year} {self.macro_indicator_name} (%)',
+                    f'SHARE_OF_{self.macro_indicator}_{self.year}': new_col_name_macro,
                     'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of total unrelated-party revenues (%)'
                 },
                 inplace=True
