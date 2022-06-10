@@ -1049,6 +1049,9 @@ class USAnalysesProvider:
         elif country_code == 'LBN':
             country_name = 'Lebanon'
 
+        elif country_code == 'NLD':
+            country_name = 'the Netherlands'
+
         else:
             country_name = country_code
 
