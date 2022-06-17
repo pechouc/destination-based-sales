@@ -451,7 +451,13 @@ class PerIndustryAnalyser:
 
         return df.rename(columns={'INDUSTRY': 'Industry'}).reset_index(drop=True)
 
-    def plot_industry_specific_charts(self, verbose=False, save_PNG=False, path_to_folder=None):
+    def plot_industry_specific_charts(
+        self,
+        verbose=False,
+        save_PNG=False,
+        split_figures=False,
+        path_to_folder=None
+    ):
         """
         This method allows to output the graphs that show the relationship between partner jurisdictions’ share of US
         multinational companies’ foreign unrelated-party revenues and their share of Gross National Income (GNI),
@@ -474,10 +480,23 @@ class PerIndustryAnalyser:
             # Loading cleaned data with consumption expenditure data (eliminating rows for which we have no data)
             data = self.load_data_with_CONS(dropna=True)
 
-        fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(25, 40))
+        if split_figures:
+            fig1, axes1 = plt.subplots(nrows=2, ncols=2, figsize=(25, 20))
+            fig2, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(25, 20))
+
+            axes_list = list(axes1.flatten()) + list(axes2.flatten())
+
+        else:
+            fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(25, 40))
+
+            axes_list = list(axes.flatten())
 
         # Figure displays one graph per industry group
-        for industry, ax in zip(data['INDUSTRY'].unique(), axes.flatten()):
+        for industry, ax, panel in zip(
+            data['INDUSTRY'].unique(),
+            axes_list,
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        ):
 
             # Restricting the dataset to the industry group under consideration and excluding the US-US row
             restricted_df = data[
@@ -557,17 +576,39 @@ class PerIndustryAnalyser:
 
             # Title indicating the industry being considered and the correlation between the share of foreign unrelated-
             # party revenues and the share of GNI
-            ax.set_title(f'{industry} - Correlation of {round(correlation, 2)}')
+            ax.set_title(f'Panel {panel} - {industry} - Correlation of {round(correlation, 2)}')
 
-        axes.flatten()[-1].set_axis_off()
+        if split_figures:
+            axes2.flatten()[-1].set_axis_off()
 
-        plt.show()
+        else:
+            axes.flatten()[-1].set_axis_off()
+            plt.show()
 
         # Saving the figure into a PNG file if relevant
         if save_PNG:
-            fig.savefig(
-                os.path.join(
-                    path_to_folder,
-                    f'industry_specific_charts_{self.year}.png'
+            if split_figures:
+                fig1.savefig(
+                    os.path.join(
+                        path_to_folder,
+                        f'industry_specific_charts_{self.year}_part_1.png'
+                    ),
+                    bbox_inches='tight'
                 )
-            )
+
+                fig2.savefig(
+                    os.path.join(
+                        path_to_folder,
+                        f'industry_specific_charts_{self.year}_part_2.png'
+                    ),
+                    bbox_inches='tight'
+                )
+
+            else:
+                fig.savefig(
+                    os.path.join(
+                        path_to_folder,
+                        f'industry_specific_charts_{self.year}.png'
+                    ),
+                    bbox_inches='tight'
+                )

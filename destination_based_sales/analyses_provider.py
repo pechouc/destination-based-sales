@@ -484,7 +484,8 @@ class USAnalysesProvider:
                     os.path.join(
                         path_to_folder,
                         f'figure_1_{self.year}_US_only{"_GNI" if self.macro_indicator_prefix == "GNI" else ""}.png'
-                    )
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -814,7 +815,8 @@ class USAnalysesProvider:
                     os.path.join(
                         path_to_folder,
                         f'figure_2_{self.year}_US_only{"_GNI" if self.macro_indicator_prefix == "GNI" else ""}.png'
-                    )
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -1036,7 +1038,9 @@ class USAnalysesProvider:
             plt.savefig(
                 os.path.join(
                     path_to_folder,
-                    f'focus_on_tax_havens_{self.year}_US_only{"_excl" if temp_bool else ""}_{file_name_suffix}.png')
+                    f'focus_on_tax_havens_{self.year}_US_only{"_excl" if temp_bool else ""}_{file_name_suffix}.png'
+                ),
+                bbox_inches='tight'
             )
 
         plt.show()
@@ -1528,6 +1532,9 @@ class GlobalAnalysesProvider:
         if exclude_US_from_parents:
             oecd = oecd[oecd['PARENT_COUNTRY_CODE'] != 'USA'].copy()
 
+        # TEMP
+        # oecd = oecd[oecd['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
+
         oecd = oecd.groupby(
             [
                 'AFFILIATE_COUNTRY_CODE', 'AFFILIATE_COUNTRY_NAME'
@@ -1611,10 +1618,10 @@ class GlobalAnalysesProvider:
 
         return output.copy()
 
-    def get_table_2_b(self, formatted=True):
+    def get_table_2_b(self, exclude_US_from_parents=False, formatted=True):
 
         merged_df = self.get_intermediary_dataframe_1(
-            include_macro_indicator=True, exclude_US_from_parents=False
+            include_macro_indicator=True, exclude_US_from_parents=exclude_US_from_parents
         )
 
         output = merged_df[
@@ -1680,7 +1687,7 @@ class GlobalAnalysesProvider:
 
             comment = (
                 'Correlation between unrelated-party revenues and '
-                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
+                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
             plt.rcParams.update(
@@ -1724,8 +1731,19 @@ class GlobalAnalysesProvider:
             plt.title(comment)
 
             if save_PNG:
+                file_name = f'figure_1_{self.year}_global'
+
+                if exclude_US_from_parents:
+                    file_name += '_excl_US_from_parents'
+
+                file_name += '.png'
+
                 plt.savefig(
-                    os.path.join(path_to_folder, f'figure_1_{self.year}_global.png')
+                    os.path.join(
+                        path_to_folder,
+                        file_name
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -1914,6 +1932,9 @@ class GlobalAnalysesProvider:
         if exclude_US_from_parents:
             sales_mapping = sales_mapping[sales_mapping['PARENT_COUNTRY_CODE'] != 'USA'].copy()
 
+        # TEMP
+        # sales_mapping = sales_mapping[sales_mapping['OTHER_COUNTRY_CODE'] != 'USA'].copy()
+
         sales_mapping = sales_mapping.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
 
         if include_macro_indicator:
@@ -1952,16 +1973,16 @@ class GlobalAnalysesProvider:
 
             if column == f'{self.macro_indicator_prefix}_{self.year}':
                 temp = sales_mapping[
-                    ['AFFILIATE_COUNTRY_CODE', column]
+                    ['COUNTRY_CODE', column]
                 ].groupby(
-                    'AFFILIATE_COUNTRY_CODE'
+                    'COUNTRY_CODE'
                 ).first().reset_index()
                 temp[new_column] = temp[column] / temp[column].sum() * 100
 
                 sales_mapping = sales_mapping.merge(
                     temp,
                     how='inner',
-                    on='AFFILIATE_COUNTRY_CODE'
+                    on='COUNTRY_CODE'
                 )
 
             else:
@@ -1999,7 +2020,7 @@ class GlobalAnalysesProvider:
 
             comment = (
                 'Correlation between unrelated-party revenues and '
-                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
+                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
             plt.rcParams.update({'font.size': 13})
@@ -2038,11 +2059,20 @@ class GlobalAnalysesProvider:
             plt.title(comment)
 
             if save_PNG:
+
+                file_name = f'figure_2_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}'
+
+                if exclude_US_from_parents:
+                    file_name += '_excl_US_from_parents'
+
+                file_name += '.png'
+
                 plt.savefig(
                     os.path.join(
                         path_to_folder,
-                        f'figure_2_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}.png'
-                    )
+                        file_name
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -2305,7 +2335,8 @@ class GlobalAnalysesProvider:
                         f'focus_on_tax_havens_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}'
                         + f'_{file_name_suffix}.png'
                     )
-                )
+                ),
+                bbox_inches='tight'
             )
 
         plt.show()

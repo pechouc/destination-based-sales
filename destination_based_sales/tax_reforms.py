@@ -283,7 +283,7 @@ class TaxReformSimulator:
     def get_formatted_unilateral_scenario_comparison(self, table_type):
         output_df = self.compute_Barake_et_al_unilateral_scenarios()
 
-        eu_27_country_codes = self.tax_deficit_simulator.eu_27_country_codes.copy()
+        eu_27_country_codes = self.tax_deficit_calculator.eu_27_country_codes.copy()
 
         # Identifying EU countries and non-EU OECD-reporting countries
         output_df['Category'] = output_df['Parent jurisdiction (alpha-3 code)'].isin(eu_27_country_codes) * 1
@@ -418,7 +418,7 @@ class TaxReformSimulator:
                 + '"total_amounts" and "focus_on_foreign_collection".'
             )
 
-    def get_relevant_tax_deficits(self, verbose=True):
+    def get_relevant_tax_deficits(self, verbose=True, formatted=False):
         """
         With this method, we restrict the estimated tax deficits to the set of countries for which we have prepared an
         adjusted sales mapping.
@@ -479,9 +479,24 @@ class TaxReformSimulator:
                 f'So the "coverage rate" for the estimated tax deficits is of {round(ratio, 1)}%.'
             )
 
+        # ### Formatting the table --------------------------------------------------------------------------------- ###
+        if formatted:
+            restr_tax_deficits['tax_deficit'] /= 10**9
+
+            restr_tax_deficits = restr_tax_deficits.drop(columns=['Parent jurisdiction (alpha-3 code)'])
+
+            restr_tax_deficits = restr_tax_deficits.rename(
+                columns={
+                    'Parent jurisdiction (whitespaces cleaned)': 'Headquarter country',
+                    'tax_deficit': 'Tax deficit to be allocated (billion USD)'
+                }
+            )
+
+            restr_tax_deficits = restr_tax_deficits.reset_index(drop=True)
+
         return restr_tax_deficits.copy()
 
-    def get_set_of_countries_focus_table(self):
+    def get_set_of_countries_focus_table(self, verbose=False):
 
         # Identifying the partner jurisdictions reported by all the relevant parent countries
         df = self.restr_oecd_sales_mapping.copy()
@@ -518,6 +533,12 @@ class TaxReformSimulator:
             axis=1
         )
 
+        # Adding the IS_TAX_HAVEN indicator
+        full_set['IS_TAX_HAVEN'] = full_set['COUNTRY_CODE'].isin(
+            self.tax_deficit_calculator.tax_haven_country_codes.copy() + ['UKI']
+        ) * 1
+
+        # Finalising the table
         full_set = full_set.drop(columns=['COUNTRY_CODE'])
 
         full_set = full_set.sort_values(by='NAME').reset_index(drop=True)
@@ -529,7 +550,7 @@ class TaxReformSimulator:
         oecd_sales_mapping = self.restr_oecd_sales_mapping.copy()
         adjusted_sales_mapping = self.restr_adjusted_sales_mapping.copy()
 
-        restr_tax_deficits = self.get_relevant_tax_deficits(verbose=False)
+        restr_tax_deficits = self.get_relevant_tax_deficits(verbose=False, formatted=False)
 
         focus_set = self.get_set_of_countries_focus_table()
         focus_set_codes = focus_set['CODE'].unique()
