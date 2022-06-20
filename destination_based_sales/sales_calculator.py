@@ -280,6 +280,7 @@ class SimplifiedGlobalSalesCalculator:
         self,
         year,
         aamne_domestic_sales_perc,
+        breakdown_threshold,
         US_merchandise_exports_source,
         US_services_exports_source,
         non_US_merchandise_exports_source,
@@ -302,7 +303,8 @@ class SimplifiedGlobalSalesCalculator:
         # ### Loading the required data
 
         # OECD's country-by-country data
-        cbcr_preprocessor = CbCRPreprocessor(year=year)
+        self.breakdown_threshold = breakdown_threshold
+        cbcr_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=breakdown_threshold)
         self.oecd = cbcr_preprocessor.get_preprocessed_revenue_data()
 
         # Extended BEA data

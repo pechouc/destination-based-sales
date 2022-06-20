@@ -38,6 +38,7 @@ class CbCRPreprocessor:
     def __init__(
         self,
         year,
+        breakdown_threshold,
         load_raw_data=True,
         path_to_geographies=path_to_geographies,
         continent_code_imputations=CONTINENT_CODES_TO_IMPUTE_OECD_CBCR,
@@ -68,6 +69,8 @@ class CbCRPreprocessor:
         or locally from the "data" folder (if set to False).
         """
         self.year = year
+
+        self.breakdown_threshold = breakdown_threshold
 
         if fetch_data_online:
             # If relevant, we construct the URL from which we can load the CSV country-by-country dataset
@@ -198,6 +201,14 @@ class CbCRPreprocessor:
             lambda country_code: {'XKV': 'XXK'}.get(country_code, country_code)
         )
 
+        # The "NB_AFFILIATE_COUNTRIES" column shows the number of partners reported by the corresponding parent country
+        oecd['NB_AFFILIATE_COUNTRIES'] = oecd['PARENT_COUNTRY_CODE'].map(
+            lambda code: (oecd['PARENT_COUNTRY_CODE'] == code).sum()
+        )
+
+        # We only prepare an adjusted sales mapping for parents that report a minimum number of partner jurisdictions
+        oecd = oecd[oecd['NB_AFFILIATE_COUNTRIES'] >= self.breakdown_threshold].copy()
+
         # We add continent codes to the dataset from the "geographies.csv" file
         geographies = pd.read_csv(self.path_to_geographies)
 
@@ -281,7 +292,7 @@ class CbCRPreprocessor:
 
         return oecd.copy()
 
-    def get_scatterplot_data(self, breakdown_threshold):
+    def get_scatterplot_data(self):
         """
         This method allows to output the relevant data for building the scatterplots showing, for each parent jurisdi-
         ction the relationship between partner jurisdictions’ share of multinational companies’ foreign unrelated-party
@@ -299,11 +310,11 @@ class CbCRPreprocessor:
         )
 
         # We only show the scatterplot for parent countries that report a minimum number of partner jurisdictions
-        oecd_restricted = oecd[oecd['NB_AFFILIATE_COUNTRIES'] >= breakdown_threshold].copy()
+        oecd_restricted = oecd[oecd['NB_AFFILIATE_COUNTRIES'] >= self.breakdown_threshold].copy()
 
         return oecd_restricted.dropna()
 
-    def show_scatterplots(self, breakdown_threshold=60):
+    def show_scatterplots(self):
         """
         Building upon the "get_scatterplot_data" method, this method allows to output the scatterplots showing, for each
         parent jurisdiction in the OECD's country-by-country statistics, the relationship between partner jurisdictions’
@@ -312,7 +323,7 @@ class CbCRPreprocessor:
         """
 
         # We fetch the data to be displayed within the scatterplots thanks to the dedicated method
-        oecd_restricted = self.get_scatterplot_data(breakdown_threshold=breakdown_threshold)
+        oecd_restricted = self.get_scatterplot_data()
 
         # The number of parent countries determines the number of graphs to construct
         nb_countries = oecd_restricted['PARENT_COUNTRY_CODE'].nunique()

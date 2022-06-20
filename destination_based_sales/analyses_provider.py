@@ -232,7 +232,7 @@ class USAnalysesProvider:
         df[column_name] /= (foreign_totals[2016] / 100)
         df.rename(columns={column_name: 2016}, inplace=True)
 
-        for year in [2017, 2018]:
+        for year in [2017, 2018, 2019]:
 
             preprocessor = IRSDataPreprocessor(year=year)
             df_temp = preprocessor.load_final_data()
@@ -253,24 +253,24 @@ class USAnalysesProvider:
 
         indices = ['Sales to the US (billion USD)', 'Sales abroad (billion USD)']
 
-        for year in [2016, 2017, 2018]:
+        for year in [2016, 2017, 2018, 2019]:
             dict_df[year][indices[0]] = us_totals[year] / 10**9
             dict_df[year][indices[1]] = foreign_totals[year] / 10**9
 
         df = pd.DataFrame.from_dict(dict_df)
 
-        df.sort_values(by=[2018, 2017, 2016], ascending=False, inplace=True)
+        df.sort_values(by=[2019, 2018, 2017, 2016], ascending=False, inplace=True)
 
         if formatted:
 
-            for year in [2016, 2017, 2018]:
+            for year in [2016, 2017, 2018, 2019]:
                 df[year] = df[year].map('{:,.1f}'.format)
 
         df.index = indices + [f'Of which {continent} (%)' for continent in df.index[2:]]
 
         return df.copy()
 
-    def get_intermediary_dataframe_1(self, include_macro_indicator):
+    def get_intermediary_dataframe_1(self, include_macro_indicator, verbose=False):
 
         irs = self.irs.copy()
 
@@ -284,7 +284,41 @@ class USAnalysesProvider:
                 left_on='CODE', right_on='COUNTRY_CODE'
             )
 
-            merged_df = merged_df[~merged_df[f'{self.macro_indicator_prefix}_{self.year}'].isnull()]
+            if verbose:
+                print(
+                    merged_df[f'{self.macro_indicator_prefix}_{self.year}'].isnull().sum(),
+                    'foreign partner countries are eliminated because we lack the macroeconomic indicator for them.'
+                )
+
+                temp = merged_df[merged_df['AFFILIATE_COUNTRY_NAME'] != 'United States'].copy()
+                temp = (
+                    temp[
+                        temp[f'{self.macro_indicator_prefix}_{self.year}'].isnull()
+                    ]['UNRELATED_PARTY_REVENUES'].sum()
+                    / temp['UNRELATED_PARTY_REVENUES'].sum() * 100
+                )
+
+                print(
+                    'They represent',
+                    round(temp, 2),
+                    'of the foreign unrelated-party revenues in the table.'
+                )
+
+                temp = merged_df[merged_df['AFFILIATE_COUNTRY_NAME'] != 'United States'].copy()
+                temp = (
+                    temp[
+                        temp['CODE'].isin(self.tax_haven_country_codes)
+                    ][f'{self.macro_indicator_prefix}_{self.year}'].sum()
+                    / temp[f'{self.macro_indicator_prefix}_{self.year}'].sum() * 100
+                )
+
+                print(
+                    'Tax havens represent',
+                    round(temp, 2),
+                    'of the final consumption expenditures in the table.'
+                )
+
+            merged_df = merged_df[~merged_df[f'{self.macro_indicator_prefix}_{self.year}'].isnull()].copy()
 
             columns_of_interest.append(f'{self.macro_indicator_prefix}_{self.year}')
 
@@ -336,9 +370,9 @@ class USAnalysesProvider:
 
         return output.copy()
 
-    def get_table_2_b(self, formatted=True):
+    def get_table_2_b(self, formatted=True, verbose=False):
 
-        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=True)
+        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=True, verbose=verbose)
 
         output = merged_df[
             [
@@ -403,10 +437,15 @@ class USAnalysesProvider:
 
             comment = (
                 f'Correlation between unrelated-party revenues and {self.macro_indicator_name} '
-                + f'in {self.year}: {round(correlation, 5)}'
+                + f'in {self.year}: {round(correlation, 2)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 
@@ -445,7 +484,8 @@ class USAnalysesProvider:
                     os.path.join(
                         path_to_folder,
                         f'figure_1_{self.year}_US_only{"_GNI" if self.macro_indicator_prefix == "GNI" else ""}.png'
-                    )
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -566,7 +606,7 @@ class USAnalysesProvider:
         df[column_name] /= (foreign_totals[2016] / 100)
         df.rename(columns={column_name: 2016}, inplace=True)
 
-        for year in [2017, 2018]:
+        for year in [2017, 2018, 2019]:
 
             analyser = USAnalysesProvider(
                 year=year,
@@ -597,17 +637,17 @@ class USAnalysesProvider:
 
         indices = ['Sales to the US (billion USD)', 'Sales abroad (billion USD)']
 
-        for year in [2016, 2017, 2018]:
+        for year in [2016, 2017, 2018, 2019]:
             dict_df[year][indices[0]] = us_totals[year] / 10**9
             dict_df[year][indices[1]] = foreign_totals[year] / 10**9
 
         df = pd.DataFrame.from_dict(dict_df)
 
-        df.sort_values(by=[2018, 2017, 2016], ascending=False, inplace=True)
+        df.sort_values(by=[2019, 2018, 2017, 2016], ascending=False, inplace=True)
 
         if formatted:
 
-            for year in [2016, 2017, 2018]:
+            for year in [2016, 2017, 2018, 2019]:
                 df[year] = df[year].map('{:,.1f}'.format)
 
         df.index = indices + [f'Of which {continent} (%)' for continent in df.index[2:]]
@@ -727,10 +767,15 @@ class USAnalysesProvider:
 
             comment = (
                 'Correlation between unrelated-party revenues and '
-                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
+                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 
@@ -770,7 +815,8 @@ class USAnalysesProvider:
                     os.path.join(
                         path_to_folder,
                         f'figure_2_{self.year}_US_only{"_GNI" if self.macro_indicator_prefix == "GNI" else ""}.png'
-                    )
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -930,7 +976,12 @@ class USAnalysesProvider:
             ascending=ascending
         ).copy()
 
-        plt.rcParams.update({'font.size': 13})
+        plt.rcParams.update(
+            {
+                'axes.titlesize': 20,
+                'axes.labelsize': 20
+            }
+        )
 
         plt.figure(figsize=figsize)
 
@@ -987,15 +1038,23 @@ class USAnalysesProvider:
             plt.savefig(
                 os.path.join(
                     path_to_folder,
-                    f'focus_on_tax_havens_{self.year}_US_only{"_excl" if temp_bool else ""}_{file_name_suffix}.png')
+                    f'focus_on_tax_havens_{self.year}_US_only{"_excl" if temp_bool else ""}_{file_name_suffix}.png'
+                ),
+                bbox_inches='tight'
             )
 
         plt.show()
 
-    def get_table_6(self, country_code):
+    def get_table_6(self, country_code, formatted=True):
 
         if country_code == 'BEL':
             country_name = 'Belgium'
+
+        elif country_code == 'LBN':
+            country_name = 'Lebanon'
+
+        elif country_code == 'NLD':
+            country_name = 'the Netherlands'
 
         else:
             country_name = country_code
@@ -1028,8 +1087,12 @@ class USAnalysesProvider:
         focus['UNRELATED_PARTY_REVENUES'] /= 10**6
         focus['UNRELATED_PARTY_REVENUES'] = focus['UNRELATED_PARTY_REVENUES'].map(lambda x: round(x, 1))
 
-        focus['EXPORT_PERC'] = (focus['EXPORT_PERC'] * 100).map('{:.2f}'.format)
-        focus['EXPORT_PERC'] = focus['EXPORT_PERC'].map(lambda x: '..' if x == 'nan' else x)
+        if formatted:
+            focus['EXPORT_PERC'] = (focus['EXPORT_PERC'] * 100).map('{:.2f}'.format)
+            focus['EXPORT_PERC'] = focus['EXPORT_PERC'].map(lambda x: '..' if x == 'nan' else x)
+        else:
+            focus['EXPORT_PERC'] *= 100
+            focus['EXPORT_PERC'] = focus['EXPORT_PERC'].map(lambda x: '..' if np.isnan(x) else x)
 
         focus.rename(
             columns={
@@ -1185,6 +1248,7 @@ class GlobalAnalysesProvider:
         self,
         year,
         aamne_domestic_sales_perc,
+        breakdown_threshold,
         US_merchandise_exports_source,
         US_services_exports_source,
         non_US_merchandise_exports_source,
@@ -1241,12 +1305,14 @@ class GlobalAnalysesProvider:
         tax_havens = pd.read_csv(self.path_to_tax_haven_list)
         self.tax_haven_country_codes = list(tax_havens['CODE'].unique()) + ['UKI']
 
-        cbcr_preprocessor = CbCRPreprocessor(year=year)
+        self.breakdown_threshold = breakdown_threshold
+        cbcr_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=breakdown_threshold)
         self.oecd = cbcr_preprocessor.get_preprocessed_revenue_data()
 
         calculator = SimplifiedGlobalSalesCalculator(
             year=self.year,
             aamne_domestic_sales_perc=aamne_domestic_sales_perc,
+            breakdown_threshold=breakdown_threshold,
             US_merchandise_exports_source=US_merchandise_exports_source,
             US_services_exports_source=US_services_exports_source,
             non_US_merchandise_exports_source=non_US_merchandise_exports_source,
@@ -1293,16 +1359,22 @@ class GlobalAnalysesProvider:
         ).reset_index(drop=True)
 
         df = df[df['ITEM'].map(lambda x: x.strip()) == 'Final consumption expenditure'].copy()
-        df = df[df[['2016', '2017', '2018']].sum(axis=1) != '___'].copy()
 
-        for col in ['2016', '2017', '2018']:
+        list_of_years = ['2016', '2017', '2018', '2019', '2020']
+        df = df[df[list_of_years].sum(axis=1) != '_' * len(list_of_years)].copy()
+
+        for col in list_of_years:
             df[col] = df[col].astype(float)
 
         df = df.drop(columns='ITEM')
 
         df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(lambda x: x.strip())
+
         df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(
-            lambda country_name: {'Switzerland, Liechtenstein': 'Switzerland'}.get(country_name, country_name)
+            lambda country_name: {'France': 'France incl. Monaco'}.get(country_name, country_name)
+        )
+        df['COUNTRY_NAME'] = df['COUNTRY_NAME'].map(
+            lambda country_name: {'France, metropolitan': 'France'}.get(country_name, country_name)
         )
 
         geographies = pd.read_csv(self.path_to_geographies)
@@ -1344,6 +1416,34 @@ class GlobalAnalysesProvider:
 
         return df.copy()
 
+    def get_table_with_relevant_parents(self):
+        df = self.oecd.copy()
+
+        df = df.groupby(
+            ['PARENT_COUNTRY_CODE', 'PARENT_COUNTRY_NAME']
+        ).nunique(
+        )[
+            'AFFILIATE_COUNTRY_CODE'
+        ].reset_index()
+
+        table_methodology = df[
+            ['PARENT_COUNTRY_NAME', 'AFFILIATE_COUNTRY_CODE']
+        ].sort_values(
+            by=['AFFILIATE_COUNTRY_CODE', 'PARENT_COUNTRY_NAME'],
+            ascending=[False, True]
+        ).rename(
+            columns={
+                'PARENT_COUNTRY_NAME': 'Parent country',
+                'AFFILIATE_COUNTRY_CODE': 'Number of partner jurisdictions'
+            }
+        )
+
+        table_methodology['Parent country'] = table_methodology['Parent country'].map(
+            lambda country_name: 'China' if country_name == "China (People's Republic of)" else country_name
+        )
+
+        return table_methodology.reset_index(drop=True)
+
     def get_table_1(self, formatted=True, sales_type='unrelated'):
 
         sales_type_correspondence = {
@@ -1357,7 +1457,7 @@ class GlobalAnalysesProvider:
         domestic_totals = {}
         foreign_totals = {}
 
-        preprocessor = CbCRPreprocessor(year=2016)
+        preprocessor = CbCRPreprocessor(year=2016, breakdown_threshold=self.breakdown_threshold)
         df = preprocessor.get_preprocessed_revenue_data()
 
         domestic_totals[2016] = df[df['PARENT_COUNTRY_CODE'] == df['AFFILIATE_COUNTRY_CODE']][column_name].sum()
@@ -1372,7 +1472,7 @@ class GlobalAnalysesProvider:
 
         for year in [2017]:
 
-            preprocessor = CbCRPreprocessor(year=year)
+            preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=self.breakdown_threshold)
             df_temp = preprocessor.get_preprocessed_revenue_data()
 
             domestic_totals[year] = df_temp[
@@ -1419,7 +1519,7 @@ class GlobalAnalysesProvider:
 
         return df.iloc[:-1, ].copy()  # We exclude the row corresponding to "Other Groups" in the table we output
 
-    def get_intermediary_dataframe_1(self, include_macro_indicator):
+    def get_intermediary_dataframe_1(self, include_macro_indicator, exclude_US_from_parents):
 
         oecd = self.oecd.copy()
 
@@ -1428,6 +1528,12 @@ class GlobalAnalysesProvider:
         oecd = oecd[
             oecd['PARENT_COUNTRY_CODE'] != oecd['AFFILIATE_COUNTRY_CODE']
         ].copy()
+
+        if exclude_US_from_parents:
+            oecd = oecd[oecd['PARENT_COUNTRY_CODE'] != 'USA'].copy()
+
+        # TEMP
+        # oecd = oecd[oecd['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
 
         oecd = oecd.groupby(
             [
@@ -1460,13 +1566,30 @@ class GlobalAnalysesProvider:
 
             new_columns.append(new_column)
 
-            merged_df[new_column] = merged_df[column] / merged_df[column].sum() * 100
+            if column == f'{self.macro_indicator_prefix}_{self.year}':
+                temp = merged_df[
+                    ['AFFILIATE_COUNTRY_CODE', column]
+                ].groupby(
+                    'AFFILIATE_COUNTRY_CODE'
+                ).first().reset_index()
+                temp[new_column] = temp[column] / temp[column].sum() * 100
+
+                merged_df = merged_df.merge(
+                    temp,
+                    how='inner',
+                    on='AFFILIATE_COUNTRY_CODE'
+                )
+
+            else:
+                merged_df[new_column] = merged_df[column] / merged_df[column].sum() * 100
 
         return merged_df.copy()
 
     def get_table_2_a(self, formatted=True):
 
-        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=False)
+        merged_df = self.get_intermediary_dataframe_1(
+            include_macro_indicator=False, exclude_US_from_parents=False
+        )
 
         output = merged_df[
             ['AFFILIATE_COUNTRY_NAME', 'UNRELATED_PARTY_REVENUES', 'SHARE_OF_UNRELATED_PARTY_REVENUES']
@@ -1495,9 +1618,11 @@ class GlobalAnalysesProvider:
 
         return output.copy()
 
-    def get_table_2_b(self, formatted=True):
+    def get_table_2_b(self, exclude_US_from_parents=False, formatted=True):
 
-        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=True)
+        merged_df = self.get_intermediary_dataframe_1(
+            include_macro_indicator=True, exclude_US_from_parents=exclude_US_from_parents
+        )
 
         output = merged_df[
             [
@@ -1527,7 +1652,7 @@ class GlobalAnalysesProvider:
 
         return output.copy()
 
-    def plot_figure_1(self, kind, save_PNG=False, path_to_folder=None):
+    def plot_figure_1(self, kind, exclude_US_from_parents, save_PNG=False, path_to_folder=None):
 
         if kind not in ['regplot', 'scatter', 'interactive']:
             raise Exception(
@@ -1537,7 +1662,9 @@ class GlobalAnalysesProvider:
         if save_PNG and path_to_folder is None:
             raise Exception('To save the figure as a PNG, you must indicate the target folder as an argument.')
 
-        merged_df = self.get_intermediary_dataframe_1(include_macro_indicator=True)
+        merged_df = self.get_intermediary_dataframe_1(
+            include_macro_indicator=True, exclude_US_from_parents=exclude_US_from_parents
+        )
 
         if kind == 'regplot':
 
@@ -1560,10 +1687,15 @@ class GlobalAnalysesProvider:
 
             comment = (
                 'Correlation between unrelated-party revenues and '
-                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
+                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 
@@ -1599,8 +1731,19 @@ class GlobalAnalysesProvider:
             plt.title(comment)
 
             if save_PNG:
+                file_name = f'figure_1_{self.year}_global'
+
+                if exclude_US_from_parents:
+                    file_name += '_excl_US_from_parents'
+
+                file_name += '.png'
+
                 plt.savefig(
-                    os.path.join(path_to_folder, f'figure_1_{self.year}_global.png')
+                    os.path.join(
+                        path_to_folder,
+                        file_name
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -1778,13 +1921,19 @@ class GlobalAnalysesProvider:
 
         return df.copy()
 
-    def get_intermediary_dataframe_2(self, include_macro_indicator):
+    def get_intermediary_dataframe_2(self, include_macro_indicator, exclude_US_from_parents):
 
         sales_mapping = self.sales_mapping.copy()
 
         sales_mapping = sales_mapping[
             sales_mapping['PARENT_COUNTRY_CODE'] != sales_mapping['OTHER_COUNTRY_CODE']
         ].copy()
+
+        if exclude_US_from_parents:
+            sales_mapping = sales_mapping[sales_mapping['PARENT_COUNTRY_CODE'] != 'USA'].copy()
+
+        # TEMP
+        # sales_mapping = sales_mapping[sales_mapping['OTHER_COUNTRY_CODE'] != 'USA'].copy()
 
         sales_mapping = sales_mapping.groupby('OTHER_COUNTRY_CODE').sum().reset_index()
 
@@ -1822,11 +1971,26 @@ class GlobalAnalysesProvider:
 
             new_columns.append(new_column)
 
-            sales_mapping[new_column] = sales_mapping[column] / sales_mapping[column].sum() * 100
+            if column == f'{self.macro_indicator_prefix}_{self.year}':
+                temp = sales_mapping[
+                    ['COUNTRY_CODE', column]
+                ].groupby(
+                    'COUNTRY_CODE'
+                ).first().reset_index()
+                temp[new_column] = temp[column] / temp[column].sum() * 100
+
+                sales_mapping = sales_mapping.merge(
+                    temp,
+                    how='inner',
+                    on='COUNTRY_CODE'
+                )
+
+            else:
+                sales_mapping[new_column] = sales_mapping[column] / sales_mapping[column].sum() * 100
 
         return sales_mapping.copy()
 
-    def plot_figure_2(self, kind, save_PNG=False, path_to_folder=None):
+    def plot_figure_2(self, kind, exclude_US_from_parents, save_PNG=False, path_to_folder=None):
 
         if kind not in ['regplot', 'scatter', 'interactive']:
             raise Exception(
@@ -1836,7 +2000,9 @@ class GlobalAnalysesProvider:
         if save_PNG and path_to_folder is None:
             raise Exception('To save the figure as a PNG, you must indicate the target folder as an argument.')
 
-        merged_df = self.get_intermediary_dataframe_2(include_macro_indicator=True)
+        merged_df = self.get_intermediary_dataframe_2(
+            include_macro_indicator=True, exclude_US_from_parents=exclude_US_from_parents
+        )
 
         if kind == 'regplot':
 
@@ -1854,7 +2020,7 @@ class GlobalAnalysesProvider:
 
             comment = (
                 'Correlation between unrelated-party revenues and '
-                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 5)}'
+                + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
             plt.rcParams.update({'font.size': 13})
@@ -1893,11 +2059,20 @@ class GlobalAnalysesProvider:
             plt.title(comment)
 
             if save_PNG:
+
+                file_name = f'figure_2_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}'
+
+                if exclude_US_from_parents:
+                    file_name += '_excl_US_from_parents'
+
+                file_name += '.png'
+
                 plt.savefig(
                     os.path.join(
                         path_to_folder,
-                        f'figure_2_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}.png'
-                    )
+                        file_name
+                    ),
+                    bbox_inches='tight'
                 )
 
             plt.show()
@@ -1946,7 +2121,9 @@ class GlobalAnalysesProvider:
 
     def get_table_5(self, formatted=True):
 
-        merged_df = self.get_intermediary_dataframe_2(include_macro_indicator=True)
+        merged_df = self.get_intermediary_dataframe_2(
+            include_macro_indicator=True, exclude_US_from_parents=False
+        )
 
         output = merged_df[
             [
@@ -2158,7 +2335,8 @@ class GlobalAnalysesProvider:
                         f'focus_on_tax_havens_{self.year}_global{"_AAMNE" if self.aamne_domestic_sales_perc else ""}'
                         + f'_{file_name_suffix}.png'
                     )
-                )
+                ),
+                bbox_inches='tight'
             )
 
         plt.show()
@@ -2167,6 +2345,9 @@ class GlobalAnalysesProvider:
 
         if country_code == 'BEL':
             country_name = 'Belgium'
+
+        elif country_code == 'LBN':
+            country_name = 'Lebanon'
 
         else:
             country_name = country_code

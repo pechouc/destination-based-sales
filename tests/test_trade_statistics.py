@@ -128,7 +128,7 @@ def test_second_combination_winsorizing():
 def test_first_combination_overlap():
     for year, df in first_outputs.items():
         if year in [2016, 2017]:
-            processor = CbCRPreprocessor(year=year)
+            processor = CbCRPreprocessor(year=year, breakdown_threshold=0)
             unique_country_codes = processor.get_preprocessed_revenue_data()
             unique_country_codes = list(unique_country_codes['AFFILIATE_COUNTRY_CODE'].unique())
 
@@ -145,7 +145,7 @@ def test_first_combination_overlap():
 def test_second_combination_overlap():
     for year, df in second_outputs.items():
         if year in [2016, 2017]:
-            processor = CbCRPreprocessor(year=year)
+            processor = CbCRPreprocessor(year=year, breakdown_threshold=0)
             unique_country_codes = processor.get_preprocessed_revenue_data()
             unique_country_codes = list(unique_country_codes['AFFILIATE_COUNTRY_CODE'].unique())
 

@@ -220,3 +220,20 @@ def compute_foreign_owned_gross_output(row, include_US):
 
     else:
         return foreign_owned_gross_output - row['USA']
+
+
+########################################################################################################################
+# --- For tax_reforms.py
+
+def define_category(row):
+    if row['IS_EU'] == 1:
+        return 3
+
+    elif row['REPORTS_CBCR'] == 1:
+        return 2
+
+    elif row['IS_LARGE_TAX_HAVEN'] == 1:
+        return 1
+
+    else:
+        return 0

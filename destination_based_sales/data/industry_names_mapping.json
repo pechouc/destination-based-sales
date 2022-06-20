@@ -1,7 +1,7 @@
 {
-    "Agriculture, forestry, fishing and hunting, mining, quarrying, oil and gas extraction, utilities, and construction": "Agriculture, extractives and construction",
-    "Wholesale and retail trade, transportation and warehousing ": "Wholesale and retail trade",
-    "Finance and insurance, real estate and rental and leasing": "Finance and insurance",
+    "Agriculture, forestry, fishing and hunting, mining, quarrying, oil and gas extraction, utilities, and construction": "Primary",
+    "Wholesale and retail trade, transportation and warehousing ": "Trade",
+    "Finance and insurance, real estate and rental and leasing": "Finance, insurance",
     "Professional, scientific, and technical services": "Technical services",
-    "Management of companies and enterprises, all other services (except public administration)": "Management (except public administration)"
+    "Management of companies and enterprises, all other services (except public administration)": "Management"
 }
