@@ -817,10 +817,15 @@ class USAnalysesProvider:
             plt.title(comment)
 
             if save_PNG:
+                temp_bool = len(self.service_flows_to_exclude) > 0
+
+                figure_name = f'figure_2_{self.year}_US_only{"_GNI" if self.macro_indicator_prefix == "GNI" else ""}'
+                figure_name += f'{"_excl" if temp_bool else ""}.png'
+
                 plt.savefig(
                     os.path.join(
                         path_to_folder,
-                        f'figure_2_{self.year}_US_only{"_GNI" if self.macro_indicator_prefix == "GNI" else ""}.png'
+                        figure_name
                     ),
                     bbox_inches='tight'
                 )
