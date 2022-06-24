@@ -443,7 +443,10 @@ class USAnalysesProvider:
             plt.rcParams.update(
                 {
                     'axes.titlesize': 20,
-                    'axes.labelsize': 20
+                    'axes.labelsize': 20,
+                    'xtick.labelsize': 18,
+                    'ytick.labelsize': 18,
+                    'legend.fontsize': 18
                 }
             )
 
@@ -773,7 +776,10 @@ class USAnalysesProvider:
             plt.rcParams.update(
                 {
                     'axes.titlesize': 20,
-                    'axes.labelsize': 20
+                    'axes.labelsize': 20,
+                    'xtick.labelsize': 18,
+                    'ytick.labelsize': 18,
+                    'legend.fontsize': 18
                 }
             )
 
@@ -979,7 +985,10 @@ class USAnalysesProvider:
         plt.rcParams.update(
             {
                 'axes.titlesize': 20,
-                'axes.labelsize': 20
+                'axes.labelsize': 20,
+                'xtick.labelsize': 18,
+                'ytick.labelsize': 18,
+                'legend.fontsize': 18
             }
         )
 
@@ -1693,7 +1702,10 @@ class GlobalAnalysesProvider:
             plt.rcParams.update(
                 {
                     'axes.titlesize': 20,
-                    'axes.labelsize': 20
+                    'axes.labelsize': 20,
+                    'xtick.labelsize': 18,
+                    'ytick.labelsize': 18,
+                    'legend.fontsize': 18
                 }
             )
 
@@ -2023,7 +2035,15 @@ class GlobalAnalysesProvider:
                 + f'{self.macro_indicator_name} in {self.year}: {round(correlation, 2)}'
             )
 
-            plt.rcParams.update({'font.size': 13})
+            plt.rcParams.update(
+                {
+                    'axes.titlesize': 20,
+                    'axes.labelsize': 20,
+                    'xtick.labelsize': 18,
+                    'ytick.labelsize': 18,
+                    'legend.fontsize': 18
+                }
+            )
 
             plt.figure(figsize=(17, 10))
 
@@ -2276,7 +2296,15 @@ class GlobalAnalysesProvider:
             ascending=ascending
         ).copy()
 
-        plt.rcParams.update({'font.size': 13})
+        plt.rcParams.update(
+            {
+                'axes.titlesize': 20,
+                'axes.labelsize': 20,
+                'xtick.labelsize': 18,
+                'ytick.labelsize': 18,
+                'legend.fontsize': 18
+            }
+        )
 
         plt.figure(figsize=figsize)
 
