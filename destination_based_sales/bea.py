@@ -21,7 +21,8 @@ from destination_based_sales.utils import CODES_TO_IMPUTE_BEA, impute_missing_co
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 
-from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values
+from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values, \
+    online_path_to_geo_file
 
 ########################################################################################################################
 # --- Diverse
@@ -40,7 +41,8 @@ class BEADataPreprocessor:
         self,
         year,
         path_to_dir=path_to_dir,
-        path_to_geo_file=path_to_geographies
+        path_to_geo_file=path_to_geographies,
+        load_data_online=False
     ):
         """
         The instructions allowing to load and preprocess BEA data are organised in a Python class, BEADataPreprocessor.
@@ -54,14 +56,24 @@ class BEADataPreprocessor:
         self.year = year
 
         # We construct the path to the relevant data file, which depends on the year considered
-        self.path_to_bea = os.path.join(
-            path_to_dir,
-            'data',
-            str(year),
-            'Part-II-E1-E17.xls'
-        )
+        if not load_data_online:
+            self.path_to_bea = os.path.join(
+                path_to_dir,
+                'data',
+                str(year),
+                'Part-II-E1-E17.xls'
+            )
 
-        self.path_to_geo_file = path_to_geo_file
+            self.path_to_geo_file = path_to_geo_file
+
+        else:
+            if year in [2016, 2017, 2018]:
+                self.path_to_bea = f'https://apps.bea.gov/international/xls/usdia{year}r/Part-II-E1-E17.xls'
+
+            else:
+                self.path_to_bea = 'https://apps.bea.gov/international/xls/usdia2019p/Part-II-E1-E17.xls'
+
+            self.path_to_geo_file = online_path_to_geo_file
 
         self.CODES_TO_IMPUTE = CODES_TO_IMPUTE_BEA.copy()
 
@@ -211,19 +223,25 @@ class ExtendedBEADataLoader:
     def __init__(
         self,
         year,
-        path_to_dir=path_to_dir
+        path_to_dir=path_to_dir,
+        load_data_online=False
     ):
 
         self.year = year
 
         self.path_to_dir = path_to_dir
+        self.load_data_online = load_data_online
 
         # Instantiating an object of the class BEADataPreprocessor defined above
-        self.bea_preprocessor = BEADataPreprocessor(year=year)
+        self.bea_preprocessor = BEADataPreprocessor(year=year, load_data_online=load_data_online)
 
         # Defining the complete set of affiliate countries to cover eventually
         if year in [2016, 2017]:
-            oecd_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=0)
+            oecd_preprocessor = CbCRPreprocessor(
+                year=year,
+                breakdown_threshold=0,
+                load_data_online=load_data_online
+            )
             oecd = oecd_preprocessor.get_preprocessed_revenue_data()
 
             self.target_countries = oecd[
@@ -231,7 +249,7 @@ class ExtendedBEADataLoader:
             ].drop_duplicates()
 
         else:
-            irs_preprocessor = IRSDataPreprocessor(year=year)
+            irs_preprocessor = IRSDataPreprocessor(year=year, load_data_online=load_data_online)
             irs = irs_preprocessor.load_final_data()
 
             self.target_countries = irs[
@@ -246,12 +264,20 @@ class ExtendedBEADataLoader:
     def load_data_with_US_US_row(self):
         df = self.bea_preprocessor.load_final_data()
 
-        path_to_BEA_KR_tables = os.path.join(
-            self.path_to_dir,
-            'data',
-            str(self.year),
-            'Part-I-K1-R2.xls'
-        )
+        if not self.load_data_online:
+            path_to_BEA_KR_tables = os.path.join(
+                self.path_to_dir,
+                'data',
+                str(self.year),
+                'Part-I-K1-R2.xls'
+            )
+
+        else:
+            if self.year in [2016, 2017, 2018]:
+                path_to_BEA_KR_tables = f'https://apps.bea.gov/international/xls/usdia{self.year}r/Part-I-K1-R2.xls'
+
+            else:
+                path_to_BEA_KR_tables = 'https://apps.bea.gov/international/xls/usdia2019p/Part-I-K1-R2.xls'
 
         temp = pd.read_excel(path_to_BEA_KR_tables, sheet_name='Table I.O 1')
 

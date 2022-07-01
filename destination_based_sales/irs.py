@@ -13,7 +13,8 @@ import os
 import numpy as np
 import pandas as pd
 
-from destination_based_sales.utils import CODES_TO_IMPUTE_IRS, impute_missing_codes, UK_CARIBBEAN_ISLANDS
+from destination_based_sales.utils import CODES_TO_IMPUTE_IRS, impute_missing_codes, UK_CARIBBEAN_ISLANDS,\
+    online_path_to_geo_file
 
 
 ########################################################################################################################
@@ -21,7 +22,6 @@ from destination_based_sales.utils import CODES_TO_IMPUTE_IRS, impute_missing_co
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
-path_to_irs_data = os.path.join(path_to_dir, 'data', '18it01acbc.xlsx')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
 
@@ -34,7 +34,8 @@ class IRSDataPreprocessor:
         self,
         year,
         path_to_dir=path_to_dir,
-        path_to_geo_file=path_to_geographies
+        path_to_geo_file=path_to_geographies,
+        load_data_online=False,
     ):
         """
         The instructions allowing to load and preprocess IRS data are organised in a Python class, IRSDataPreprocessor.
@@ -47,15 +48,20 @@ class IRSDataPreprocessor:
         """
         self.year = year
 
-        # We reconstruct the path to the relevant Excel file, which depends on the year considered
-        self.path_to_cbcr = os.path.join(
-            path_to_dir,
-            'data',
-            str(year),
-            f'{year - 2000}it01acbc.xlsx'
-        )
+        if not load_data_online:
+            # We reconstruct the path to the relevant Excel file, which depends on the year considered
+            self.path_to_cbcr = os.path.join(
+                path_to_dir,
+                'data',
+                str(year),
+                f'{year - 2000}it01acbc.xlsx'
+            )
 
-        self.path_to_geo_file = path_to_geographies
+            self.path_to_geo_file = path_to_geographies
+
+        else:
+            self.path_to_cbcr = f'https://www.irs.gov/pub/irs-soi/{year - 2000}it01acbc.xlsx'
+            self.path_to_geo_file = online_path_to_geo_file
 
         self.CODES_TO_IMPUTE = CODES_TO_IMPUTE_IRS.copy()
         self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()

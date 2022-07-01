@@ -12,6 +12,13 @@ import numpy as np
 
 
 ########################################################################################################################
+# --- Generalities
+
+online_path_to_geo_file = 'https://raw.githubusercontent.com/pechouc/destination-based-sales/main/'
+online_path_to_geo_file += 'destination_based_sales/data/geographies.csv'
+
+
+########################################################################################################################
 # --- For IRS data
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
