@@ -16,7 +16,7 @@ import pandas as pd
 import requests
 
 from destination_based_sales.utils import impute_missing_continent_codes, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR, \
-    UK_CARIBBEAN_ISLANDS
+    UK_CARIBBEAN_ISLANDS, online_path_to_geo_file, online_path_to_GNI_data, online_path_to_TH_list, url_to_data
 
 
 ########################################################################################################################
@@ -40,68 +40,54 @@ class CbCRPreprocessor:
         year,
         breakdown_threshold,
         load_raw_data=True,
-        path_to_geographies=path_to_geographies,
-        continent_code_imputations=CONTINENT_CODES_TO_IMPUTE_OECD_CBCR,
-        path_to_GNI_data=path_to_GNI_data,
-        path_to_tax_haven_list=path_to_tax_haven_list,
-        fetch_data_online=False
+        load_data_online=False
     ):
         """
+        TO BE COMPLETED.
         The instructions allowing to load and preprocess OECD data are organised in a Python class, CbCRPreprocessor.
 
         This is the instantiation function for this class. It requires several arguments:
 
         - "load_raw_data": a boolean indicating whether or not to directly load the data in a class attribute;
 
-        - "path_to_geographies": the string path to the "geographies.csv" file, used for instance to complement the
-        OECD's country-by-country data with country codes;
-
-        - "continent_code_imputations": a dictionary with the OECD codes (for continental aggregates in particular) as
-        keys and the codes that we use throughout our computations as values;
-
-        - "path_to_GNI_data": a string path to the "gross_national_income.csv" file, used to build comparisons between
-        the distribution of revenue variables and that of Gross National Income (GNI);
-
-        - "path_to_tax_haven_list": a string path to the "tax_havens.csv" file, that contains the list of tax havens
-        compiled by Tørsløv, Wier and Zucman (2019);
-
-        - "fetch_data_online": a boolean indicating whether to fetch the country-by-country data online (if set to True)
-        or locally from the "data" folder (if set to False).
+        - "load_data_online": a boolean indicating whether to fetch data online (if set to True) or locally from the
+        "data" folder (if set to False).
         """
         self.year = year
 
         self.breakdown_threshold = breakdown_threshold
 
-        if fetch_data_online:
+        if load_data_online:
             # If relevant, we construct the URL from which we can load the CSV country-by-country dataset
             self.url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
             self.dataset_identifier = 'CBCR_TABLEI/'
             self.dimensions = 'ALL/'
             self.agency_name = 'OECD'
 
-            self.path_to_OECD_CbCR_data = (
-                self.url_base + self.dataset_identifier + self.dimensions + self.agency_name + '?contenttype=csv'
-            )
+            # self.path_to_OECD_CbCR_data = (
+            #     self.url_base + self.dataset_identifier + self.dimensions + self.agency_name + '?contenttype=csv'
+            # )
+
+            # For now, we rely on the files available on GitHub
+            self.path_to_OECD_CbCR_data = url_to_data + 'oecd_cbcr.csv'
+
+            self.path_to_geographies = online_path_to_geo_file
+            self.path_to_GNI_data = online_path_to_GNI_data
+            self.path_to_tax_haven_list = online_path_to_TH_list
 
         else:
             # Or we use the path to the local file
             self.path_to_OECD_CbCR_data = local_path_to_OECD_CbCR_data
 
-        self.path_to_geographies = path_to_geographies
-        self.continent_code_imputations = continent_code_imputations
+            self.path_to_geographies = path_to_geographies
+            self.path_to_GNI_data = path_to_GNI_data
+            self.path_to_tax_haven_list = path_to_tax_haven_list
 
-        self.path_to_GNI_data = path_to_GNI_data
-        self.path_to_tax_haven_list = path_to_tax_haven_list
+        self.continent_code_imputations = CONTINENT_CODES_TO_IMPUTE_OECD_CBCR
 
         # If relevant, we load the data in a dedicated class attribute
         if load_raw_data:
-            if fetch_data_online:
-                print("Fetching the OECD's aggregated and anonymized CbCR data - This may take up to 30 seconds.")
-
             self.data = pd.read_csv(self.path_to_OECD_CbCR_data)
-
-            if fetch_data_online:
-                print("Loaded the OECD's aggregated and anonymized CbCR data successfully.")
 
         else:
             self.data = None

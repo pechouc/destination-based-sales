@@ -15,7 +15,7 @@ from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 
 from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, ensure_country_overlap_with_IRS, \
-    ensure_country_overlap_with_OECD_CbCR
+    ensure_country_overlap_with_OECD_CbCR, online_path_to_geo_file
 
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +36,7 @@ class TradeStatisticsProcessor:
         non_US_winsorizing_threshold=None,
         US_winsorizing_threshold=None,
         service_flows_to_exclude=None,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
 
         # Checking the chosen mix of data sources
@@ -57,6 +57,7 @@ class TradeStatisticsProcessor:
         self.US_only = US_only
         self.winsorize_export_percs = winsorize_export_percs
         self.service_flows_to_exclude = service_flows_to_exclude
+        self.load_data_online = load_data_online
 
         if winsorize_export_percs:
             if non_US_winsorizing_threshold is None or US_winsorizing_threshold is None:
@@ -72,14 +73,15 @@ class TradeStatisticsProcessor:
         self.non_US_services_exports_source = non_US_services_exports_source
 
         # Loading geographies
-        self.path_to_geographies = path_to_geographies
+        self.path_to_geographies = online_path_to_geo_file if load_data_online else path_to_geographies
         self.geographies = pd.read_csv(path_to_geographies)
 
         # Loading BaTIS data once and for all if needed as it can be quite long
         if 'BaTIS' in [non_US_services_exports_source, US_services_exports_source]:
             processor = BalancedTradeStatsProcessor(
                 year=self.year,
-                service_flows_to_exclude=self.service_flows_to_exclude
+                service_flows_to_exclude=self.service_flows_to_exclude,
+                load_data_online=load_data_online
             )
             self.services_batis = processor.load_clean_services_data()
 
@@ -89,11 +91,11 @@ class TradeStatisticsProcessor:
         # If we are focusing only on the adjustment of US multinationals' sales, we match the IRS dataset
         # We also do if the year considered in 2018 since, for this one, we do not have the OECD's CbCR data yet
         if self.US_only or self.year in [2018, 2019]:
-            preprocessor = IRSDataPreprocessor(year=year)
+            preprocessor = IRSDataPreprocessor(year=year, load_data_online=load_data_online)
             self.unique_IRS_country_codes = preprocessor.load_final_data()['CODE'].unique()
 
         else:
-            oecd_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=0)
+            oecd_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=0, load_data_online=load_data_online)
             temp = oecd_preprocessor.get_preprocessed_revenue_data()
             self.unique_OECD_country_codes = temp['AFFILIATE_COUNTRY_CODE'].unique()
 
@@ -103,16 +105,16 @@ class TradeStatisticsProcessor:
 
         # Merchandise
         if self.US_merchandise_exports_source == 'BIMTS':
-            processor = BalancedTradeStatsProcessor(year=self.year)
+            processor = BalancedTradeStatsProcessor(year=self.year, load_data_online=self.load_data_online)
             us_merchandise = processor.load_clean_merchandise_data()
             us_merchandise = us_merchandise[us_merchandise['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
 
         elif self.US_merchandise_exports_source == 'BoP':
-            processor = USBalanceOfPaymentsProcessor(year=self.year)
+            processor = USBalanceOfPaymentsProcessor(year=self.year, load_data_online=self.load_data_online)
             us_merchandise = processor.load_final_merchandise_data()
 
         else:   # Alternative is to use Comtrade
-            processor = UNComtradeProcessor(year=self.year)
+            processor = UNComtradeProcessor(year=self.year, load_data_online=self.load_data_online)
             us_merchandise = processor.load_data_with_geographies()
             us_merchandise = us_merchandise[us_merchandise['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
 
@@ -122,19 +124,19 @@ class TradeStatisticsProcessor:
             us_services = services_batis[services_batis['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
 
         else:   # Alternative is to use the US BoP
-            processor = USBalanceOfPaymentsProcessor(year=self.year)
+            processor = USBalanceOfPaymentsProcessor(year=self.year, load_data_online=self.load_data_online)
             us_services = processor.load_final_services_data()
 
         # ### Loading non-US exports data
 
         # Merchandise
         if self.non_US_merchandise_exports_source == 'BIMTS':
-            processor = BalancedTradeStatsProcessor(year=self.year)
+            processor = BalancedTradeStatsProcessor(year=self.year, load_data_online=self.load_data_online)
             merchandise = processor.load_clean_merchandise_data()
             merchandise = merchandise[merchandise['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
 
         else:   # Alternative is to use Comtrade
-            processor = UNComtradeProcessor(year=self.year)
+            processor = UNComtradeProcessor(year=self.year, load_data_online=self.load_data_online)
             merchandise = processor.load_data_with_geographies()
             merchandise = merchandise[merchandise['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
 
@@ -304,7 +306,7 @@ class TradeStatisticsProcessor:
         if self.US_only or self.year in [2018, 2019]:
 
             # In this case, we want to cover all the affiliate countries present in the IRS' country-by-country data
-            processor = IRSDataPreprocessor(year=self.year)
+            processor = IRSDataPreprocessor(year=self.year, load_data_online=self.load_data_online)
             all_countries = processor.load_final_data()
 
             all_countries = all_countries.rename(
@@ -321,7 +323,7 @@ class TradeStatisticsProcessor:
         else:
 
             # In this case, we want to cover all the affiliate countries present in the OECD's country-by-country data
-            processor = CbCRPreprocessor(year=self.year, breakdown_threshold=0)
+            processor = CbCRPreprocessor(year=self.year, breakdown_threshold=0, load_data_online=self.load_data_online)
             all_countries = processor.get_preprocessed_revenue_data()
 
             all_countries = all_countries.rename(

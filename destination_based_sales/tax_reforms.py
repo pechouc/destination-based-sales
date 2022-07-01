@@ -7,9 +7,8 @@ import os
 import numpy as np
 import pandas as pd
 
-from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 from destination_based_sales.sales_calculator import SimplifiedGlobalSalesCalculator
-from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, define_category
+from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, define_category, online_path_to_geo_file
 
 from tax_deficit_simulator.calculator import TaxDeficitCalculator
 
@@ -26,9 +25,11 @@ path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
 class TaxReformSimulator:
 
-    def __init__(self, year):
+    def __init__(self, year, load_data_online=False):
 
         self.year = year
+
+        self.path_to_geographies = path_to_geographies if not load_data_online else online_path_to_geo_file
 
         # Storing the global sales calculator and the unadjusted / adjusted sales mappings without any filtering based
         # on the detail of the bilateral breakdown provided in CbCR statistics
@@ -43,7 +44,8 @@ class TaxReformSimulator:
             winsorize_export_percs=True,
             US_winsorizing_threshold=0.5,
             non_US_winsorizing_threshold=0.5,
-            service_flows_to_exclude=[]
+            service_flows_to_exclude=[],
+            load_data_online=load_data_online
         )
 
         self.oecd_sales_mapping = self.sales_calculator.oecd.copy()
@@ -62,7 +64,8 @@ class TaxReformSimulator:
             winsorize_export_percs=True,
             US_winsorizing_threshold=0.5,
             non_US_winsorizing_threshold=0.5,
-            service_flows_to_exclude=[]
+            service_flows_to_exclude=[],
+            load_data_online=load_data_online
         )
 
         self.restr_oecd_sales_mapping = self.restr_sales_calculator.oecd.copy()
@@ -519,7 +522,7 @@ class TaxReformSimulator:
         full_set = pd.DataFrame(full_set)
         full_set.columns = ['COUNTRY_CODE']
 
-        geographies = pd.read_csv(path_to_geographies)
+        geographies = pd.read_csv(self.path_to_geographies)
         geographies = geographies.groupby('CODE').first()['NAME'].reset_index()
 
         full_set = full_set.merge(

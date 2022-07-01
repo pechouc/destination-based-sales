@@ -14,8 +14,13 @@ import numpy as np
 ########################################################################################################################
 # --- Generalities
 
-online_path_to_geo_file = 'https://raw.githubusercontent.com/pechouc/destination-based-sales/main/'
-online_path_to_geo_file += 'destination_based_sales/data/geographies.csv'
+url_to_data = 'https://raw.githubusercontent.com/pechouc/destination-based-sales/main/destination_based_sales/data/'
+
+online_path_to_geo_file = url_to_data + 'geographies.csv'
+online_path_to_GNI_data = url_to_data + 'gross_national_income.csv'
+online_path_to_TH_list = url_to_data + 'tax_havens.csv'
+online_path_to_CONS_data = url_to_data + 'us_gdpcomponent_98866982281181.csv'
+online_path_to_indus_mapping = url_to_data + 'industry_names_mapping.json'
 
 
 ########################################################################################################################

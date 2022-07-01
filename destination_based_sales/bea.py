@@ -40,8 +40,6 @@ class BEADataPreprocessor:
     def __init__(
         self,
         year,
-        path_to_dir=path_to_dir,
-        path_to_geo_file=path_to_geographies,
         load_data_online=False
     ):
         """
@@ -50,8 +48,7 @@ class BEADataPreprocessor:
         This is the instantiation function for this class. It requires several arguments:
 
         - the year to consider (for now, one of 2016, 2017 or 2018);
-        - the path to the directory where this Python file is located, to retrieve the appropriate data file;
-        - the path to the "geographies.csv" file, used for instance to complement BEA data with country codes.
+        - whether to load the data online or locally (depending on the value of the "load_data_online" boolean).
         """
         self.year = year
 
@@ -64,7 +61,7 @@ class BEADataPreprocessor:
                 'Part-II-E1-E17.xls'
             )
 
-            self.path_to_geo_file = path_to_geo_file
+            self.path_to_geo_file = path_to_geographies
 
         else:
             if year in [2016, 2017, 2018]:
