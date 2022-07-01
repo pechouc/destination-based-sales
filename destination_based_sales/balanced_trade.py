@@ -37,12 +37,12 @@ class BalancedTradeStatsProcessor:
             self.path_to_geographies = path_to_geographies
 
         else:
-            # If relevant, we construct the URL from which we can load the BIMTS data
-            url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
-            merchandise_dataset_identifier = 'BIMTS_HS2017/'
-            services_dataset_identifier = 'BATIS_EBOPS2010'
-            dimensions = 'ALL/'
-            agency_name = 'OECD'
+            # # If relevant, we construct the URL from which we can load the BIMTS data
+            # url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
+            # merchandise_dataset_identifier = 'BIMTS_HS2017/'
+            # services_dataset_identifier = 'BATIS_EBOPS2010'
+            # dimensions = 'ALL/'
+            # agency_name = 'OECD'
 
             # self.path_to_merchandise_data = (
             #     url_base + merchandise_dataset_identifier + dimensions + agency_name + '?contenttype=csv'

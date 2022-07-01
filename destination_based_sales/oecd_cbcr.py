@@ -13,8 +13,6 @@ import os
 import numpy as np
 import pandas as pd
 
-import requests
-
 from destination_based_sales.utils import impute_missing_continent_codes, CONTINENT_CODES_TO_IMPUTE_OECD_CBCR, \
     UK_CARIBBEAN_ISLANDS, online_path_to_geo_file, online_path_to_GNI_data, online_path_to_TH_list, url_to_data
 
@@ -58,11 +56,11 @@ class CbCRPreprocessor:
         self.breakdown_threshold = breakdown_threshold
 
         if load_data_online:
-            # If relevant, we construct the URL from which we can load the CSV country-by-country dataset
-            self.url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
-            self.dataset_identifier = 'CBCR_TABLEI/'
-            self.dimensions = 'ALL/'
-            self.agency_name = 'OECD'
+            # # If relevant, we construct the URL from which we can load the CSV country-by-country dataset
+            # self.url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
+            # self.dataset_identifier = 'CBCR_TABLEI/'
+            # self.dimensions = 'ALL/'
+            # self.agency_name = 'OECD'
 
             # self.path_to_OECD_CbCR_data = (
             #     self.url_base + self.dataset_identifier + self.dimensions + self.agency_name + '?contenttype=csv'
