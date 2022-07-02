@@ -1,5 +1,4 @@
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('requirements.txt') as f:
     content = f.readlines()
@@ -10,6 +9,7 @@ setup(
     version="1.0",
     description="Python package accompanying my work on the adjustment of country-by-country revenue variables.",
     packages=find_packages(),
+    include_package_data=True,
     test_suite='tests',
     zip_safe=False
 )

@@ -26,18 +26,20 @@ class USSalesCalculator:
         winsorize_export_percs,
         US_winsorizing_threshold=None,
         non_US_winsorizing_threshold=None,
-        service_flows_to_exclude=None
+        service_flows_to_exclude=None,
+        load_data_online=False,
     ):
         self.year = year
+        self.load_data_online = load_data_online
 
         # ### Loading the required data
 
         # IRS' country-by-country data
-        irs_preprocessor = IRSDataPreprocessor(year=year)
+        irs_preprocessor = IRSDataPreprocessor(year=year, load_data_online=load_data_online)
         self.irs = irs_preprocessor.load_final_data()
 
         # Extended BEA data
-        self.bea_loader = ExtendedBEADataLoader(year=year)
+        self.bea_loader = ExtendedBEADataLoader(year=year, load_data_online=load_data_online)
         self.sales_percentages = self.bea_loader.get_extended_sales_percentages()
 
         # Trade statistics (can be quite long!)
@@ -78,7 +80,8 @@ class USSalesCalculator:
             winsorize_export_percs=winsorize_export_percs,
             US_winsorizing_threshold=US_winsorizing_threshold,
             non_US_winsorizing_threshold=non_US_winsorizing_threshold,
-            service_flows_to_exclude=service_flows_to_exclude
+            service_flows_to_exclude=service_flows_to_exclude,
+            load_data_online=self.load_data_online
         )
 
         trade_statistics = trade_stat_processor.get_final_exports_distributions()
@@ -288,7 +291,8 @@ class SimplifiedGlobalSalesCalculator:
         winsorize_export_percs,
         US_winsorizing_threshold=None,
         non_US_winsorizing_threshold=None,
-        service_flows_to_exclude=None
+        service_flows_to_exclude=None,
+        load_data_online=False
     ):
         if year not in [2016, 2017]:
             raise Exception(
@@ -299,16 +303,21 @@ class SimplifiedGlobalSalesCalculator:
         self.year = year
         self.aamne_domestic_sales_perc = aamne_domestic_sales_perc
         self.service_flows_to_exclude = service_flows_to_exclude
+        self.load_data_online = load_data_online
 
         # ### Loading the required data
 
         # OECD's country-by-country data
         self.breakdown_threshold = breakdown_threshold
-        cbcr_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=breakdown_threshold)
+        cbcr_preprocessor = CbCRPreprocessor(
+            year=year,
+            breakdown_threshold=breakdown_threshold,
+            load_data_online=load_data_online
+        )
         self.oecd = cbcr_preprocessor.get_preprocessed_revenue_data()
 
         # Extended BEA data
-        self.bea_loader = ExtendedBEADataLoader(year=year)
+        self.bea_loader = ExtendedBEADataLoader(year=year, load_data_online=load_data_online)
         self.sales_percentages = self.bea_loader.get_extended_sales_percentages()
 
         # US sales mapping and trade statistics
@@ -322,7 +331,8 @@ class SimplifiedGlobalSalesCalculator:
             winsorize_export_percs=winsorize_export_percs,
             US_winsorizing_threshold=US_winsorizing_threshold,
             non_US_winsorizing_threshold=non_US_winsorizing_threshold,
-            service_flows_to_exclude=service_flows_to_exclude
+            service_flows_to_exclude=service_flows_to_exclude,
+            load_data_online=load_data_online
         )
 
         self.trade_statistics = calculator.unrestricted_trade_statistics.copy()
@@ -330,7 +340,7 @@ class SimplifiedGlobalSalesCalculator:
 
         if self.aamne_domestic_sales_perc:
             # If we want to use the Analytical AMNE database instead of BEA statistics for domestic sales percentages
-            preprocessor = AnalyticalAMNEPreprocessor()
+            preprocessor = AnalyticalAMNEPreprocessor(load_data_online=load_data_online)
 
             aamne_domestic = preprocessor.get_unextended_domestic_analytical_amne_data()
 

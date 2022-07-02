@@ -15,7 +15,7 @@ import pandas as pd
 
 from destination_based_sales.bea import BEADataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
-from destination_based_sales.utils import compute_foreign_owned_gross_output
+from destination_based_sales.utils import compute_foreign_owned_gross_output, online_path_to_geo_file
 
 
 ########################################################################################################################
@@ -36,10 +36,8 @@ class AnalyticalAMNEPreprocessor:
 
     def __init__(
         self,
-        path_to_analytical_amne=path_to_analytical_amne,
-        path_to_analytical_amne_domestic=path_to_analytical_amne_domestic,
-        path_to_geographies=path_to_geographies,
-        load_OECD_data=True
+        load_OECD_data=True,
+        load_data_online=False
     ):
         """
         The logic used to load and preprocess the OECD's Analytical AMNE data is encapsulated in a Python class, Analy-
@@ -56,32 +54,52 @@ class AnalyticalAMNEPreprocessor:
         - a boolean, "load_OECD_data", indicating whether to save the OECD's aggregated and anonymized country-by-
         country data in a dedicated class attribute.
         """
-        self.path_to_analytical_amne = path_to_analytical_amne
+        self.load_data_online = load_data_online
+
+        if not load_data_online:
+            self.path_to_analytical_amne = path_to_analytical_amne
+            self.path_to_analytical_amne_domestic = path_to_analytical_amne_domestic
+            self.path_to_geographies = path_to_geographies
+
+        else:
+            self.path_to_analytical_amne = \
+                'http://stats.oecd.org/wbos/fileview2.aspx?IDFile=1e7c1e6d-a466-4e6b-a9f2-eee4a8bdadef'
+
+            self.path_to_analytical_amne_domestic = \
+                'http://stats.oecd.org/wbos/fileview2.aspx?IDFile=45ba0358-ce9a-4b25-8ca2-c9e5fc87a9f0'
+
+            self.path_to_geographies = online_path_to_geo_file
+
         self.tab_1 = 'GO bilateral'
         self.tab_2 = 'GVA EXGR IMGR'
 
-        self.path_to_analytical_amne_domestic = path_to_analytical_amne_domestic
         self.domestic_aamne_tab = 'MNE GO GVA EXGR IMGR'
 
-        self.bea_processor = BEADataPreprocessor(year=2016)
+        self.bea_processor = BEADataPreprocessor(year=2016, load_data_online=load_data_online)
         self.bea = self.bea_processor.load_final_data()
 
         # Depending on the boolean passed as argument, we load the OECD's CbCR data or not
         if load_OECD_data:
-            self.cbcr_preprocessor = CbCRPreprocessor(year=2016, breakdown_threshold=0)
+            self.cbcr_preprocessor = CbCRPreprocessor(
+                year=2016,
+                breakdown_threshold=0,
+                load_data_online=load_data_online
+            )
             self.oecd = self.cbcr_preprocessor.get_preprocessed_revenue_data()
 
         else:
             self.oecd = None
-
-        self.path_to_geographies = path_to_geographies
 
     def load_OECD_CbCR_data(self):
         """
         If, when instantiating the AnalyticalAMNEPreprocessor object, the option "load_OECD_data=False" was chosen, this
         method allows to load the OECD's country-by-country data and to save it in an "oecd" attribute.
         """
-        self.cbcr_preprocessor = CbCRPreprocessor(year=2016, breakdown_threshold=0)
+        self.cbcr_preprocessor = CbCRPreprocessor(
+            year=2016,
+            breakdown_threshold=0,
+            load_data_online=self.load_data_online
+        )
         self.oecd = self.cbcr_preprocessor.get_preprocessed_revenue_data()
 
     def load_clean_foreign_analytical_amne_data(self):

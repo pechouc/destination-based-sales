@@ -8,3 +8,4 @@ dist/
 *.iml
 .DS_Store
 .idea/
+destination_based_sales.egg-info/

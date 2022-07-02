@@ -1,16 +1,12 @@
 import os
-import io
 
 import numpy as np
 import pandas as pd
 
-import requests
-import zipfile
-
 import warnings
 
 from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
-    impute_missing_continent_codes
+    impute_missing_continent_codes, online_path_to_geo_file, url_to_data
 
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,19 +23,43 @@ class BalancedTradeStatsProcessor:
         self,
         year,
         service_flows_to_exclude=None,
-        path_to_merchandise_data=path_to_merchandise_data,
-        path_to_services_data=path_to_services_data,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
 
         self.year = year
 
         self.service_flows_to_exclude = service_flows_to_exclude
 
-        self.path_to_merchandise_data = path_to_merchandise_data
-        self.path_to_services_data = path_to_services_data
+        if not load_data_online:
+            self.path_to_merchandise_data = path_to_merchandise_data
+            self.path_to_services_data = path_to_services_data
 
-        self.path_to_geographies = path_to_geographies
+            self.path_to_geographies = path_to_geographies
+
+        else:
+            # # If relevant, we construct the URL from which we can load the BIMTS data
+            # url_base = 'http://stats.oecd.org/SDMX-JSON/data/'
+            # merchandise_dataset_identifier = 'BIMTS_HS2017/'
+            # services_dataset_identifier = 'BATIS_EBOPS2010'
+            # dimensions = 'ALL/'
+            # agency_name = 'OECD'
+
+            # self.path_to_merchandise_data = (
+            #     url_base + merchandise_dataset_identifier + dimensions + agency_name + '?contenttype=csv'
+            # )
+            # self.path_to_services_data = (
+            #     url_base + services_dataset_identifier + dimensions + agency_name + '?contenttype=csv'
+            # )
+
+            # For now, we rely on the files available on GitHub
+            self.path_to_merchandise_data = url_to_data + 'merchandise_trade_statistics.csv'
+
+            temp = 'https://github.com/pechouc/destination-based-sales/blob/main/destination_based_sales/data/'
+            temp += 'OECD-WTO_BATIS_BPM6_Jan2021_bulk.csv?raw=true'
+            self.path_to_services_data = temp
+
+            self.path_to_geographies = online_path_to_geo_file
+
         self.geographies = pd.read_csv(self.path_to_geographies)
 
         self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()

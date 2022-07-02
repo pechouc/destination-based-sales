@@ -8,7 +8,21 @@ This module defines several useful functions, mobilised throughout the other Pyt
 import os
 import json
 
+from urllib.request import urlopen
+
 import numpy as np
+
+
+########################################################################################################################
+# --- Generalities
+
+url_to_data = 'https://raw.githubusercontent.com/pechouc/destination-based-sales/main/destination_based_sales/data/'
+
+online_path_to_geo_file = url_to_data + 'geographies.csv'
+online_path_to_GNI_data = url_to_data + 'gross_national_income.csv'
+online_path_to_TH_list = url_to_data + 'tax_havens.csv'
+online_path_to_CONS_data = url_to_data + 'us_gdpcomponent_98866982281181.csv'
+online_path_to_indus_mapping = url_to_data + 'industry_names_mapping.json'
 
 
 ########################################################################################################################
@@ -16,14 +30,25 @@ import numpy as np
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
-path_to_codes_to_impute_IRS = os.path.join(path_to_dir, 'data', 'codes_to_impute_IRS.json')
-path_to_codes_to_impute_BEA = os.path.join(path_to_dir, 'data', 'codes_to_impute_BEA.json')
+try:
+    path_to_codes_to_impute_IRS = os.path.join(path_to_dir, 'data', 'codes_to_impute_IRS.json')
+    path_to_codes_to_impute_BEA = os.path.join(path_to_dir, 'data', 'codes_to_impute_BEA.json')
 
-with open(path_to_codes_to_impute_IRS) as file:
-    CODES_TO_IMPUTE_IRS = json.loads(file.read())
+    with open(path_to_codes_to_impute_IRS) as file:
+        CODES_TO_IMPUTE_IRS = json.loads(file.read())
 
-with open(path_to_codes_to_impute_BEA) as file:
-    CODES_TO_IMPUTE_BEA = json.loads(file.read())
+    with open(path_to_codes_to_impute_BEA) as file:
+        CODES_TO_IMPUTE_BEA = json.loads(file.read())
+
+except FileNotFoundError:
+    path_to_codes_to_impute_IRS = url_to_data + 'codes_to_impute_IRS.json'
+    path_to_codes_to_impute_BEA = url_to_data + 'codes_to_impute_BEA.json'
+
+    with urlopen(path_to_codes_to_impute_IRS) as file:
+        CODES_TO_IMPUTE_IRS = json.loads(file.read())
+
+    with urlopen(path_to_codes_to_impute_BEA) as file:
+        CODES_TO_IMPUTE_BEA = json.loads(file.read())
 
 CONTINENT_CODES_TO_IMPUTE_TRADE = {
     'OASIAOCN': 'APAC',

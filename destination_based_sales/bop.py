@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 
-from destination_based_sales.irs import IRSDataPreprocessor
-from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, ensure_country_overlap_with_IRS
+from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, ensure_country_overlap_with_IRS, \
+    online_path_to_geo_file, url_to_data
 
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,14 +36,18 @@ class USBalanceOfPaymentsProcessor():
     def __init__(
         self,
         year,
-        path_to_US_bop_data=path_to_US_bop_data,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
 
         self.year = year
 
-        self.path_to_US_bop_data = path_to_US_bop_data
-        self.path_to_geographies = path_to_geographies
+        if not load_data_online:
+            self.path_to_US_bop_data = path_to_US_bop_data
+            self.path_to_geographies = path_to_geographies
+
+        else:
+            self.path_to_US_bop_data = url_to_data + 'us_bop.xls'
+            self.path_to_geographies = online_path_to_geo_file
 
         geographies = pd.read_csv(self.path_to_geographies)
         self.geographies = geographies.groupby('CODE').first().reset_index()

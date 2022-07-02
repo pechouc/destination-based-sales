@@ -3,6 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 
+from destination_based_sales.utils import url_to_data, online_path_to_geo_file
+
+
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_comtrade_data = os.path.join(path_to_dir, 'data', 'selected_comtrade_data.csv')
@@ -14,15 +17,19 @@ class UNComtradeProcessor():
     def __init__(
         self,
         year,
-        path_to_comtrade_data=path_to_comtrade_data,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
 
         self.year = year
 
-        self.path_to_comtrade_data = path_to_comtrade_data
+        if not load_data_online:
+            self.path_to_comtrade_data = path_to_comtrade_data
+            self.path_to_geographies = path_to_geographies
 
-        self.path_to_geographies = path_to_geographies
+        else:
+            self.path_to_comtrade_data = url_to_data + 'selected_comtrade_data.csv'
+            self.path_to_geographies = online_path_to_geo_file
+
         self.geographies = pd.read_csv(self.path_to_geographies)
 
     def load_raw_data(self):

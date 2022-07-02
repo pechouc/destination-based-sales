@@ -18,7 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from destination_based_sales.utils import CONTINENT_CODES_TO_IMPUTE_TRADE
+from destination_based_sales.utils import CONTINENT_CODES_TO_IMPUTE_TRADE, online_path_to_geo_file, \
+    online_path_to_GNI_data, online_path_to_TH_list, online_path_to_CONS_data, online_path_to_indus_mapping
 
 
 ########################################################################################################################
@@ -31,9 +32,6 @@ path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 path_to_industry_names_mapping = os.path.join(path_to_dir, 'data', 'industry_names_mapping.json')
 
-with open(path_to_industry_names_mapping) as file:
-    industry_names_mapping = json.loads(file.read())
-
 
 ########################################################################################################################
 # --- Content
@@ -44,9 +42,7 @@ class PerIndustryAnalyser:
         self,
         year,
         macro_indicator,
-        path_to_dir=path_to_dir,
-        path_to_tax_haven_list=path_to_tax_haven_list,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
         """
         The logic for loading, preprocessing and analysing the industry-specific country-by-country statistics of the
@@ -77,12 +73,35 @@ class PerIndustryAnalyser:
                 + 'or the UNCTAD consumption expenditure indicator (pass "macro_indicator=CONS" as argument).'
             )
 
+        if load_data_online:
+            self.path_to_tax_haven_list = online_path_to_TH_list
+            self.path_to_geographies = online_path_to_geo_file
+            self.path_to_GNI_data = online_path_to_GNI_data
+            self.path_to_CONS_data = online_path_to_CONS_data
+            self.path_to_industry_names_mapping = online_path_to_indus_mapping
+
+            self.path_to_industry_data = f'https://www.irs.gov/pub/irs-soi/{self.year - 2000}it02cbc.xlsx'
+
+        else:
+            self.path_to_tax_haven_list = path_to_tax_haven_list
+            self.path_to_geographies = path_to_geographies
+            self.path_to_GNI_data = path_to_GNI_data
+            self.path_to_CONS_data = path_to_CONS_data
+            self.path_to_industry_names_mapping = path_to_industry_names_mapping
+
+            self.path_to_industry_data = os.path.join(
+                path_to_dir,
+                'data',
+                str(self.year),
+                f'{self.year - 2000}it02cbc.xlsx'
+            )
+
         # We load the list of tax havens in a dedicated attribute
-        self.path_to_tax_haven_list = path_to_tax_haven_list
         self.tax_havens = pd.read_csv(self.path_to_tax_haven_list)
 
-        self.path_to_dir = path_to_dir
-        self.path_to_geographies = path_to_geographies
+        # We load the mapping of industry group names
+        with open(self.path_to_industry_names_mapping) as file:
+            self.industry_names_mapping = json.loads(file.read())
 
     def load_clean_data(
         self,
@@ -96,15 +115,8 @@ class PerIndustryAnalyser:
         """
 
         # Loading the data from the corresponding Excel file
-        path_to_industry_data = os.path.join(
-            self.path_to_dir,
-            'data',
-            str(self.year),
-            f'{self.year - 2000}it02cbc.xlsx'
-        )
-
         data = pd.read_excel(
-            path_to_industry_data,
+            self.path_to_industry_data,
             engine='openpyxl'
         )
 
@@ -224,12 +236,12 @@ class PerIndustryAnalyser:
 
         # Renaming industries for convenience
         data['INDUSTRY'] = data['INDUSTRY'].map(
-            lambda industry: industry_names_mapping.get(industry, industry)
+            lambda industry: self.industry_names_mapping.get(industry, industry)
         )
 
         return data.copy()
 
-    def load_data_with_GNI(self, dropna=False, path_to_GNI_data=path_to_GNI_data):
+    def load_data_with_GNI(self, dropna=False):
         """
         Building upon the previous method, "load_clean_data", this method allows to load and preprocess the industry-
         specific country-by-country data while adding the Gross National Income (GNI) of each partner country, for the
@@ -243,7 +255,7 @@ class PerIndustryAnalyser:
         data = self.load_clean_data()
 
         # Loading and preprocessing Gross National Income (GNI) data
-        gross_national_income = pd.read_csv(path_to_GNI_data, delimiter=';')
+        gross_national_income = pd.read_csv(self.path_to_GNI_data, delimiter=';')
         gross_national_income = gross_national_income[['COUNTRY_CODE', f'GNI_{self.year}']].copy()
 
         gross_national_income[f'GNI_{self.year}'] = gross_national_income[f'GNI_{self.year}'].map(
@@ -264,7 +276,7 @@ class PerIndustryAnalyser:
 
         return data.copy()
 
-    def load_data_with_CONS(self, dropna=False, path_to_CONS_data=path_to_CONS_data):
+    def load_data_with_CONS(self, dropna=False):
         """
         Building upon the previous method, "load_clean_data", this method allows to load and preprocess the industry-
         specific country-by-country data while adding the final consumption expenditures of each partner country, for
@@ -277,7 +289,7 @@ class PerIndustryAnalyser:
         # Loading and cleaning industry-specific country-by-country data
         data = self.load_clean_data()
 
-        df = pd.read_csv(path_to_CONS_data, encoding='latin')
+        df = pd.read_csv(self.path_to_CONS_data, encoding='latin')
 
         df = df.reset_index()
         df.columns = df.iloc[0]

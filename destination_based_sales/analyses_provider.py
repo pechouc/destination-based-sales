@@ -14,11 +14,11 @@ import plotly.express as px
 from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 from destination_based_sales.bea import ExtendedBEADataLoader
-from destination_based_sales.revenue_split import RevenueSplitter
 from destination_based_sales.trade_statistics import TradeStatisticsProcessor
 from destination_based_sales.per_industry import PerIndustryAnalyser
 from destination_based_sales.sales_calculator import USSalesCalculator, SimplifiedGlobalSalesCalculator
-from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS
+from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, online_path_to_geo_file, online_path_to_TH_list, \
+    online_path_to_GNI_data, online_path_to_CONS_data
 
 
 ########################################################################################################################
@@ -51,10 +51,7 @@ class USAnalysesProvider:
         non_US_winsorizing_threshold=0.5,
         service_flows_to_exclude=None,
         macro_indicator='CONS',
-        path_to_GNI_data=path_to_GNI_data,
-        path_to_UNCTAD_data=path_to_UNCTAD_consumption_exp,
-        path_to_tax_haven_list=path_to_tax_haven_list,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
 
         self.year = year
@@ -70,11 +67,23 @@ class USAnalysesProvider:
 
         self.service_flows_to_exclude = service_flows_to_exclude
 
-        self.path_to_geographies = path_to_geographies
+        self.load_data_online = load_data_online
 
-        # Loading the relevant macroeconomic indicator
-        self.path_to_GNI_data = path_to_GNI_data
-        self.path_to_UNCTAD_data = path_to_UNCTAD_data
+        if not load_data_online:
+            self.path_to_geographies = path_to_geographies
+            self.path_to_tax_haven_list = path_to_tax_haven_list
+
+            # Loading the relevant macroeconomic indicator
+            self.path_to_GNI_data = path_to_GNI_data
+            self.path_to_UNCTAD_data = path_to_UNCTAD_data
+
+        else:
+            self.path_to_geographies = online_path_to_geo_file
+            self.path_to_tax_haven_list = online_path_to_TH_list
+
+            # Loading the relevant macroeconomic indicator
+            self.path_to_GNI_data = online_path_to_GNI_data
+            self.path_to_UNCTAD_data = online_path_to_CONS_data
 
         if macro_indicator == 'GNI':
             self.macro_indicator = self.get_GNI_data()
@@ -93,11 +102,10 @@ class USAnalysesProvider:
             )
 
         # Loading the list of tax havens
-        self.path_to_tax_haven_list = path_to_tax_haven_list
         tax_havens = pd.read_csv(self.path_to_tax_haven_list)
         self.tax_haven_country_codes = list(tax_havens['CODE'].unique()) + ['UKI']
 
-        irs_preprocessor = IRSDataPreprocessor(year=year)
+        irs_preprocessor = IRSDataPreprocessor(year=year, load_data_online=load_data_online)
         self.irs = irs_preprocessor.load_final_data()
 
         calculator = USSalesCalculator(
@@ -110,7 +118,8 @@ class USAnalysesProvider:
             winsorize_export_percs=winsorize_export_percs,
             US_winsorizing_threshold=US_winsorizing_threshold,
             non_US_winsorizing_threshold=non_US_winsorizing_threshold,
-            service_flows_to_exclude=service_flows_to_exclude
+            service_flows_to_exclude=service_flows_to_exclude,
+            load_data_online=load_data_online
         )
         self.trade_statistics = calculator.unrestricted_trade_statistics.copy()
         self.sales_mapping = calculator.get_final_sales_mapping()
@@ -219,7 +228,7 @@ class USAnalysesProvider:
         us_totals = {}
         foreign_totals = {}
 
-        preprocessor = IRSDataPreprocessor(year=2016)
+        preprocessor = IRSDataPreprocessor(year=2016, load_data_online=self.load_data_online)
         df = preprocessor.load_final_data()
 
         us_totals[2016] = df[df['CODE'] == 'USA'][column_name].iloc[0]
@@ -234,7 +243,7 @@ class USAnalysesProvider:
 
         for year in [2017, 2018, 2019]:
 
-            preprocessor = IRSDataPreprocessor(year=year)
+            preprocessor = IRSDataPreprocessor(year=year, load_data_online=self.load_data_online)
             df_temp = preprocessor.load_final_data()
 
             us_totals[year] = df_temp[df_temp['CODE'] == 'USA'][column_name].iloc[0]
@@ -1142,7 +1151,7 @@ class USAnalysesProvider:
 
         trade_statistics = self.trade_statistics.copy()
 
-        bea_preprocessor = ExtendedBEADataLoader(year=year)
+        bea_preprocessor = ExtendedBEADataLoader(year=year, load_data_online=self.load_data_online)
         bea = bea_preprocessor.get_extended_sales_percentages()
 
         trade_stats_processor = TradeStatisticsProcessor(
@@ -1153,7 +1162,8 @@ class USAnalysesProvider:
             non_US_merchandise_exports_source=self.non_US_merchandise_exports_source,
             non_US_services_exports_source=self.non_US_services_exports_source,
             winsorize_export_percs=False,
-            service_flows_to_exclude=self.service_flows_to_exclude
+            service_flows_to_exclude=self.service_flows_to_exclude,
+            load_data_online=self.load_data_online
         )
         trade_stats_non_winsorized = trade_stats_processor.load_merged_data()
 
@@ -1272,10 +1282,7 @@ class GlobalAnalysesProvider:
         non_US_winsorizing_threshold=0.5,
         service_flows_to_exclude=None,
         macro_indicator='CONS',
-        path_to_GNI_data=path_to_GNI_data,
-        path_to_UNCTAD_data=path_to_UNCTAD_consumption_exp,
-        path_to_tax_haven_list=path_to_tax_haven_list,
-        path_to_geographies=path_to_geographies
+        load_data_online=False
     ):
 
         self.year = year
@@ -1293,11 +1300,23 @@ class GlobalAnalysesProvider:
 
         self.service_flows_to_exclude = service_flows_to_exclude
 
-        self.path_to_geographies = path_to_geographies
+        self.load_data_online = load_data_online
 
-        # Loading the relevant macroeconomic indicator
-        self.path_to_GNI_data = path_to_GNI_data
-        self.path_to_UNCTAD_data = path_to_UNCTAD_data
+        if not load_data_online:
+            self.path_to_geographies = path_to_geographies
+            self.path_to_tax_haven_list = path_to_tax_haven_list
+
+            # Loading the relevant macroeconomic indicator
+            self.path_to_GNI_data = path_to_GNI_data
+            self.path_to_UNCTAD_data = path_to_UNCTAD_data
+
+        else:
+            self.path_to_geographies = online_path_to_geo_file
+            self.path_to_tax_haven_list = online_path_to_TH_list
+
+            # Loading the relevant macroeconomic indicator
+            self.path_to_GNI_data = online_path_to_GNI_data
+            self.path_to_UNCTAD_data = online_path_to_CONS_data
 
         if macro_indicator == 'GNI':
             self.macro_indicator = self.get_GNI_data()
@@ -1315,12 +1334,15 @@ class GlobalAnalysesProvider:
                 + 'or the UNCTAD consumption expenditure indicator (pass "macro_indicator=CONS" as argument).'
             )
 
-        self.path_to_tax_haven_list = path_to_tax_haven_list
         tax_havens = pd.read_csv(self.path_to_tax_haven_list)
         self.tax_haven_country_codes = list(tax_havens['CODE'].unique()) + ['UKI']
 
         self.breakdown_threshold = breakdown_threshold
-        cbcr_preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=breakdown_threshold)
+        cbcr_preprocessor = CbCRPreprocessor(
+            year=year,
+            breakdown_threshold=breakdown_threshold,
+            load_data_online=load_data_online
+        )
         self.oecd = cbcr_preprocessor.get_preprocessed_revenue_data()
 
         calculator = SimplifiedGlobalSalesCalculator(
@@ -1334,7 +1356,8 @@ class GlobalAnalysesProvider:
             winsorize_export_percs=winsorize_export_percs,
             US_winsorizing_threshold=US_winsorizing_threshold,
             non_US_winsorizing_threshold=non_US_winsorizing_threshold,
-            service_flows_to_exclude=service_flows_to_exclude
+            service_flows_to_exclude=service_flows_to_exclude,
+            load_data_online=load_data_online
         )
         self.trade_statistics = calculator.trade_statistics.copy()
         self.sales_mapping = calculator.get_final_sales_mapping()
@@ -1471,7 +1494,11 @@ class GlobalAnalysesProvider:
         domestic_totals = {}
         foreign_totals = {}
 
-        preprocessor = CbCRPreprocessor(year=2016, breakdown_threshold=self.breakdown_threshold)
+        preprocessor = CbCRPreprocessor(
+            year=2016,
+            breakdown_threshold=self.breakdown_threshold,
+            load_data_online=self.load_data_online
+        )
         df = preprocessor.get_preprocessed_revenue_data()
 
         domestic_totals[2016] = df[df['PARENT_COUNTRY_CODE'] == df['AFFILIATE_COUNTRY_CODE']][column_name].sum()
@@ -1486,7 +1513,11 @@ class GlobalAnalysesProvider:
 
         for year in [2017]:
 
-            preprocessor = CbCRPreprocessor(year=year, breakdown_threshold=self.breakdown_threshold)
+            preprocessor = CbCRPreprocessor(
+                year=year,
+                breakdown_threshold=self.breakdown_threshold,
+                load_data_online=self.load_data_online
+            )
             df_temp = preprocessor.get_preprocessed_revenue_data()
 
             domestic_totals[year] = df_temp[
@@ -2444,7 +2475,7 @@ class GlobalAnalysesProvider:
 
         trade_statistics = self.trade_statistics.copy()
 
-        bea_preprocessor = ExtendedBEADataLoader(year=year)
+        bea_preprocessor = ExtendedBEADataLoader(year=year, load_data_online=self.load_data_online)
         bea = bea_preprocessor.get_extended_sales_percentages()
 
         trade_stats_processor = TradeStatisticsProcessor(
@@ -2455,7 +2486,8 @@ class GlobalAnalysesProvider:
             non_US_merchandise_exports_source=self.non_US_merchandise_exports_source,
             non_US_services_exports_source=self.non_US_services_exports_source,
             winsorize_export_percs=False,
-            service_flows_to_exclude=self.service_flows_to_exclude
+            service_flows_to_exclude=self.service_flows_to_exclude,
+            load_data_online=self.load_data_online
         )
         trade_stats_non_winsorized = trade_stats_processor.load_merged_data()
 
