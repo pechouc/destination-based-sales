@@ -75,7 +75,7 @@ class USAnalysesProvider:
 
             # Loading the relevant macroeconomic indicator
             self.path_to_GNI_data = path_to_GNI_data
-            self.path_to_UNCTAD_data = path_to_UNCTAD_data
+            self.path_to_UNCTAD_data = path_to_UNCTAD_consumption_exp
 
         else:
             self.path_to_geographies = online_path_to_geo_file
@@ -1308,7 +1308,7 @@ class GlobalAnalysesProvider:
 
             # Loading the relevant macroeconomic indicator
             self.path_to_GNI_data = path_to_GNI_data
-            self.path_to_UNCTAD_data = path_to_UNCTAD_data
+            self.path_to_UNCTAD_data = path_to_UNCTAD_consumption_exp
 
         else:
             self.path_to_geographies = online_path_to_geo_file
