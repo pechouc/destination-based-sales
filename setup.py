@@ -11,5 +11,13 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     test_suite='tests',
-    zip_safe=False
+    zip_safe=False,
+    install_requires=[
+        'pandas==1.3.5',
+        'xlrd==2.0.1',
+        'openpyxl==3.0.7',
+        'matplotlib==3.2.1',
+        'seaborn==0.10.1',
+        'numpy==1.18.5',
+    ]
 )
