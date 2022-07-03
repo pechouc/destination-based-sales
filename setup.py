@@ -19,5 +19,6 @@ setup(
         'matplotlib==3.2.1',
         'seaborn==0.10.1',
         'numpy==1.18.5',
+        'plotly==5.3.1'
     ]
 )
