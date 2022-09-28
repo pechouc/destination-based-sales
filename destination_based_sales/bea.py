@@ -1,7 +1,6 @@
 """
 This module is used to load and preprocess data from the Bureau of Economic Analysis (BEA). These allow to split revenue
-variables between sales directed to the host (or affiliate) country, to the US and to any third country. Data are loaded
-from Excel files saved in the "data" folder.
+variables between sales directed to the host (or affiliate) country, to the US and to any third country.
 """
 
 
@@ -14,6 +13,9 @@ import os
 import numpy as np
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 # Imports for the BEADataPreprocessor class
 from destination_based_sales.utils import CODES_TO_IMPUTE_BEA, impute_missing_codes
 
@@ -22,7 +24,7 @@ from destination_based_sales.irs import IRSDataPreprocessor
 from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 
 from destination_based_sales.utils import eliminate_irrelevant_percentages, impute_missing_values, \
-    online_path_to_geo_file
+    online_path_to_geo_file, online_path_to_TH_list
 
 ########################################################################################################################
 # --- Diverse
@@ -30,6 +32,7 @@ from destination_based_sales.utils import eliminate_irrelevant_percentages, impu
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
+path_to_tax_havens = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 
 
 ########################################################################################################################
@@ -39,16 +42,18 @@ class BEADataPreprocessor:
 
     def __init__(
         self,
-        year,
-        load_data_online=False
+        year: int,
+        load_data_online: bool = False
     ):
-        """
-        The instructions allowing to load and preprocess BEA data are organised in a Python class, BEADataPreprocessor.
+        """Encapsulates the logic allowing to load and preprocess BEA data.
 
-        This is the instantiation function for this class. It requires several arguments:
+        :param year: the year to consider (for now, one of 2016, 2017, 2018 or 2019)
+        :type year: int
+        :param load_data_online: whether to load the data online or locally, defaults to False
+        :type load_data_online: bool, optional
 
-        - the year to consider (for now, one of 2016, 2017 or 2018);
-        - whether to load the data online or locally (depending on the value of the "load_data_online" boolean).
+        :rtype: destination_based_sales.bea.BEADataPreprocessor
+        :returns: object of the class BEADataPreprocessor, used to load and preprocess BEA data
         """
         self.year = year
 
@@ -62,6 +67,7 @@ class BEADataPreprocessor:
             )
 
             self.path_to_geo_file = path_to_geographies
+            self.path_to_tax_havens = path_to_tax_havens
 
         else:
             if year in [2016, 2017, 2018]:
@@ -71,13 +77,15 @@ class BEADataPreprocessor:
                 self.path_to_bea = 'https://apps.bea.gov/international/xls/usdia2019p/Part-II-E1-E17.xls'
 
             self.path_to_geo_file = online_path_to_geo_file
+            self.path_to_tax_havens = online_path_to_TH_list
 
         self.CODES_TO_IMPUTE = CODES_TO_IMPUTE_BEA.copy()
 
-    def load_data(self):
-        """
-        This class method is used to load and clean the data from the BEA. It relies on the data file paths, saved as
-        class attributes when the instantiation function is called. Preprocessing steps are detailed in comments below.
+    def load_data(self) -> pd.DataFrame:
+        """Loads data from the BEA and applies the basic cleaning steps.
+
+        :rtype: pandas.DataFrame
+        :return: BEA data on the sales of goods and services of US multinationals, after a basic cleaning
         """
 
         # We load the data from the appropriate Excel file
@@ -155,10 +163,11 @@ class BEADataPreprocessor:
 
         return bea_cleaned.reset_index(drop=True)
 
-    def load_data_with_geo_codes(self):
-        """
-        This class method is used to add geographical ISO codes to the raw dataset, loaded with the "load_data" method.
-        It relies on the "impute_missing_codes" function defined in utils.py.
+    def load_data_with_geo_codes(self) -> pd.DataFrame:
+        """Adds geographical ISO codes to the raw dataset, loaded with the "load_data" method.
+
+        :rtype: pandas.DataFrame
+        :return: BEA data with country and continent codes and names
         """
         bea = self.load_data()
 
@@ -188,11 +197,11 @@ class BEADataPreprocessor:
 
         return merged_df.copy()
 
-    def load_final_data(self):
-        """
-        This class method allows to load the fully preprocessed BEA data. Relying on the "load_data_with_geo_codes" me-
-        thod, continent names and codes are limited to 4 pairs, corresponding respectively to Europe, Africa, America
-        (North and South) and Asia-Pacific (gathering Asia and Oceania).
+    def load_final_data(self) -> pd.DataFrame:
+        """Loads the fully preprocessed BEA data, relying on the "load_data_with_geo_codes" method.
+
+        :rtype: pandas.DataFrame
+        :return: fully preprocessed BEA data
         """
         bea = self.load_data_with_geo_codes()
 
@@ -214,16 +223,113 @@ class BEADataPreprocessor:
 
         return bea.copy()
 
+    def plot_shares_of_foreign_sales(self, distinguish_THs=False, save_PNG=False, path_to_output_folder=None):
+
+        if save_PNG and path_to_output_folder is None:
+            raise Exception('To save the figure as a PNG file, you must indicate the path to an output folder.')
+
+        bea = self.load_final_data()
+
+        # Computing the shares of foreign sales for each type of transactions
+        for sales_type_suffix in ['_RELATED', '_UNRELATED', '']:
+            sales_to_us_column = 'TOTAL_US' + sales_type_suffix
+            local_sales_column = 'TOTAL_AFFILIATE_COUNTRY' + sales_type_suffix
+            sales_to_other_country_column = 'TOTAL_OTHER_COUNTRY' + sales_type_suffix
+
+            new_column = (
+                'PERC_FOREIGN_SALES' + sales_type_suffix if sales_type_suffix != '' else 'PERC_FOREIGN_SALES_TOTAL'
+            )
+
+            bea[new_column] = (
+                (bea[sales_to_us_column] + bea[sales_to_other_country_column]) /
+                (bea[sales_to_us_column] + bea[sales_to_other_country_column] + bea[local_sales_column])
+            ) * 100
+
+        # Adding the "Tax haven" indicator
+        if distinguish_THs:
+            tax_havens = pd.read_csv(self.path_to_tax_havens)
+            bea['Is tax haven?'] = bea['CODE'].isin(tax_havens['CODE'].unique()) * 1
+            bea['Is tax haven?'] = bea['Is tax haven?'].map({0: 'No', 1: 'Yes'})
+
+        # Matplotlib parameters determining the look of the graph
+        plt.rcParams.update(
+            {
+                'axes.titlesize': 20,
+                'axes.labelsize': 20,
+                'xtick.labelsize': 18,
+                'ytick.labelsize': 18,
+                'legend.fontsize': 18
+            }
+        )
+
+        # Plotting the boxplot graphs
+        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 7))
+
+        i = 0
+
+        for ax, column_suffix in zip(axes.flatten(), ['_UNRELATED', '_RELATED', '_TOTAL']):
+            if not distinguish_THs:
+                sns.boxplot(
+                    bea['PERC_FOREIGN_SALES' + column_suffix],
+                    orient='v',
+                    ax=ax,
+
+                )
+
+            else:
+                sns.boxplot(
+                    orient='v',
+                    x='Is tax haven?',
+                    y='PERC_FOREIGN_SALES' + column_suffix,
+                    ax=ax,
+                    data=bea
+                )
+
+            ax.set_ylim(0, 105)
+
+            if i == 0:
+                ax.set_ylabel('Share of foreign sales (%)')
+            else:
+                ax.set_ylabel(None)
+
+            i += 1
+
+            if column_suffix == '_UNRELATED':
+                ax.set_title('Panel A: Unaffiliated sales')
+            elif column_suffix == '_RELATED':
+                ax.set_title('Panel B: Affiliated sales')
+            else:
+                ax.set_title('Panel C: Total sales')
+
+        if save_PNG:
+            if not distinguish_THs:
+                path = os.path.join(path_to_output_folder, f'BEA_basic_boxplots_{self.year}.png')
+
+            else:
+                path = os.path.join(path_to_output_folder, f'BEA_boxplots_with_THs_{self.year}.png')
+
+            plt.savefig(path, bbox_inches='tight')
+
+        plt.show()
+
 
 class ExtendedBEADataLoader:
 
     def __init__(
         self,
-        year,
-        path_to_dir=path_to_dir,
-        load_data_online=False
+        year: int,
+        load_data_online: bool = False
     ):
+        """Encapsulates the logic behind the extension of BEA sales percentages to all partners in CbCR data.
 
+        :param year: the year to consider (for now, one of 2016, 2017, 2018 or 2019)
+        :type year: int
+        :param load_data_online: whether to load the data online or locally, defaults to False
+        :type load_data_online: bool, optional
+
+        :rtype: destination_based_sales.bea.ExtendedBEADataLoader
+        :return: object of the class ExtendedBEADataLoader, used to load and preprocess extended BEA data
+        """
         self.year = year
 
         self.path_to_dir = path_to_dir
@@ -258,7 +364,12 @@ class ExtendedBEADataLoader:
                 }
             )
 
-    def load_data_with_US_US_row(self):
+    def load_data_with_US_US_row(self) -> pd.DataFrame:
+        """Loads cleaned BEA data from the "load_final_data" method defined above and adds the US-US values.
+
+        :rtype: pandas.DataFrame
+        :return: BEA data loaded from Table II.E2, complemented with the US-US row from Table I.O1
+        """
         df = self.bea_preprocessor.load_final_data()
 
         if not self.load_data_online:
@@ -319,15 +430,23 @@ class ExtendedBEADataLoader:
 
         return df.copy()
 
-    def get_merged_dataframe(self):
+    def get_merged_dataframe(self) -> pd.DataFrame:
+        """Merges the BEA data with the US-US row (obtained from previous method) onto the target set of partners.
+
+        :rtype: pandas.DataFrame
+        :return:
+        """
+        # Loading BEA data with the US-US row
         df = self.load_data_with_US_US_row()
 
+        # Merging these data onto the target set of partner countries, to which we want to extend them
         merged_df = self.target_countries.merge(
             df,
             how='left',
             left_on='AFFILIATE_COUNTRY_CODE', right_on='CODE'
         )
 
+        # Dropping unnecessary columns and renaming some others
         merged_df.drop(
             columns=['AFFILIATE_COUNTRY_NAME_y', 'NAME', 'CODE', 'CONTINENT_CODE_y', 'CONTINENT_NAME'],
             inplace=True
@@ -343,7 +462,12 @@ class ExtendedBEADataLoader:
 
         return merged_df.copy()
 
-    def get_data_with_indicator_variables(self):
+    def get_data_with_indicator_variables(self) -> pd.DataFrame:
+        """Adds indicator variables to the dataset, that provide information about the availability of sales amounts.
+
+        :rtype: pandas.DataFrame
+        :return: target set of partners with BEA data and indicator variables showing the availability of the latter
+        """
         merged_df = self.get_merged_dataframe()
 
         mask_US = (merged_df['AFFILIATE_COUNTRY_CODE'] == 'USA')
@@ -407,26 +531,56 @@ class ExtendedBEADataLoader:
 
         return merged_df.copy()
 
-    def get_data_with_sales_percentages(self):
+    def get_data_with_sales_percentages(self) -> pd.DataFrame:
+        """Moves from the absolute amounts covered in the dataset to sales percentages.
+
+        :rtype: pandas.DataFrame
+        :return:
+
+        .. note::
+
+            Relies on the "eliminate_irrelevant_percentages" function defined in the "utils.py" module.
+        """
+        # --- Preliminary steps
+
+        # We load the dataset with the indicator variables showing the availability of sales amounts
         merged_df = self.get_data_with_indicator_variables()
 
+        # We therefore have one column per destination of the sales ("US", "OTHER_COUNTRY", "AFFILIATE_COUNTRY") x per
+        # type of transaction ("RELATED", 'UNRELATED", "TOTAL"), as well as various sub-totals
+
+        # Relevant columns start with one of these character strings depending on the destination of the sales
         bases = ['TOTAL_US', 'TOTAL_AFFILIATE_COUNTRY', 'TOTAL_OTHER_COUNTRY']
 
+        # This list will store the names of the columns with sales percentages
         percentage_columns = []
 
+        # --- Main loop and computations
+
+        # We iterate over types of transaction
         for sales_type in ['RELATED', 'UNRELATED', 'TOTAL']:
+            # We define (i) the list of existing columns that correspond to the type considered
+            # and (ii) the name of the total column (e.g., showing the total related-party and unrelated-party sales)
+
+            # First, for related and unrelated transactions
             if sales_type in ['RELATED', 'UNRELATED']:
+                # We have three existing columns depending on the destination
                 existing_columns = [column + '_' + sales_type for column in bases]
 
+                # We name the column as "TOTAL_RELATED" or "TOTAL_UNRELATED"
                 total_column = 'TOTAL_' + sales_type
 
             else:
+                # We have three existing columns depending on the destination
                 existing_columns = bases.copy()
 
+                # We will basically re-compute the "TOTAL" column, that sums all sales
                 total_column = 'TOTAL_COMPUTED'
 
+            # We compute the total column by summing sales over the set of destinations
             merged_df[total_column] = merged_df[existing_columns].sum(axis=1)
 
+            # We deduce sales percentages
             for i, destination in enumerate(['US', 'AFFILIATE_COUNTRY', 'OTHER_COUNTRY']):
                 new_column = '_'.join(['PERC', sales_type, destination])
 
@@ -434,18 +588,34 @@ class ExtendedBEADataLoader:
 
                 merged_df[new_column] = merged_df[existing_columns[i]] / merged_df[total_column]
 
-        # We eliminate the revenue percentages computed while some data are missing
+        # --- Filtering out irrelevant sales percentages
+
+        # We eliminate the revenue percentages computed while some data are missing (cf. "utils.py")
         for column in percentage_columns:
             merged_df[column] = merged_df.apply(
                 lambda row: eliminate_irrelevant_percentages(row, column),
                 axis=1
             )
 
+        # --- Final steps
+
+        # We save the names of the columns with sales percentages as an attribute
         self.percentage_columns = percentage_columns.copy()
 
         return merged_df.copy()
 
-    def build_imputations_dict(self):
+    def build_imputations_dict(self) -> dict:
+        """Builds the dictionary used to impute missing sales percentages.
+
+        :rtype: dict
+        :return: builds the dictionary with each continent's mean sales percentages, used for imputation
+
+        .. note::
+
+            Dictionary with continent codes as keys and dictionaries as values.
+            Sub-dictionaries show the continent's mean sales percentage for each destination x sales type combination.
+        """
+        # Loading BEA data with sales percentages
         merged_df = self.get_data_with_sales_percentages()
 
         imputations = {}
@@ -533,7 +703,12 @@ class ExtendedBEADataLoader:
 
         return imputations.copy()
 
-    def get_extended_sales_percentages(self):
+    def get_extended_sales_percentages(self) -> pd.DataFrame:
+        """Deduces the extended sales percentages, covering all partners in country-by-country data.
+
+        :rtype: pandas.DataFrame
+        :return: extends sales percentages to the target set of countries (partners in country-by-country data)
+        """
         merged_df = self.get_data_with_sales_percentages()
         imputations = self.build_imputations_dict()
 

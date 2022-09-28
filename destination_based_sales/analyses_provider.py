@@ -664,7 +664,8 @@ class USAnalysesProvider:
                 x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
                 y='Share of foreign unrelated-party revenues (%)',
                 data=plot_df,
-                ci=None
+                ci=None,
+                truncate=False
             )
 
             # Adding the scattered dots
@@ -678,6 +679,27 @@ class USAnalysesProvider:
                 },
                 s=100
             )
+
+            if self.year == 2017:
+                extract = plot_df.sort_values(by='Share of foreign unrelated-party revenues (%)', ascending=False).head(10)
+                for _, country in extract.iterrows():
+                    if country['CODE'] == 'BRA':
+                        x = country[col_name_new] - 0.3
+                        y = country['Share of foreign unrelated-party revenues (%)'] + 0.4
+                    else:
+                        x = country[col_name_new] + 0.2
+                        y = country['Share of foreign unrelated-party revenues (%)']
+
+                    plt.text(
+                        x=x,
+                        y=y,
+                        s=country['CODE'],
+                        size=16,
+                        bbox=dict(facecolor='gray', alpha=0.7)
+                    )
+
+                plt.xlim(0, plot_df[col_name_new].max() + 1)
+                plt.ylim(-0.3, plot_df['Share of foreign unrelated-party revenues (%)'].max() + 1)
 
             # Adding the title with the correlation coefficient
             plt.title(comment)
@@ -1093,7 +1115,7 @@ class USAnalysesProvider:
             plot_df.rename(
                 columns={
                     col_name_init: col_name_new,
-                    'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of total unrelated-party revenues (%)'
+                    'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign unrelated-party revenues (%)'
                 },
                 inplace=True
             )
@@ -1101,7 +1123,7 @@ class USAnalysesProvider:
             # Plotting the regression line
             sns.regplot(
                 x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
-                y='Share of total unrelated-party revenues (%)',
+                y='Share of foreign unrelated-party revenues (%)',
                 data=plot_df,
                 ci=None
             )
@@ -1109,7 +1131,7 @@ class USAnalysesProvider:
             # Adding scattered dots
             sns.scatterplot(
                 x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
-                y='Share of total unrelated-party revenues (%)',
+                y='Share of foreign unrelated-party revenues (%)',
                 data=plot_df,
                 hue='Category',
                 palette={
@@ -1117,6 +1139,30 @@ class USAnalysesProvider:
                 },
                 s=100
             )
+
+            if self.year == 2017:
+                extract = plot_df.sort_values(
+                    by='Share of foreign unrelated-party revenues (%)',
+                    ascending=False
+                ).head(10)
+                for _, country in extract.iterrows():
+                    if country['COUNTRY_CODE'] in ['SGP', 'NLD']:
+                        x = country[col_name_new] - 0.1
+                        y = country['Share of foreign unrelated-party revenues (%)'] + 0.35
+                    else:
+                        x = country[col_name_new] + 0.2
+                        y = country['Share of foreign unrelated-party revenues (%)']
+
+                    plt.text(
+                        x=x,
+                        y=y,
+                        s=country['COUNTRY_CODE'],
+                        size=16,
+                        bbox=dict(facecolor='gray', alpha=0.7)
+                    )
+
+                plt.xlim(0, plot_df[col_name_new].max() + 1)
+                plt.ylim(-0.3, plot_df['Share of foreign unrelated-party revenues (%)'].max() + 1)
 
             # Adding the title with the correlation coefficient
             plt.title(comment)
@@ -2365,7 +2411,8 @@ class GlobalAnalysesProvider:
                 x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
                 y='Share of foreign unrelated-party revenues (%)',
                 data=plot_df,
-                ci=None
+                ci=None,
+                truncate=False
             )
 
             # Adding scattered dots
@@ -2379,6 +2426,30 @@ class GlobalAnalysesProvider:
                 },
                 s=100
             )
+
+            if self.year == 2017:
+                extract = plot_df.sort_values(by='Share of foreign unrelated-party revenues (%)', ascending=False).head(8)
+                for _, country in extract.iterrows():
+                    if country['AFFILIATE_COUNTRY_CODE'] == 'SGP':
+                        x = country[col_name_new] - 0.05
+                        y = country['Share of foreign unrelated-party revenues (%)'] + 0.5
+                    elif country['AFFILIATE_COUNTRY_CODE'] == 'HKG':
+                        x = country[col_name_new]
+                        y = country['Share of foreign unrelated-party revenues (%)'] - 0.8
+                    else:
+                        x = country[col_name_new] + 0.35
+                        y = country['Share of foreign unrelated-party revenues (%)']
+
+                    plt.text(
+                        x=x,
+                        y=y,
+                        s=country['AFFILIATE_COUNTRY_CODE'],
+                        size=16,
+                        bbox=dict(facecolor='gray', alpha=0.7)
+                    )
+
+                plt.xlim(0, plot_df[col_name_new].max() + 2)
+                plt.ylim(-1, plot_df['Share of foreign unrelated-party revenues (%)'].max() + 2)
 
             # Adding the title with the correlation coefficient
             plt.title(comment)
@@ -2784,7 +2855,7 @@ class GlobalAnalysesProvider:
             plot_df.rename(
                 columns={
                     col_name_init: col_name_new,
-                    'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of total unrelated-party revenues (%)'
+                    'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign unrelated-party revenues (%)'
                 },
                 inplace=True
             )
@@ -2792,15 +2863,16 @@ class GlobalAnalysesProvider:
             # Plotting the regression line
             sns.regplot(
                 x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
-                y='Share of total unrelated-party revenues (%)',
+                y='Share of foreign unrelated-party revenues (%)',
                 data=plot_df,
-                ci=None
+                ci=None,
+                truncate=False
             )
 
             # Adding the scattered dots
             sns.scatterplot(
                 x=f'Share of total {self.year} {self.macro_indicator_name} (%)',
-                y='Share of total unrelated-party revenues (%)',
+                y='Share of foreign unrelated-party revenues (%)',
                 data=plot_df,
                 hue='Category',
                 palette={
@@ -2808,6 +2880,33 @@ class GlobalAnalysesProvider:
                 },
                 s=100
             )
+
+            if self.year == 2017:
+                extract = plot_df.sort_values(
+                    by='Share of foreign unrelated-party revenues (%)',
+                    ascending=False
+                ).head(10)
+                for _, country in extract.iterrows():
+                    if country['COUNTRY_CODE'] == 'HKG':
+                        x = country[col_name_new] - 0.4
+                        y = country['Share of foreign unrelated-party revenues (%)'] + 0.5
+                    elif country['COUNTRY_CODE'] == 'SGP':
+                        x = country[col_name_new] - 1.4
+                        y = country['Share of foreign unrelated-party revenues (%)'] - 0.1
+                    else:
+                        x = country[col_name_new] + 0.4
+                        y = country['Share of foreign unrelated-party revenues (%)'] - 0.1
+
+                    plt.text(
+                        x=x,
+                        y=y,
+                        s=country['COUNTRY_CODE'],
+                        size=16,
+                        bbox=dict(facecolor='gray', alpha=0.7)
+                    )
+
+                plt.xlim(-1.5, plot_df[col_name_new].max() + 2)
+                plt.ylim(-0.3, plot_df['Share of foreign unrelated-party revenues (%)'].max() + 0.8)
 
             # Adding the title with the correlation coefficient
             plt.title(comment)

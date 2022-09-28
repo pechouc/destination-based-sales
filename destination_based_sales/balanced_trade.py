@@ -1,4 +1,14 @@
+"""
+This module is used to load and preprocess trade statistics from the OECD / WTO's Balanced Trade in Services (BaTIS) da-
+taset and the OECD's Balanced International Merchandise Trade Statistics (BIMTS). The dedicated logic is encapsulated in
+a Python class, "BalancedTradeStatsProcessor".
+"""
+
+########################################################################################################################
+# --- Imports
+
 import os
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -8,6 +18,8 @@ import warnings
 from destination_based_sales.utils import UK_CARIBBEAN_ISLANDS, CONTINENT_CODES_TO_IMPUTE_TRADE, \
     impute_missing_continent_codes, online_path_to_geo_file, url_to_data
 
+########################################################################################################################
+# --- Diverse
 
 path_to_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,20 +28,34 @@ path_to_services_data = os.path.join(path_to_dir, 'data', 'OECD-WTO_BATIS_BPM6_J
 
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
+########################################################################################################################
+# --- Content
 
 class BalancedTradeStatsProcessor:
 
     def __init__(
         self,
-        year,
-        service_flows_to_exclude=None,
-        load_data_online=False
+        year: int,
+        service_flows_to_exclude: Optional[list] = None,
+        load_data_online: bool = False
     ):
+        """Encapsulates the logic used to load and preprocess balanced trade statistics.
 
+        :param year: year to consider for the analysis
+        :type year: int
+        :param service_flows_to_exclude: types of service exports to exclude from trade statistics, defaults to None
+        :type service_flows_to_exclude: list, optional
+        :param load_data_online: whether to load the data online (True) or locally (False), defaults to False
+        :type load_data_online: bool, optional
+
+        :rtype: destination_based_sales.balanced_trade.BalancedTradeStatsProcessor
+        :return: object of the class BalancedTradeStatsProcessor, used to load and preprocess balanced trade statistics
+        """
+        # Saving some of the arguments as attributes
         self.year = year
-
         self.service_flows_to_exclude = service_flows_to_exclude
 
+        # Depending on the load_data_online, we save paths to the relevant data as attributes
         if not load_data_online:
             self.path_to_merchandise_data = path_to_merchandise_data
             self.path_to_services_data = path_to_services_data
@@ -60,13 +86,19 @@ class BalancedTradeStatsProcessor:
 
             self.path_to_geographies = online_path_to_geo_file
 
+        # Loading geographies (country names, ISO codes, continent names and continent codes)
         self.geographies = pd.read_csv(self.path_to_geographies)
 
+        # Saving as attributes other items from the "utils.py" module
         self.UK_CARIBBEAN_ISLANDS = UK_CARIBBEAN_ISLANDS.copy()
         self.CONTINENT_CODES_TO_IMPUTE_TRADE = CONTINENT_CODES_TO_IMPUTE_TRADE.copy()
 
-    def load_clean_merchandise_data(self):
+    def load_clean_merchandise_data(self) -> pd.DataFrame:
+        """Loads and cleans data from the Balanced International Merchandise Trade Statistics (BIMTS).
 
+        :rtype: pandas.DataFrame
+        :return: preprocessed balanced merchandise trade statistics
+        """
         # Reading the BIMTS dataset
         merchandise = pd.read_csv(self.path_to_merchandise_data)
 
@@ -144,8 +176,14 @@ class BalancedTradeStatsProcessor:
 
         return merchandise.copy()
 
-    def load_clean_services_data(self):
+    def load_clean_services_data(self) -> pd.DataFrame:
+        """Loads and cleans data from the Balanced Trade in Statistics (BaTIS) dataset.
 
+        :raises Exception: if list of service flows to exclude was not saved (attribute still equal to None)
+
+        :rtype: pandas.DataFrame
+        :return: preprocessed balanced trade in services statistics
+        """
         if self.service_flows_to_exclude is None:
             raise Exception(
                 "To load service exports based on BaTIS data, you need to specify what flows of services to exclude:"
@@ -320,10 +358,23 @@ class BalancedTradeStatsProcessor:
 class ServicesDataTransformer:
 
     def __init__(self):
+        """Encapsulates useful logic for the preprocessing of BaTIS data (dealing with "Rest of the world" partners).
+
+        :rtype: destination_based_sales.balanced_trade.ServicesDataTransformer
+        :return: object of the class ServicesDataTransformer, used to deal with "Rest of the world" partners in BaTIS
+        """
         self.amounts_to_distribute = {}
         self.dataframes = []
 
-    def fit(self, data):
+    def fit(self, data: pd.DataFrame):
+        """Prepares the allocation of exports to the "Rest of the world" across aggregate continental partners.
+
+        :param data: partly preprocessed BaTIS data, with "Rest of the world" among the partners
+        :type data: pandas.DataFrame
+
+        :rtype: None
+        :return: no output, simply used to save relevant information as an attribute
+        """
         for country in data['AFFILIATE_COUNTRY_CODE'].unique():
             mask_affiliate_country = data['AFFILIATE_COUNTRY_CODE'] == country
             mask_RWD = data['OTHER_COUNTRY_CODE'] == 'RWD'
@@ -366,7 +417,15 @@ class ServicesDataTransformer:
             # We store the restricted DataFrame
             self.dataframes.append(restricted_df)
 
-    def transform(self, data):
+    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
+        """Based on the above, operates the allocation of exports to "Rest of the world" across continental partners.
+
+        :param data: partly preprocessed BaTIS data, with "Rest of the world" among the partners
+        :type data: pandas.DataFrame
+
+        :rtype: pandas.DataFrame
+        :return: preprocessed BaTIS data, without "Rest of the world" among the partners
+        """
         dataframe_to_append = pd.concat(self.dataframes, axis=0)
 
         data = data[data['OTHER_COUNTRY_CODE'] != 'RWD'].copy()

@@ -2,6 +2,7 @@
 # --- Imports
 
 import os
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -12,22 +13,24 @@ from destination_based_sales.oecd_cbcr import CbCRPreprocessor
 from destination_based_sales.bea import ExtendedBEADataLoader
 from destination_based_sales.trade_statistics import TradeStatisticsProcessor
 
+########################################################################################################################
+# --- Content
 
 class USSalesCalculator:
 
     def __init__(
         self,
-        year,
-        US_only,
-        US_merchandise_exports_source,
-        US_services_exports_source,
-        non_US_merchandise_exports_source,
-        non_US_services_exports_source,
-        winsorize_export_percs,
-        US_winsorizing_threshold=None,
-        non_US_winsorizing_threshold=None,
-        service_flows_to_exclude=None,
-        load_data_online=False,
+        year: int,
+        US_only: bool,
+        US_merchandise_exports_source: str,
+        US_services_exports_source: str,
+        non_US_merchandise_exports_source: str,
+        non_US_services_exports_source: str,
+        winsorize_export_percs: bool,
+        US_winsorizing_threshold: Optional[float] = None,
+        non_US_winsorizing_threshold: Optional[float] = None,
+        service_flows_to_exclude: Optional[list] = None,
+        load_data_online: bool = False,
     ):
         self.year = year
         self.load_data_online = load_data_online
@@ -58,16 +61,16 @@ class USSalesCalculator:
 
     def load_trade_statistics(
         self,
-        year,
-        US_only,
-        US_merchandise_exports_source,
-        US_services_exports_source,
-        non_US_merchandise_exports_source,
-        non_US_services_exports_source,
-        winsorize_export_percs,
-        US_winsorizing_threshold,
-        non_US_winsorizing_threshold,
-        service_flows_to_exclude
+        year: int,
+        US_only: bool,
+        US_merchandise_exports_source: str,
+        US_services_exports_source: str,
+        non_US_merchandise_exports_source: str,
+        non_US_services_exports_source: str,
+        winsorize_export_percs: bool,
+        US_winsorizing_threshold: Optional[float],
+        non_US_winsorizing_threshold: Optional[float],
+        service_flows_to_exclude: Optional[list]
     ):
 
         trade_stat_processor = TradeStatisticsProcessor(
@@ -281,18 +284,18 @@ class SimplifiedGlobalSalesCalculator:
 
     def __init__(
         self,
-        year,
-        aamne_domestic_sales_perc,
-        breakdown_threshold,
-        US_merchandise_exports_source,
-        US_services_exports_source,
-        non_US_merchandise_exports_source,
-        non_US_services_exports_source,
-        winsorize_export_percs,
-        US_winsorizing_threshold=None,
-        non_US_winsorizing_threshold=None,
-        service_flows_to_exclude=None,
-        load_data_online=False
+        year: int,
+        aamne_domestic_sales_perc: bool,
+        breakdown_threshold: int,
+        US_merchandise_exports_source: str,
+        US_services_exports_source: str,
+        non_US_merchandise_exports_source: str,
+        non_US_services_exports_source: str,
+        winsorize_export_percs: bool,
+        US_winsorizing_threshold: Optional[float] = None,
+        non_US_winsorizing_threshold: Optional[float] = None,
+        service_flows_to_exclude: Optional[list] = None,
+        load_data_online: bool = False
     ):
         if year not in [2016, 2017]:
             raise Exception(

@@ -1,7 +1,7 @@
 """
-This module is used to load and preprocess data from the OECD's Analytical AMNE database. The latter allows, for non-US
-multinational companies, to separate the revenue variables into sales to the host country and sales directed to another
-jurisdiction. These are split between sales to the headquarter country and sales to any other country based on BEA data.
+This module is used to load and preprocess data from the OECD's Analytical AMNE database. In the benchmark destination-
+based adjustment of country-by-country revenue variables, the latter allows to split non-US multinational companies'
+domestic revenue variables into local sales and sales directed to another jurisdiction.
 """
 
 
@@ -36,23 +36,18 @@ class AnalyticalAMNEPreprocessor:
 
     def __init__(
         self,
-        load_OECD_data=True,
-        load_data_online=False
+        load_OECD_data: bool = True,
+        load_data_online: bool = False
     ):
-        """
-        The logic used to load and preprocess the OECD's Analytical AMNE data is encapsulated in a Python class, Analy-
-        ticalAMNEPreprocessor. This is the instantiation method of this class, which takes as arguments:
+        """Encapsulates the logic used to load and preprocess the OECD's Analytical AMNE data.
 
-        - the string path to the main Excel file of the Analytical AMNE database, downloaded under the name "analytical_
-        amne.xlsx";
+        :param load_OECD_data: whether to save the OECD's country-by-country data in an attribute, defaults to True
+        :type load_OECD_data: bool, optional
+        :param load_data_online: whether to load the data online (True) or locally (False), defaults to False
+        :type load_data_online: bool, optional
 
-        - the string path to the complementary Excel file, focused on the activities of domestic firms (multinational
-        enterprises or purely local companies) and downloaded under the name "analytical_amne_domesticMNEs.xlsx";
-
-        - the string path to the "geographies.csv", used to add ISO country codes to the OECD's data;
-
-        - a boolean, "load_OECD_data", indicating whether to save the OECD's aggregated and anonymized country-by-
-        country data in a dedicated class attribute.
+        :rtype: destination_based_sales.analytical_amne.AnalyticalAMNEPreprocessor
+        :return: object of the class AnalyticalAMNEPreprocessor, used to load and clean the OECD's Analytical AMNE data
         """
         self.load_data_online = load_data_online
 
@@ -64,17 +59,18 @@ class AnalyticalAMNEPreprocessor:
         else:
             self.path_to_analytical_amne = \
                 'http://stats.oecd.org/wbos/fileview2.aspx?IDFile=1e7c1e6d-a466-4e6b-a9f2-eee4a8bdadef'
-
             self.path_to_analytical_amne_domestic = \
                 'http://stats.oecd.org/wbos/fileview2.aspx?IDFile=45ba0358-ce9a-4b25-8ca2-c9e5fc87a9f0'
-
             self.path_to_geographies = online_path_to_geo_file
 
+        # Main Excel file is made of two sheets
         self.tab_1 = 'GO bilateral'
         self.tab_2 = 'GVA EXGR IMGR'
 
+        # Secondary Excel file, that focuses on domestic activities, contains only one tab
         self.domestic_aamne_tab = 'MNE GO GVA EXGR IMGR'
 
+        # Loading the BEA sales percentages for 2016 (only available year in the Analytical AMNE database)
         self.bea_processor = BEADataPreprocessor(year=2016, load_data_online=load_data_online)
         self.bea = self.bea_processor.load_final_data()
 
@@ -91,9 +87,10 @@ class AnalyticalAMNEPreprocessor:
             self.oecd = None
 
     def load_OECD_CbCR_data(self):
-        """
-        If, when instantiating the AnalyticalAMNEPreprocessor object, the option "load_OECD_data=False" was chosen, this
-        method allows to load the OECD's country-by-country data and to save it in an "oecd" attribute.
+        """Loads the OECD's country-by-country data and saves them in an "oecd" attribute.
+
+        :rtype: None
+        :return: None, country-by-country data are saved as an attribute
         """
         self.cbcr_preprocessor = CbCRPreprocessor(
             year=2016,
@@ -102,18 +99,13 @@ class AnalyticalAMNEPreprocessor:
         )
         self.oecd = self.cbcr_preprocessor.get_preprocessed_revenue_data()
 
-    def load_clean_foreign_analytical_amne_data(self):
-        """
-        This method allows to load and clean the data from the second tab of the "analytical_amne.xlsx" file. This file
-        provides information and estimations relative to the activities of foreign-owned and domestically-owned compa-
-        nies in a sample of countries, from 2005 to 2016.
+    def load_clean_foreign_analytical_amne_data(self) -> pd.DataFrame:
+        """Loads and cleans data from the second tab of the "analytical_amne.xlsx" file.
 
-        For each country, the dataset indicates the gross value-added, exports and imports of the foreign subsidiaries
-        of multinational enterprises (foreign-owned companies) and of locally-owned companies. These variables are fur-
-        ther broken down by industry.
+        :rtype: pandas.DataFrame
+        :return: cleaned data from the second tab of the "analytical_amne.xlsx" file
 
-        We concentrate on 2016 data to align with country-by-country statistics and only consider the rows corresponding
-        to foreign-owned companies. We further sum the three variables over all sectors of activity.
+        .. note:: See the main paper (June 2022) and its appendix for more information about these data.
         """
 
         # We read the second tab of the spreadsheet
@@ -123,6 +115,7 @@ class AnalyticalAMNEPreprocessor:
             engine='openpyxl'
         )
 
+        # Dropping unnecessary columns (flags giving information about the nature of the data)
         aamne.drop(
             columns=['flag_gva', 'flag_exgr', 'flag_imgr'],
             inplace=True
@@ -130,8 +123,9 @@ class AnalyticalAMNEPreprocessor:
 
         aamne = aamne[aamne['year'] == 2016].copy()   # We focus on 2016 data to align with CbCR data
         aamne = aamne[aamne['own'] == 'F'].copy()     # And on the activities of foreign-owned companies
-        aamne = aamne[aamne['cou'] != 'ROW'].copy()
+        aamne = aamne[aamne['cou'] != 'ROW'].copy()   # We eliminate the "Rest of the world" from partners
 
+        # Some columns become uninformative after this filtering
         aamne.drop(
             columns=['year', 'own'],
             inplace=True
@@ -139,7 +133,7 @@ class AnalyticalAMNEPreprocessor:
 
         aamne.reset_index(drop=True, inplace=True)
 
-        # We consider all sectors of activity and therefore group by countries
+        # We consider all sectors of activity and therefore group by countries (summing over industries)
         aamne_grouped = aamne.groupby('cou').sum().reset_index()
 
         aamne_grouped.rename(
@@ -154,17 +148,16 @@ class AnalyticalAMNEPreprocessor:
 
         return aamne_grouped.copy()
 
-    def load_clean_bilateral_gross_output_data(self):
-        """
-        This method allows to load and clean the data from the first tab of the "analytical_amne.xlsx" file. Indeed, the
-        dataset also provides a bilateral mapping of gross output between host countries and the jurisdictions where
-        companies are ultimately headquartered.
+    def load_clean_bilateral_gross_output_data(self) -> pd.DataFrame:
+        """Loads and cleans data from the first tab of the "analytical_amne.xlsx" file.
 
-        Focusing on 2016 data, we sum these results over all sectors of activity and all jurisdictions of ultimate
-        ownership, so as to complement the previous dataset with gross output. As explained in more details in the PDF
-        report, we also compute the total gross output excluding US-headquartered multinational enterprises.
+        :rtype: pandas.DataFrame
+        :return: cleaned data from the first tab of the "analytical_amne.xlsx" file
 
-        This method relies on a function, "compute_foreign_owned_gross_output", defined in the "utils.py" file.
+        .. note::
+
+            See the main paper (June 2022) and its appendix for more information about these data.
+            Relies on a function, "compute_foreign_owned_gross_output", defined in the "utils.py" module.
         """
 
         # We read the first tab of the spreadsheet
@@ -177,6 +170,7 @@ class AnalyticalAMNEPreprocessor:
         gross_output = gross_output[gross_output['year'] == 2016].copy()   # We focus on 2016 data to align with CbCR
         gross_output = gross_output[gross_output['cou'] != 'ROW'].copy()
 
+        # We sum over all sectors of activity and all jurisdictions of ultimate ownership (grouping by "cou")
         gross_output = gross_output.drop(columns='year').groupby('cou').sum().reset_index()
 
         # Relying on a function defined in "utils.py", we compute for each country the gross output registered there by
@@ -204,15 +198,20 @@ class AnalyticalAMNEPreprocessor:
 
         return gross_output.copy()
 
-    def get_merged_foreign_analytical_amne_data(self):
-        """
-        This method allows to construct a DataFrame that combines all the relevant information on foreign-owned compa-
-        nies, loaded and preprocessed from the "analytical_amne.xlsx" file.
+    def get_merged_foreign_analytical_amne_data(self) -> pd.DataFrame:
+        """Constructs a DataFrame that combines all the relevant information on foreign-owned companies.
+
+        :rtype: pandas.DataFrame
+        :return: table combining all the relevant information from the "analytical_amne.xlsx" file
         """
 
+        # Loading information on gross value-added, imports and exports (2nd tab of "analytical_amne.xlsx")
         foreign_aamne = self.load_clean_foreign_analytical_amne_data()
+
+        # Loading information on gross output (1st tab of "analytical_amne.xlsx")
         gross_output = self.load_clean_bilateral_gross_output_data()
 
+        # Merging both tables
         foreign_aamne = foreign_aamne.merge(
             gross_output,
             how='inner',
@@ -221,28 +220,19 @@ class AnalyticalAMNEPreprocessor:
 
         return foreign_aamne.copy()
 
-    def get_unextended_foreign_analytical_amne_data(self):
-        """
-        With the three methods defined above, we have obtained, for each in-sample country, information on the gross
-        output, gross value-added exports and imports that foreign-owned companies register. We want to deduce an ap-
-        proximation of the following three aggregates:
+    def get_unextended_foreign_analytical_amne_data(self) -> pd.DataFrame:
+        """Based on methods above, splits local sales, sales to headquarter country and sales to any third country.
 
-        - sales of foreign-owned companies to the host country;
-        - sales of foreign-owned companies to their headquarter country;
-        - and sales of foreign-owned companies to any other country.
+        :rtype: pandas.DataFrame
+        :return: table splitting, for each country, foreign MNEs' local and foreign (HQ vs. third-country) sales
 
-        The first one is approximated as (gross output - exports).
+        .. note::
 
-        The second one is approximated as (exports * ratio of exports to the headquarter country). For each country con-
-        sidered, the ratio is assumed to be the same for all foreign-owned companies (simplifying assumption made neces-
-        sary because of the limited data at hand) and we therefore draw it from BEA data. If the country is absent from
-        BEA data, we take the ratio averaged across all countries in the BEA.
-
-        The third one is simply computed as (exports - sales to the heaquarter country).
-
-        Eventually, as we know that this distribution will be used to split the revenue variables of non-US multinatio-
-        nal companies, we exclude the US from these computations. We already have a gross output variable that excludes
-        the US and we approximate US exports from the BEA data.
+            Local sales are approximated as (gross output - exports).
+            Sales to the headquarter country are estimated as (exports * ratio of exports to the headquarter country).
+            The latter ratio is obtained from BEA data.
+            Sales to any third country are computed as (exports - sales to the heaquarter country).
+            Throughout these computations, US multinationals are excluded from gross output and exports.
         """
         bea = self.bea.copy()
 
@@ -331,12 +321,13 @@ class AnalyticalAMNEPreprocessor:
 
         return merged_df.reset_index(drop=True)
 
-    def get_extended_foreign_analytical_amne_data(self):
-        """
-        Building upon the previous method, we extend the dataset to all the partner countries that appear in the OECD's
-        aggregated and anonymized country-by-country data. Imputations for countries that are absent from the Analytical
-        AMNE database relies on continental aggregates (possible since we are looking for sales ratios and not absolute
-        amounts to split the revenue variables.)
+    def get_extended_foreign_analytical_amne_data(self) -> pd.DataFrame:
+        """Extends the dataset to all the partner countries that appear in the OECD's country-by-country data.
+
+        :rtype: pandas.DataFrame
+        :return: split of sales extended to all the partner countries that appear in the OECD's country-by-country data
+
+        :raises Exception: if self.oecd is still None, the OECD's country-by-country data having not yet been loaded
         """
         if self.oecd is None:
             raise Exception(
@@ -454,17 +445,13 @@ class AnalyticalAMNEPreprocessor:
 
         return partner_jurisdictions.copy()
 
-    def load_clean_domestic_analytical_amne_data(self):
-        """
-        This method allows to load and clean data from the complementary Excel file of the OECD's Analytical AMNE data-
-        base, "analytical_amne_domesticMNEs.xlsx". It provides information on and estimations of the gross output, gross
-        value-added, exports and imports of domestically-owned companies.
+    def load_clean_domestic_analytical_amne_data(self) -> pd.DataFrame:
+        """Loads and cleans data from the complementary Excel file, "analytical_amne_domesticMNEs.xlsx".
 
-        It allows to distinguish between the domestic branches of multinational enterprises and purely local firms.
-        Here also, variables are further broken down by industry.
+        :rtype: pandas.DataFrame
+        :return: cleaned data from the complementary Excel file, "analytical_amne_domesticMNEs.xlsx"
 
-        We concentrate on 2016 data and only consider the rows corresponding to the activities of multinational enter-
-        prises. We sum the four variables over all sectors of activity.
+        .. note:: See the main paper (June 2022) and its appendix for more information about these data.
         """
 
         # We read the Excel file; paths are defined when instantiating the AnalyticalAMNEPreprocessor object
@@ -483,7 +470,7 @@ class AnalyticalAMNEPreprocessor:
             inplace=True
         )
 
-        # We consider all sectors of activity together and thus group by host country
+        # We consider all sectors of activity together and thus group by host country (summing over industries)
         aamne_domestic = aamne_domestic.groupby('cou').sum().reset_index()
 
         aamne_domestic.rename(
@@ -499,17 +486,20 @@ class AnalyticalAMNEPreprocessor:
 
         return aamne_domestic.copy()
 
-    def get_unextended_domestic_analytical_amne_data(self):
+    def get_unextended_domestic_analytical_amne_data(self) -> pd.DataFrame:
+        """Based on the method above, splits local sales and sales to any foreign country.
+
+        :rtype: pandas.DataFrame
+        :return: table splitting, for each country in the database, domestic multinationals' local and foreign sales
         """
-        Equivalently to the "get_unextended_foreign_analytical_amne_data" method, this method allows to move from infor-
-        mation on gross output, gross value-added, etc. to proxies of sales to the host / headquarter country and sales
-        to any other country. Domestic sales are simply defined as (gross output - exports).
-        """
+        # Loading and cleaning data from the complementary Excel file
         aamne_domestic = self.load_clean_domestic_analytical_amne_data()
 
+        # Domestic sales are defined as (gross output - exports)
         aamne_domestic['DOMESTIC_SALES'] = (
             aamne_domestic['GROSS_OUTPUT'] - aamne_domestic['EXPORTS']
         )
+        # Sales to any foreign country simply defined as exports
         aamne_domestic['SALES_TO_OTHER_COUNTRY'] = aamne_domestic['EXPORTS'].values
 
         aamne_domestic.drop(
@@ -519,11 +509,13 @@ class AnalyticalAMNEPreprocessor:
 
         return aamne_domestic.copy()
 
-    def get_extended_domestic_analytical_amne_data(self):
-        """
-        Building upon the previous method, this method is used (i) to move from sales proxies in absolute amounts to
-        sales percentages and (ii) to extend the dataset to the parent countries in CbCR data that are absent from the
-        Analytical AMNE database, via continental imputation.
+    def get_extended_domestic_analytical_amne_data(self) -> pd.DataFrame:
+        """Deduces percentages from absolute amounts and extends the dataset to all parent countries in the OECD's data.
+
+        :raises Exception: if self.oecd is still None, the OECD's country-by-country data having not yet been loaded
+
+        :rtype: pandas.DataFrame
+        :return: split of domestic MNEs' local and foreign sales extended to all parent countries in the OECD's data
         """
         if self.oecd is None:
             raise Exception(
