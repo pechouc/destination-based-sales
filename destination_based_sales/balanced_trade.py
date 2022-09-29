@@ -28,6 +28,7 @@ path_to_services_data = os.path.join(path_to_dir, 'data', 'OECD-WTO_BATIS_BPM6_J
 
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
+
 ########################################################################################################################
 # --- Content
 

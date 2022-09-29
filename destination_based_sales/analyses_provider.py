@@ -681,7 +681,11 @@ class USAnalysesProvider:
             )
 
             if self.year == 2017:
-                extract = plot_df.sort_values(by='Share of foreign unrelated-party revenues (%)', ascending=False).head(10)
+                extract = plot_df.sort_values(
+                    by='Share of foreign unrelated-party revenues (%)',
+                    ascending=False
+                ).head(10)
+
                 for _, country in extract.iterrows():
                     if country['CODE'] == 'BRA':
                         x = country[col_name_new] - 0.3
@@ -2428,7 +2432,11 @@ class GlobalAnalysesProvider:
             )
 
             if self.year == 2017:
-                extract = plot_df.sort_values(by='Share of foreign unrelated-party revenues (%)', ascending=False).head(8)
+                extract = plot_df.sort_values(
+                    by='Share of foreign unrelated-party revenues (%)',
+                    ascending=False
+                ).head(8)
+
                 for _, country in extract.iterrows():
                     if country['AFFILIATE_COUNTRY_CODE'] == 'SGP':
                         x = country[col_name_new] - 0.05
