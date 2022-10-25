@@ -40,6 +40,18 @@ path_to_UNCTAD_consumption_exp = os.path.join(path_to_dir, 'data', 'us_gdpcompon
 path_to_tax_haven_list = os.path.join(path_to_dir, 'data', 'tax_havens.csv')
 path_to_geographies = os.path.join(path_to_dir, 'data', 'geographies.csv')
 
+simplified_country_names = {
+    'United States of America': 'United States',
+    'United Kingdom Islands, Caribbean': 'UK Caribbean Islands',
+    'China, Hong Kong SAR': 'Hong Kong',
+    'Korea, Republic of': 'Korea',
+    'Russian Federation': 'Russia',
+    'United Arab Emirates': 'UAE',
+    'Hong Kong, China': 'Hong Kong',
+    "China (People's Republic of)": 'China',
+    'China, Taiwan Province of': 'Taiwan'
+}
+
 
 ########################################################################################################################
 # --- Content
@@ -504,12 +516,17 @@ class USAnalysesProvider:
             for column in ['UNRELATED_PARTY_REVENUES', 'SHARE_OF_UNRELATED_PARTY_REVENUES']:
                 output[column] = output[column].map('{:.1f}'.format)
 
+        # Adapting some country names
+        output['AFFILIATE_COUNTRY_NAME'] = output['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country: simplified_country_names.get(country, country)
+        )
+
         # (Almost) final step - Renaming the columns
         output.rename(
             columns={
-                'AFFILIATE_COUNTRY_NAME': 'Partner jurisdiction',
-                'UNRELATED_PARTY_REVENUES': 'Unrelated-party revenues (USD billion)',
-                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign unrelated-party revenues (%)'
+                'AFFILIATE_COUNTRY_NAME': 'Affiliate country',
+                'UNRELATED_PARTY_REVENUES': 'UPR (USD billion)',
+                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign UPR (%)'
             },
             inplace=True
         )
@@ -554,11 +571,16 @@ class USAnalysesProvider:
             for column in ['SHARE_OF_UNRELATED_PARTY_REVENUES', f'SHARE_OF_{self.macro_indicator_prefix}_{self.year}']:
                 output[column] = output[column].map('{:.1f}'.format)
 
+        # Adapting some country names
+        output['AFFILIATE_COUNTRY_NAME'] = output['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country: simplified_country_names.get(country, country)
+        )
+
         # (Almost) final step - Renaming the columns
         output.rename(
             columns={
-                'AFFILIATE_COUNTRY_NAME': 'Partner jurisdiction',
-                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign unrelated-party revenues (%)',
+                'AFFILIATE_COUNTRY_NAME': 'Affiliate country',
+                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign UPR (%)',
                 f'SHARE_OF_{self.macro_indicator_prefix}_{self.year}': f'Share of {self.macro_indicator_name} (%)'
             },
             inplace=True
@@ -1024,12 +1046,17 @@ class USAnalysesProvider:
             for column in output.columns[1:]:
                 output[column] = output[column].map('{:.1f}'.format)
 
+        # Adapting some of the country names
+        output['COUNTRY_NAME'] = output['COUNTRY_NAME'].map(
+            lambda country: simplified_country_names.get(country, country)
+        )
+
         # Final formatting step - Renaming columns
         output.rename(
             columns={
-                'COUNTRY_NAME': 'Partner jurisdiction',
-                'UNRELATED_PARTY_REVENUES': 'Unrelated-party revenues (USD billion)',
-                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of unrelated-party revenues (%)',
+                'COUNTRY_NAME': 'Destination country',
+                'UNRELATED_PARTY_REVENUES': 'UPR (USD billion)',
+                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of UPR (%)',
                 f'SHARE_OF_{self.macro_indicator_prefix}_{self.year}': f'Share of {self.macro_indicator_name} (%)'
             },
             inplace=True
@@ -1428,6 +1455,14 @@ class USAnalysesProvider:
                 color=colors
             )
 
+            # We shorten some country names
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'UK Caribbean Islands' if x == 'United Kingdom Islands, Caribbean' else x
+            )
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'St. Vincent and the Gr.' if x == 'Saint Vincent and the Grenadines' else x
+            )
+
             plt.yticks(
                 ticks=y_pos,
                 labels=df_sorted['Country name']
@@ -1555,8 +1590,8 @@ class USAnalysesProvider:
         # Renaming columns
         focus.rename(
             columns={
-                'AFFILIATE_COUNTRY_CODE': 'Affiliate jurisdiction',
-                'UNRELATED_PARTY_REVENUES': 'Unrelated-party revenues (million USD)',
+                'AFFILIATE_COUNTRY_CODE': 'Affiliate country',
+                'UNRELATED_PARTY_REVENUES': 'UPR (million USD)',
                 'EXPORT_PERC': f'Share of {country_name} in exports (%)'
             },
             inplace=True
@@ -1564,7 +1599,7 @@ class USAnalysesProvider:
 
         # Sorting the countries of origin of revenues from the largest to the smallest; restricting to the 10 largest
         focus = focus.sort_values(
-            by='Unrelated-party revenues (million USD)',
+            by='UPR (million USD)',
             ascending=False
         ).head(10).reset_index(drop=True)
 
@@ -2245,12 +2280,17 @@ class GlobalAnalysesProvider:
         # Moving from USD to billion USD
         output['UNRELATED_PARTY_REVENUES'] /= 10**9
 
+        # Adapting some of the country names
+        output['AFFILIATE_COUNTRY_NAME'] = output['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country: simplified_country_names.get(country, country)
+        )
+
         # Renaming the columns
         output.rename(
             columns={
-                'AFFILIATE_COUNTRY_NAME': 'Partner jurisdiction',
-                'UNRELATED_PARTY_REVENUES': 'Unrelated-party revenues (USD billion)',
-                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign unrelated-party revenues (%)'
+                'AFFILIATE_COUNTRY_NAME': 'Affiliate country',
+                'UNRELATED_PARTY_REVENUES': 'UPR (USD billion)',
+                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign UPR (%)'
             },
             inplace=True
         )
@@ -2302,11 +2342,16 @@ class GlobalAnalysesProvider:
             for column in ['SHARE_OF_UNRELATED_PARTY_REVENUES', f'SHARE_OF_{self.macro_indicator_prefix}_{self.year}']:
                 output[column] = output[column].map('{:,.1f}'.format)
 
+        # Adapting some of the country names
+        output['AFFILIATE_COUNTRY_NAME'] = output['AFFILIATE_COUNTRY_NAME'].map(
+            lambda country: simplified_country_names.get(country, country)
+        )
+
         # (Almost) final step - Renaming the columns
         output.rename(
             columns={
-                'AFFILIATE_COUNTRY_NAME': 'Partner jurisdiction',
-                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign unrelated-party revenues (%)',
+                'AFFILIATE_COUNTRY_NAME': 'Affiliate country',
+                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of foreign UPR (%)',
                 f'SHARE_OF_{self.macro_indicator_prefix}_{self.year}': f'Share of {self.macro_indicator_name} (%)'
             },
             inplace=True
@@ -2613,6 +2658,7 @@ class GlobalAnalysesProvider:
         # Manipulations for the year 2016
         analyser = GlobalAnalysesProvider(
             year=2016,
+            breakdown_threshold=self.breakdown_threshold,
             aamne_domestic_sales_perc=self.aamne_domestic_sales_perc,
             US_merchandise_exports_source=self.US_merchandise_exports_source,
             US_services_exports_source=self.US_services_exports_source,
@@ -2640,6 +2686,7 @@ class GlobalAnalysesProvider:
 
             analyser = GlobalAnalysesProvider(
                 year=year,
+                breakdown_threshold=self.breakdown_threshold,
                 aamne_domestic_sales_perc=self.aamne_domestic_sales_perc,
                 US_merchandise_exports_source=self.US_merchandise_exports_source,
                 US_services_exports_source=self.US_services_exports_source,
@@ -3024,12 +3071,17 @@ class GlobalAnalysesProvider:
             for column in output.columns[1:]:
                 output[column] = output[column].map('{:.1f}'.format)
 
+        # Adapting some of the country names
+        output['COUNTRY_NAME'] = output['COUNTRY_NAME'].map(
+            lambda country: simplified_country_names.get(country, country)
+        )
+
         # Final formatting step - Renaming columns
         output.rename(
             columns={
-                'COUNTRY_NAME': 'Partner jurisdiction',
-                'UNRELATED_PARTY_REVENUES': 'Unrelated-party revenues (USD billion)',
-                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of unrelated-party revenues (%)',
+                'COUNTRY_NAME': 'Destination country',
+                'UNRELATED_PARTY_REVENUES': 'UPR (USD billion)',
+                'SHARE_OF_UNRELATED_PARTY_REVENUES': 'Share of UPR (%)',
                 f'SHARE_OF_{self.macro_indicator_prefix}_{self.year}': f'Share of {self.macro_indicator_name} (%)'
             },
             inplace=True
@@ -3135,8 +3187,8 @@ class GlobalAnalysesProvider:
         restricted_df.rename(
             columns={
                 'COUNTRY_NAME': 'Country name',
-                'UPR_OECD': 'Unrelated-party revenues based on OECD ($m)',
-                'UPR_ADJUSTED': 'Adjusted unrelated-party revenues ($m)',
+                'UPR_OECD': 'UPR based on OECD ($m)',
+                'UPR_ADJUSTED': 'Adjusted UPR ($m)',
                 'SHARE_OF_UPR_OECD': 'Share of UPR based on OECD (%)',
                 'SHARE_OF_UPR_ADJUSTED': 'Share of adjusted UPR (%)'
             },
@@ -3198,8 +3250,8 @@ class GlobalAnalysesProvider:
         if (np.abs(df[df.columns[-1]]) >= 100).sum() > 0:
             for _, row in df[np.abs(df[df.columns[-1]]) >= 100].iterrows():
                 print(
-                    row['Country name'], '-', row['Unrelated-party revenues based on OECD ($m)'],
-                    '-', row['Adjusted unrelated-party revenues ($m)'], '-', row[df.columns[-1]]
+                    row['Country name'], '-', row['UPR based on OECD ($m)'],
+                    '-', row['Adjusted UPR ($m)'], '-', row[df.columns[-1]]
                 )
 
         # Eliminating the tax haven(s) concerned
@@ -3237,6 +3289,14 @@ class GlobalAnalysesProvider:
                 y_pos,
                 df_sorted[df_sorted.columns[-1]],
                 color=colors
+            )
+
+            # We shorten some country names
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'UK Caribbean Islands' if x == 'United Kingdom Islands, Caribbean' else x
+            )
+            df_sorted['Country name'] = df_sorted['Country name'].map(
+                lambda x: 'St. Vincent and the Gr.' if x == 'Saint Vincent and the Grenadines' else x
             )
 
             plt.yticks(
@@ -3361,7 +3421,7 @@ class GlobalAnalysesProvider:
         focus.rename(
             columns={
                 'AFFILIATE_COUNTRY_CODE': 'Affiliate jurisdiction',
-                'UNRELATED_PARTY_REVENUES': 'Unrelated-party revenues (million USD)',
+                'UNRELATED_PARTY_REVENUES': 'UPR (million USD)',
                 'EXPORT_PERC': f'Share of {country_name} in exports (%)'
             },
             inplace=True
@@ -3369,7 +3429,7 @@ class GlobalAnalysesProvider:
 
         # Sorting the countries of origin of revenues from the largest to the smallest; restricting to the 10 largest
         focus = focus.sort_values(
-            by='Unrelated-party revenues (million USD)',
+            by='UPR (million USD)',
             ascending=False
         ).head(10).reset_index(drop=True)
 

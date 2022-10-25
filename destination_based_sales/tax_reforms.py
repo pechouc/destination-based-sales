@@ -77,6 +77,7 @@ class TaxReformSimulator:
             add_AUT_AUT_row=True,
             sweden_treatment='adjust',
             belgium_treatment='replace',
+            SGP_CYM_treatment='replace',
             use_adjusted_profits=True,
             average_ETRs=True,
             carve_outs=False,
