@@ -57,16 +57,12 @@ winsorizing_threshold_US = second_processor.winsorizing_threshold_US
 
 def test_first_combination_affiliate_vs_other():
     for _, df in first_outputs.items():
-        assert(
-            (df['AFFILIATE_COUNTRY_CODE'] == df['OTHER_COUNTRY_CODE']).sum() == 0
-        )
+        assert (df['AFFILIATE_COUNTRY_CODE'] == df['OTHER_COUNTRY_CODE']).sum() == 0
 
 
 def test_second_combination_affiliate_vs_other():
     for _, df in second_outputs.items():
-        assert(
-            (df['AFFILIATE_COUNTRY_CODE'] == df['OTHER_COUNTRY_CODE']).sum() == 0
-        )
+        assert (df['AFFILIATE_COUNTRY_CODE'] == df['OTHER_COUNTRY_CODE']).sum() == 0
 
 
 def test_first_combination_missing_values():
@@ -102,13 +98,9 @@ def test_first_combination_winsorizing():
         us_extract = df[df['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
         non_us_extract = df[df['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
 
-        assert(
-            (us_extract['EXPORT_PERC'] < winsorizing_threshold_US).sum() == 0
-        )
+        assert (us_extract['EXPORT_PERC'] < winsorizing_threshold_US).sum() == 0
 
-        assert(
-            (non_us_extract['EXPORT_PERC'] < winsorizing_threshold).sum() == 0
-        )
+        assert (non_us_extract['EXPORT_PERC'] < winsorizing_threshold).sum() == 0
 
 
 def test_second_combination_winsorizing():
@@ -116,13 +108,9 @@ def test_second_combination_winsorizing():
         us_extract = df[df['AFFILIATE_COUNTRY_CODE'] == 'USA'].copy()
         non_us_extract = df[df['AFFILIATE_COUNTRY_CODE'] != 'USA'].copy()
 
-        assert(
-            (us_extract['EXPORT_PERC'] < winsorizing_threshold_US).sum() == 0
-        )
+        assert (us_extract['EXPORT_PERC'] < winsorizing_threshold_US).sum() == 0
 
-        assert(
-            (non_us_extract['EXPORT_PERC'] < winsorizing_threshold).sum() == 0
-        )
+        assert (non_us_extract['EXPORT_PERC'] < winsorizing_threshold).sum() == 0
 
 
 def test_first_combination_overlap():
@@ -137,9 +125,7 @@ def test_first_combination_overlap():
             unique_country_codes = processor.load_final_data()
             unique_country_codes = unique_country_codes['CODE'].unique()
 
-        assert(
-            df[~df['OTHER_COUNTRY_CODE'].isin(unique_country_codes)].shape[0] == 0
-        )
+        assert df[~df['OTHER_COUNTRY_CODE'].isin(unique_country_codes)].shape[0] == 0
 
 
 def test_second_combination_overlap():
@@ -154,9 +140,7 @@ def test_second_combination_overlap():
             unique_country_codes = processor.load_final_data()
             unique_country_codes = unique_country_codes['CODE'].unique()
 
-        assert(
-            df[~df['OTHER_COUNTRY_CODE'].isin(unique_country_codes)].shape[0] == 0
-        )
+        assert df[~df['OTHER_COUNTRY_CODE'].isin(unique_country_codes)].shape[0] == 0
 
 
 if __name__ == '__main__':
